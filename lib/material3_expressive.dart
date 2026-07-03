@@ -41,6 +41,7 @@
 /// | SliverList                     | [MESliverList]               |
 /// | SliverGrid                     | [MESliverGrid]               |
 /// | SliverPersistentHeader         | [MESliverPinnedHeader]       |
+/// | Scaffold + CustomScrollView    | [MESliverScaffold]           |
 /// | (new)                          | [MESliverSectionHeader]      |
 /// | (new)                          | [MESplitButton]              |
 /// | RangeSlider                    | [MERangeSlider]              |
@@ -294,6 +295,7 @@ export 'src/progress/me_liquid_progress.dart';
 export 'src/progress/me_loading_indicator.dart';
 export 'src/progress/me_refresh_indicator.dart';
 export 'src/progress/me_skeleton.dart';
+export 'src/slivers/me_sliver_scaffold.dart';
 export 'src/slivers/me_slivers.dart';
 export 'src/theme/me_motion.dart';
 export 'src/theme/me_shapes.dart';
