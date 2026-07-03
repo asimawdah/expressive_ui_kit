@@ -110,8 +110,7 @@ class _SparklinePainter extends CustomPainter {
 
     // Trim the path to the draw-in progress.
     final metrics = path.computeMetrics().toList();
-    final totalLength =
-        metrics.fold<double>(0, (sum, m) => sum + m.length);
+    final totalLength = metrics.fold<double>(0, (sum, m) => sum + m.length);
     final visible = Path();
     var remaining = totalLength * progress;
     Offset? tip;
@@ -134,7 +133,7 @@ class _SparklinePainter extends CustomPainter {
         Paint()
           ..style = PaintingStyle.fill
           ..shader = ui.Gradient.linear(
-            Offset(0, 0),
+            Offset.zero,
             Offset(0, size.height),
             [
               color.withValues(alpha: 0.22),
@@ -251,9 +250,8 @@ class _MEBarChartState extends State<MEBarChart> {
   ) {
     final entry = widget.entries[index];
     final selected = _selected == index;
-    final barColor = selected
-        ? scheme.primary
-        : (entry.color ?? scheme.secondaryContainer);
+    final barColor =
+        selected ? scheme.primary : (entry.color ?? scheme.secondaryContainer);
     final fraction =
         maxValue <= 0 ? 0.0 : (entry.value / maxValue).clamp(0.0, 1.0);
     final targetHeight = (widget.height - 28) * fraction;
@@ -280,8 +278,7 @@ class _MEBarChartState extends State<MEBarChart> {
         GestureDetector(
           onTap: () {
             if (widget.selectedIndex == null) {
-              setState(
-                  () => _internalSelected = selected ? null : index);
+              setState(() => _internalSelected = selected ? null : index);
             }
             widget.onBarSelected?.call(index);
           },

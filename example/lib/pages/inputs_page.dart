@@ -23,8 +23,16 @@ class _InputsPageState extends State<InputsPage> {
       List.generate(3, (i) => 'Swipe me away — message ${i + 1}');
 
   static const List<String> _fruits = [
-    'Apple', 'Apricot', 'Banana', 'Blueberry', 'Cherry',
-    'Grape', 'Mango', 'Orange', 'Peach', 'Pear',
+    'Apple',
+    'Apricot',
+    'Banana',
+    'Blueberry',
+    'Cherry',
+    'Grape',
+    'Mango',
+    'Orange',
+    'Peach',
+    'Pear',
   ];
 
   @override
@@ -62,7 +70,8 @@ class _InputsPageState extends State<InputsPage> {
           label: 'Flavor',
           value: _flavor,
           items: const [
-            MEMenuItem(value: 'vanilla', label: 'Vanilla', icon: Icons.icecream),
+            MEMenuItem(
+                value: 'vanilla', label: 'Vanilla', icon: Icons.icecream),
             MEMenuItem(value: 'mint', label: 'Mint', icon: Icons.icecream),
             MEMenuItem(value: 'mocha', label: 'Mocha', icon: Icons.icecream),
           ],
@@ -112,9 +121,9 @@ class _InputsPageState extends State<InputsPage> {
                 onPressed: () => setState(() => _badgeCount++),
               ),
             ),
-            METooltip(
+            const METooltip(
               message: 'Expressive tooltip',
-              child: const Icon(Icons.help_outline),
+              child: Icon(Icons.help_outline),
             ),
             MEButton.tonal(
               onPressed: () => showMESnackBar(
@@ -189,12 +198,12 @@ class _InputsPageState extends State<InputsPage> {
         const SizedBox(height: 24),
         Text('Data table', style: Theme.of(context).textTheme.titleMedium),
         const SizedBox(height: 8),
-        MEDataTable(
-          columns: const [
+        const MEDataTable(
+          columns: [
             DataColumn(label: Text('Widget')),
             DataColumn(label: Text('Replaces')),
           ],
-          rows: const [
+          rows: [
             DataRow(cells: [
               DataCell(Text('MEButton')),
               DataCell(Text('ElevatedButton')),
@@ -210,7 +219,8 @@ class _InputsPageState extends State<InputsPage> {
           ],
         ),
         const SizedBox(height: 24),
-        Text('Segmented button', style: Theme.of(context).textTheme.titleMedium),
+        Text('Segmented button',
+            style: Theme.of(context).textTheme.titleMedium),
         const SizedBox(height: 8),
         MESegmentedButton<String>(
           segments: const [

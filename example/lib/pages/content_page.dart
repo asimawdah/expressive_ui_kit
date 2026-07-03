@@ -69,7 +69,10 @@ class _ContentPageState extends State<ContentPage> {
     Color(0xFFB8860B),
   ];
   final List<({String text, bool outgoing})> _messages = [
-    (text: 'Hey! Have you tried the new **expressive** widgets?', outgoing: false),
+    (
+      text: 'Hey! Have you tried the new **expressive** widgets?',
+      outgoing: false
+    ),
     (text: 'Just did — the springs feel great.', outgoing: true),
     (text: 'Even supports `inline code` in messages.', outgoing: true),
   ];
@@ -166,9 +169,8 @@ MEButton.filled(
             outgoing: _messages[i].outgoing,
             animateIn: false,
             position: _groupPosition(i),
-            avatar: _messages[i].outgoing
-                ? null
-                : const MEAvatar(child: Text('A')),
+            avatar:
+                _messages[i].outgoing ? null : const MEAvatar(child: Text('A')),
             timestamp: i == _messages.length - 1 ? '2:44 PM' : null,
           ),
         if (_typing)
@@ -201,8 +203,7 @@ MEButton.filled(
               onChanged: (v) => setState(() => _rating = v),
             ),
             const SizedBox(width: 16),
-            Text('$_rating',
-                style: Theme.of(context).textTheme.bodyMedium),
+            Text('$_rating', style: Theme.of(context).textTheme.bodyMedium),
           ],
         ),
         const SizedBox(height: 12),
@@ -345,13 +346,11 @@ MEButton.filled(
                   ],
                 ),
                 METreeNode(
-                    label: Text('main.dart'),
-                    icon: Icons.description_outlined),
+                    label: Text('main.dart'), icon: Icons.description_outlined),
               ],
             ),
             METreeNode(
-                label: Text('pubspec.yaml'),
-                icon: Icons.description_outlined),
+                label: Text('pubspec.yaml'), icon: Icons.description_outlined),
           ],
         ),
         const SizedBox(height: 32),
@@ -361,8 +360,7 @@ MEButton.filled(
           alignment: Alignment.centerLeft,
           child: MEProgressButton(
             icon: const Icon(Icons.cloud_upload_outlined),
-            onPressed: () =>
-                Future<void>.delayed(const Duration(seconds: 2)),
+            onPressed: () => Future<void>.delayed(const Duration(seconds: 2)),
             child: const Text('Upload'),
           ),
         ),
@@ -425,9 +423,9 @@ MEButton.filled(
         const SizedBox(height: 32),
         Text('Bar chart', style: title),
         const SizedBox(height: 8),
-        MECard(
+        const MECard(
           onPressed: null,
-          child: const MEBarChart(
+          child: MEBarChart(
             entries: [
               MEBarChartEntry(value: 12, label: 'Mon'),
               MEBarChartEntry(value: 18, label: 'Tue'),
@@ -453,8 +451,7 @@ MEButton.filled(
                 Text(
                   'Tap to flip',
                   style: Theme.of(context).textTheme.titleMedium!.copyWith(
-                        color:
-                            Theme.of(context).colorScheme.onPrimaryContainer,
+                        color: Theme.of(context).colorScheme.onPrimaryContainer,
                       ),
                 ),
               ],
@@ -466,15 +463,13 @@ MEButton.filled(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Icon(Icons.qr_code_2,
-                    color:
-                        Theme.of(context).colorScheme.onTertiaryContainer),
+                    color: Theme.of(context).colorScheme.onTertiaryContainer),
                 const SizedBox(height: 24),
                 Text(
                   'The back face',
                   style: Theme.of(context).textTheme.titleMedium!.copyWith(
-                        color: Theme.of(context)
-                            .colorScheme
-                            .onTertiaryContainer,
+                        color:
+                            Theme.of(context).colorScheme.onTertiaryContainer,
                       ),
                 ),
               ],
@@ -755,8 +750,7 @@ MEButton.filled(
             for (int i = 0; i < 48; i++)
               MEHeatmapCell(
                 value: ((i * 7919) % 13).toDouble(),
-                tooltip:
-                    '${(i * 7919) % 13} contributions in week ${i + 1}',
+                tooltip: '${(i * 7919) % 13} contributions in week ${i + 1}',
               ),
           ],
         ),
@@ -841,9 +835,9 @@ MEButton.filled(
         const SizedBox(height: 32),
         Text('Line chart', style: title),
         const SizedBox(height: 8),
-        MECard(
+        const MECard(
           onPressed: null,
-          child: const MELineChart(
+          child: MELineChart(
             series: [
               MELineSeries(
                 values: [4, 7, 5, 10, 8, 13, 11, 16, 14, 18],
@@ -873,8 +867,7 @@ MEButton.filled(
                 context,
                 targetKey: _coachTargetKey,
                 title: 'Try the new feature',
-                message:
-                    'This button now supports expressive shape morphing. '
+                message: 'This button now supports expressive shape morphing. '
                     'Tap it to see the spring animation.',
               ),
               child: const Text('Show coachmark'),
@@ -919,7 +912,7 @@ MEButton.filled(
         const SizedBox(height: 32),
         Text('Radar chart', style: title),
         const SizedBox(height: 8),
-         Center(
+        Center(
           child: MERadarChart(
             axes: const [
               MERadarAxis(label: 'Speed', value: 0.9),
@@ -978,8 +971,7 @@ MEButton.filled(
                 icon: Icons.note_add_outlined,
                 shortcut: 'Ctrl N',
                 keywords: const ['create', 'file'],
-                onSelected: () =>
-                    showMEToast(context, message: 'New document'),
+                onSelected: () => showMEToast(context, message: 'New document'),
               ),
               MECommand(
                 label: 'Toggle dark mode',
@@ -999,8 +991,7 @@ MEButton.filled(
                 label: 'Share project',
                 icon: Icons.share_outlined,
                 keywords: const ['export', 'send'],
-                onSelected: () =>
-                    showMEToast(context, message: 'Share dialog'),
+                onSelected: () => showMEToast(context, message: 'Share dialog'),
               ),
             ],
           ),
@@ -1131,7 +1122,9 @@ MEButton.filled(
               const SizedBox(width: 16),
               Expanded(
                 child: Text(
-                  _eqPlaying ? 'Now playing — tap to pause' : 'Paused — tap to play',
+                  _eqPlaying
+                      ? 'Now playing — tap to pause'
+                      : 'Paused — tap to play',
                   style: Theme.of(context).textTheme.titleSmall,
                 ),
               ),
@@ -1156,7 +1149,9 @@ MEButton.filled(
             const SizedBox(height: 8),
             MEButton.text(
               onPressed: () => setState(() {
-                _liquidValue = _liquidValue >= 0.9 ? 0.15 : _liquidValue + 0.25;
+                _liquidValue = _liquidValue >= 0.9
+                    ? 0.15
+                    : (_liquidValue + 0.25).clamp(0.0, 1.0).toDouble();
               }),
               child: const Text('Add progress'),
             ),
@@ -1211,8 +1206,8 @@ MEButton.filled(
                 'x: ${_joystickValue.dx.toStringAsFixed(2)}\n'
                 'y: ${_joystickValue.dy.toStringAsFixed(2)}',
                 style: Theme.of(context).textTheme.bodyMedium!.copyWith(
-                      fontFeatures: const [FontFeature.tabularFigures()],
-                    ),
+                  fontFeatures: const [FontFeature.tabularFigures()],
+                ),
               ),
             ),
           ],
@@ -1286,7 +1281,7 @@ MEButton.filled(
         const SizedBox(height: 32),
         Text('Funnel chart', style: title),
         const SizedBox(height: 8),
-         MEFunnelChart(
+        MEFunnelChart(
           stages: const [
             MEFunnelStage(value: 12400, label: 'Visitors'),
             MEFunnelStage(value: 6800, label: 'Sign-ups'),
@@ -1318,9 +1313,13 @@ MEButton.filled(
               onRolled: (v) => setState(() => _diceTotal += v),
             ),
             const SizedBox(width: 24),
-            Text(
-              'Total rolled: $_diceTotal',
-              style: Theme.of(context).textTheme.bodyMedium,
+            Expanded(
+              child: Text(
+                'Total rolled: $_diceTotal',
+                style: Theme.of(context).textTheme.bodyMedium,
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+              ),
             ),
           ],
         ),
@@ -1376,7 +1375,7 @@ MEButton.filled(
               onPressed: () => setState(() {
                 _batteryLevel = _batteryLevel <= 0.15
                     ? 0.95
-                    : _batteryLevel - 0.25;
+                    : (_batteryLevel - 0.25).clamp(0.0, 1.0).toDouble();
               }),
               child: const Text('Drain'),
             ),
@@ -1456,13 +1455,13 @@ MEButton.filled(
         const SizedBox(height: 32),
         Text('Credit card', style: title),
         const SizedBox(height: 8),
-        Center(
+        const Center(
           child: MECreditCard(
             number: '4242424242424242',
             holder: 'Alex Rivera',
             expiry: '09/28',
             cvc: '314',
-            brand: const Text('Expressive'),
+            brand: Text('Expressive'),
           ),
         ),
         const SizedBox(height: 32),
@@ -1501,8 +1500,7 @@ MEButton.filled(
             MEStickyNote(
               color: MEStickyNoteColor.tertiary,
               angle: -2,
-              onPressed: () =>
-                  showMEToast(context, message: 'Note tapped'),
+              onPressed: () => showMEToast(context, message: 'Note tapped'),
               child: Text(
                 'Pick up groceries\n\n- Oat milk\n- Coffee beans\n- Basil',
                 style: Theme.of(context).textTheme.bodyMedium,
@@ -1511,8 +1509,7 @@ MEButton.filled(
             MEStickyNote(
               color: MEStickyNoteColor.primary,
               angle: 1.5,
-              onPressed: () =>
-                  showMEToast(context, message: 'Note tapped'),
+              onPressed: () => showMEToast(context, message: 'Note tapped'),
               child: Text(
                 'Ship the widget batch by Friday!',
                 style: Theme.of(context).textTheme.titleMedium,
@@ -1539,8 +1536,7 @@ MEButton.filled(
               child: const Text('+1 day'),
             ),
             MEButton.text(
-              onPressed: () =>
-                  setState(() => _streakActive = !_streakActive),
+              onPressed: () => setState(() => _streakActive = !_streakActive),
               child: Text(_streakActive ? 'Break streak' : 'Revive'),
             ),
           ],
@@ -1551,8 +1547,7 @@ MEButton.filled(
         Center(
           child: MEPolaroid(
             caption: 'Golden hour, June 2026',
-            onPressed: () =>
-                showMEToast(context, message: 'Photo tapped'),
+            onPressed: () => showMEToast(context, message: 'Photo tapped'),
             child: ColoredBox(
               color: Theme.of(context).colorScheme.primaryContainer,
               child: Icon(

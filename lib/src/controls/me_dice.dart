@@ -4,7 +4,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
 import '../internal/me_pressable.dart';
-import '../theme/me_motion.dart';
 import '../theme/me_shapes.dart';
 import '../theme/me_theme.dart';
 
@@ -118,17 +117,16 @@ class _MEDiceState extends State<MEDice> with SingleTickerProviderStateMixin {
       child: AnimatedBuilder(
         animation: _tumble,
         builder: (context, _) {
-          final t = _tumble.value;
+          final t = _tumble.value.clamp(0.0, 1.0).toDouble();
           // Spin fast at the start, decelerating into the landing; the
           // landing segment uses the spring curve for overshoot.
           final spinCurve = Curves.easeOutCubic.transform(t);
           final angle = spinCurve * math.pi * 4;
-          final landing = t < 0.7
-              ? 0.0
-              : motion.fastSpatial.curve.transform((t - 0.7) / 0.3);
-          final scale = _rolling
-              ? (0.82 + 0.18 * landing).clamp(0.7, 1.05)
-              : 1.0;
+          final landingT = ((t - 0.7) / 0.3).clamp(0.0, 1.0).toDouble();
+          final landing =
+              t < 0.7 ? 0.0 : motion.fastSpatial.curve.transform(landingT);
+          final scale =
+              _rolling ? (0.82 + 0.18 * landing).clamp(0.7, 1.05) : 1.0;
           // Cycle through random-looking faces while spinning.
           final shownFace = _rolling && t < 0.7
               ? ((t * 17).floor() % widget.sides) + 1

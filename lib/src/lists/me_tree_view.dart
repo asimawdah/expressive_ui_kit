@@ -80,11 +80,18 @@ class _METreeTile extends StatefulWidget {
 
 class _METreeTileState extends State<_METreeTile>
     with SingleTickerProviderStateMixin {
-  late bool _expanded = widget.node.initiallyExpanded;
-  late final AnimationController _anim = AnimationController.unbounded(
-    vsync: this,
-    value: _expanded ? 1 : 0,
-  );
+  late bool _expanded;
+  late final AnimationController _anim;
+
+  @override
+  void initState() {
+    super.initState();
+    _expanded = widget.node.initiallyExpanded;
+    _anim = AnimationController.unbounded(
+      vsync: this,
+      value: _expanded ? 1 : 0,
+    );
+  }
 
   @override
   void dispose() {
@@ -113,8 +120,8 @@ class _METreeTileState extends State<_METreeTile>
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Padding(
-          padding: EdgeInsetsDirectional.only(
-              start: widget.depth * widget.indent),
+          padding:
+              EdgeInsetsDirectional.only(start: widget.depth * widget.indent),
           child: MEPressable(
             onPressed: node.isLeaf
                 ? (widget.onNodePressed == null
@@ -126,8 +133,7 @@ class _METreeTileState extends State<_METreeTile>
             ),
             overlayColor: colors.onSurface.withValues(alpha: 0.08),
             child: Padding(
-              padding:
-                  const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
+              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
               child: Row(
                 mainAxisSize: MainAxisSize.min,
                 children: [

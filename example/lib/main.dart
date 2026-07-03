@@ -19,11 +19,13 @@ class GalleryApp extends StatelessWidget {
   Widget build(BuildContext context) {
     final ColorScheme scheme = ColorScheme.fromSeed(
       seedColor: const Color(0xFF3D6B35),
+      brightness: Brightness.dark,
     );
     return MaterialApp(
       title: 'M3 Expressive Gallery',
       debugShowCheckedModeBanner: false,
-      theme: ThemeData(colorScheme: scheme, useMaterial3: true),
+      theme: ThemeData.from(colorScheme: scheme, useMaterial3: true),
+      themeMode: ThemeMode.dark,
       builder: (context, child) => METheme(
         data: METhemeData.expressive,
         child: child!,

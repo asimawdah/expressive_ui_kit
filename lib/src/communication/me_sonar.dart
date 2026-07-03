@@ -54,8 +54,7 @@ class MESonar extends StatefulWidget {
   State<MESonar> createState() => _MESonarState();
 }
 
-class _MESonarState extends State<MESonar>
-    with SingleTickerProviderStateMixin {
+class _MESonarState extends State<MESonar> with SingleTickerProviderStateMixin {
   late final Ticker _ticker;
   double _sweep = 0; // Radians, 0 = up.
 
@@ -134,10 +133,10 @@ class _SonarPainter extends CustomPainter {
     for (int i = 1; i <= 3; i++) {
       canvas.drawCircle(center, radius * i / 3, gridPaint);
     }
-    canvas.drawLine(center - Offset(radius, 0), center + Offset(radius, 0),
-        gridPaint);
-    canvas.drawLine(center - Offset(0, radius), center + Offset(0, radius),
-        gridPaint);
+    canvas.drawLine(
+        center - Offset(radius, 0), center + Offset(radius, 0), gridPaint);
+    canvas.drawLine(
+        center - Offset(0, radius), center + Offset(0, radius), gridPaint);
 
     // Sweep beam: a fading wedge trailing behind the leading edge.
     // Angle convention: 0 = up, clockwise -> canvas angle = sweep - pi/2.
@@ -187,21 +186,21 @@ class _SonarPainter extends CustomPainter {
 
       final pos = center +
           Offset(
-            math.sin(blipAngle),
-            -math.cos(blipAngle),
-          ) *
+                math.sin(blipAngle),
+                -math.cos(blipAngle),
+              ) *
               (radius * b.distance.clamp(0.0, 0.96));
 
       // Halo + core.
       canvas.drawCircle(
         pos,
         6 + 6 * intensity,
-        Paint()..color = this.blip.withValues(alpha: 0.25 * intensity),
+        Paint()..color = blip.withValues(alpha: 0.25 * intensity),
       );
       canvas.drawCircle(
         pos,
         3.5,
-        Paint()..color = this.blip.withValues(alpha: intensity),
+        Paint()..color = blip.withValues(alpha: intensity),
       );
     }
 

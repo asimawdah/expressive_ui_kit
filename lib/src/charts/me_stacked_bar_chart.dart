@@ -187,28 +187,52 @@ class _MEStackedBarChartState extends State<MEStackedBarChart>
     final barCount = widget.bars.length;
     final delay = barCount <= 1 ? 0.0 : index / (barCount * 2.5);
     final t = ((_grow.value - delay) / (1 - delay)).clamp(0.0, 1.15);
-
-    final chartHeight = widget.height - (bar.label != null ? 24.0 : 0.0);
+    final layoutT = t.clamp(0.0, 1.0);
 
     return Column(
       mainAxisAlignment: MainAxisAlignment.end,
       children: [
-        // Segments stack bottom-up: last series renders on top.
-        for (int s = bar.values.length - 1; s >= 0; s--)
-          Container(
-            height:
-                (bar.values[s] / maxTotal * chartHeight * t).clamp(0.0, 1e6),
-            margin: EdgeInsets.only(bottom: s == 0 ? 0 : 2),
-            decoration: BoxDecoration(
-              color: colors[s % colors.length],
-              borderRadius: BorderRadius.vertical(
-                top: Radius.circular(
-                  s == bar.values.length - 1 ? widget.barRadius : 2,
+        Expanded(
+          child: LayoutBuilder(
+            builder: (context, constraints) {
+              final gapCount =
+                  bar.values.length > 1 ? bar.values.length - 1 : 0;
+              final gapHeight = gapCount * 2.0;
+              final segmentSpace = constraints.maxHeight > gapHeight
+                  ? constraints.maxHeight - gapHeight
+                  : 0.0;
+
+              return SizedBox(
+                width: double.infinity,
+                height: constraints.maxHeight,
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.end,
+                  children: [
+                    // Segments stack bottom-up: last series renders on top.
+                    for (int s = bar.values.length - 1; s >= 0; s--)
+                      Container(
+                        height:
+                            (bar.values[s] / maxTotal * segmentSpace * layoutT)
+                                .clamp(0.0, segmentSpace),
+                        margin: EdgeInsets.only(bottom: s == 0 ? 0 : 2),
+                        decoration: BoxDecoration(
+                          color: colors[s % colors.length],
+                          borderRadius: BorderRadius.vertical(
+                            top: Radius.circular(
+                              s == bar.values.length - 1 ? widget.barRadius : 2,
+                            ),
+                            bottom: Radius.circular(
+                              s == 0 ? widget.barRadius : 2,
+                            ),
+                          ),
+                        ),
+                      ),
+                  ],
                 ),
-                bottom: Radius.circular(s == 0 ? widget.barRadius : 2),
-              ),
-            ),
+              );
+            },
           ),
+        ),
         if (bar.label != null) ...[
           const SizedBox(height: 6),
           Text(

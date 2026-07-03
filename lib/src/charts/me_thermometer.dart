@@ -184,7 +184,7 @@ class _ThermometerPainter extends CustomPainter {
       tubeTop - tubeWidth / 2,
       tubeX + tubeWidth / 2,
       tubeBottom,
-      Radius.circular(tubeWidth / 2),
+      const Radius.circular(tubeWidth / 2),
     );
     canvas.drawRRect(tubeRect, trackPaint);
     canvas.drawCircle(bulbCenter, bulbRadius, trackPaint);
@@ -199,7 +199,7 @@ class _ThermometerPainter extends CustomPainter {
       columnTop,
       tubeX + tubeWidth / 2 - 3,
       bulbCenter.dy,
-      Radius.circular((tubeWidth - 6) / 2),
+      const Radius.circular((tubeWidth - 6) / 2),
     );
     canvas.drawRRect(columnRect, mercuryPaint);
 

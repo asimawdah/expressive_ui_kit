@@ -151,7 +151,7 @@
 /// | (new)                          | [MEPinPad]                   |
 /// | (new)                          | [MEReceipt]                  |
 /// | (new)                          | [MEVinyl]                    |
-library material3_expressive;
+library;
 
 export 'src/buttons/me_button.dart';
 export 'src/buttons/me_button_group.dart';

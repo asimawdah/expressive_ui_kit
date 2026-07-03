@@ -24,8 +24,8 @@ class MEStampCard extends StatefulWidget {
     this.haptics = true,
     this.semanticLabel,
   })  : assert(total > 0, 'total must be > 0'),
-        assert(earned >= 0 && earned <= total,
-            'earned must be within 0..total');
+        assert(
+            earned >= 0 && earned <= total, 'earned must be within 0..total');
 
   /// Total stamps needed (including the reward slot).
   final int total;
@@ -82,7 +82,12 @@ class _MEStampCardState extends State<MEStampCard>
       springTo(_punch, 1, METheme.of(context).motion.fastSpatial);
       if (widget.haptics) HapticFeedback.mediumImpact();
       if (widget.earned >= widget.total) {
-        widget.onCompleted?.call();
+        final onCompleted = widget.onCompleted;
+        if (onCompleted != null) {
+          WidgetsBinding.instance.addPostFrameCallback((_) {
+            if (mounted) onCompleted();
+          });
+        }
         _rewardPulse.repeat(reverse: true);
         if (widget.haptics) HapticFeedback.heavyImpact();
       }
@@ -122,9 +127,9 @@ class _MEStampCardState extends State<MEStampCard>
               LayoutBuilder(
                 builder: (context, constraints) {
                   final spacing = 10.0;
-                  final cell = (constraints.maxWidth -
-                          spacing * (widget.columns - 1)) /
-                      widget.columns;
+                  final cell =
+                      (constraints.maxWidth - spacing * (widget.columns - 1)) /
+                          widget.columns;
                   return Wrap(
                     spacing: spacing,
                     runSpacing: spacing,

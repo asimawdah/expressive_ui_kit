@@ -2,7 +2,6 @@ import 'dart:math' as math;
 
 import 'package:flutter/material.dart';
 
-import '../theme/me_motion.dart';
 import '../theme/me_theme.dart';
 
 /// A Material 3 Expressive radial gauge.

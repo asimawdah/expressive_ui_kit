@@ -128,13 +128,17 @@ class _MEBoardingPassState extends State<MEBoardingPass>
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       DefaultTextStyle(
-                        style: Theme.of(context).textTheme.titleMedium!
+                        style: Theme.of(context)
+                            .textTheme
+                            .titleMedium!
                             .copyWith(color: scheme.onPrimaryContainer),
                         child: widget.header,
                       ),
                       const Spacer(),
                       DefaultTextStyle(
-                        style: Theme.of(context).textTheme.bodyMedium!
+                        style: Theme.of(context)
+                            .textTheme
+                            .bodyMedium!
                             .copyWith(color: scheme.onPrimaryContainer),
                         child: widget.body,
                       ),
@@ -174,7 +178,9 @@ class _MEBoardingPassState extends State<MEBoardingPass>
                         height: widget.height,
                         child: Center(
                           child: DefaultTextStyle(
-                            style: Theme.of(context).textTheme.titleLarge!
+                            style: Theme.of(context)
+                                .textTheme
+                                .titleLarge!
                                 .copyWith(color: scheme.onPrimaryContainer),
                             child: widget.stub,
                           ),
@@ -220,7 +226,7 @@ class _PerforationPainter extends CustomPainter {
     // Semicircular notches at the top and bottom, punched out with the
     // page surface color so the ticket silhouette reads correctly.
     final notch = Paint()..color = surface;
-    canvas.drawCircle(Offset(0, 0), 10, notch);
+    canvas.drawCircle(Offset.zero, 10, notch);
     canvas.drawCircle(Offset(0, size.height), 10, notch);
   }
 

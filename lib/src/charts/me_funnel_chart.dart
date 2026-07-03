@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 
-import '../theme/me_motion.dart';
 import '../theme/me_shapes.dart';
 import '../theme/me_theme.dart';
 
@@ -94,7 +93,8 @@ class _MEFunnelChartState extends State<MEFunnelChart>
     final scheme = Theme.of(context).colorScheme;
     final textTheme = Theme.of(context).textTheme;
     final motion = METheme.of(context).motion;
-    final maxValue = widget.stages.first.value;
+    final maxValue =
+        widget.stages.first.value <= 0 ? 1.0 : widget.stages.first.value;
 
     return Semantics(
       label: widget.semanticLabel ??
@@ -109,57 +109,84 @@ class _MEFunnelChartState extends State<MEFunnelChart>
               builder: (context, _) {
                 // Staggered entrance: each stage starts after the
                 // previous one is 40% in.
-                final start =
-                    (i * 0.4 / widget.stages.length).clamp(0.0, 0.9);
-                final local = ((_entrance.value - start) / (1 - start))
-                    .clamp(0.0, 1.0);
+                final start = (i * 0.4 / widget.stages.length).clamp(0.0, 0.9);
+                final local =
+                    ((_entrance.value - start) / (1 - start)).clamp(0.0, 1.0);
                 final eased = motion.slowSpatial.curve.transform(local);
                 final fraction =
                     (widget.stages[i].value / maxValue).clamp(0.0, 1.0);
                 return LayoutBuilder(
                   builder: (context, constraints) {
-                    final width =
-                        constraints.maxWidth * fraction * eased.clamp(0.0, 1.2);
+                    final animatedFraction = (fraction * eased).clamp(0.0, 1.0);
+                    final hasConversion = widget.showConversion && i > 0;
+                    final previousValue =
+                        hasConversion ? widget.stages[i - 1].value : 0.0;
+                    final trailingText = hasConversion
+                        ? '${previousValue <= 0 ? 0 : (widget.stages[i].value / previousValue * 100).round()}%'
+                        : constraints.maxWidth * animatedFraction <= 90
+                            ? widget.stages[i].label
+                            : null;
+                    final trailingMaxWidth = constraints.maxWidth < 240
+                        ? constraints.maxWidth * 0.36
+                        : 96.0;
                     return Row(
                       children: [
-                        Container(
-                          width: width.clamp(0.0, constraints.maxWidth),
-                          height: widget.barHeight,
-                          alignment: Alignment.centerLeft,
-                          padding:
-                              const EdgeInsets.symmetric(horizontal: 12),
-                          decoration: BoxDecoration(
-                            color: _stageColor(scheme, i),
-                            borderRadius:
-                                BorderRadius.circular(MECorners.small),
-                          ),
-                          child: width > 90
-                              ? Text(
-                                  widget.stages[i].label,
-                                  maxLines: 1,
-                                  overflow: TextOverflow.ellipsis,
-                                  style: textTheme.labelMedium!.copyWith(
-                                    color: _stageTextColor(scheme, i),
-                                    fontWeight: FontWeight.w600,
+                        Expanded(
+                          child: LayoutBuilder(
+                            builder: (context, barConstraints) {
+                              final width =
+                                  barConstraints.maxWidth * animatedFraction;
+                              final showInternalLabel = width > 90;
+                              return Align(
+                                alignment: Alignment.centerLeft,
+                                child: Container(
+                                  width:
+                                      width.clamp(0.0, barConstraints.maxWidth),
+                                  height: widget.barHeight,
+                                  alignment: Alignment.centerLeft,
+                                  padding: showInternalLabel
+                                      ? const EdgeInsets.symmetric(
+                                          horizontal: 12,
+                                        )
+                                      : EdgeInsets.zero,
+                                  decoration: BoxDecoration(
+                                    color: _stageColor(scheme, i),
+                                    borderRadius: BorderRadius.circular(
+                                      MECorners.small,
+                                    ),
                                   ),
-                                )
-                              : null,
+                                  child: showInternalLabel
+                                      ? Text(
+                                          widget.stages[i].label,
+                                          maxLines: 1,
+                                          overflow: TextOverflow.ellipsis,
+                                          style:
+                                              textTheme.labelMedium!.copyWith(
+                                            color: _stageTextColor(scheme, i),
+                                            fontWeight: FontWeight.w600,
+                                          ),
+                                        )
+                                      : null,
+                                ),
+                              );
+                            },
+                          ),
                         ),
-                        const SizedBox(width: 8),
-                        if (widget.showConversion && i > 0)
-                          Text(
-                            '${(widget.stages[i].value / widget.stages[i - 1].value * 100).round()}%',
-                            style: textTheme.labelSmall!.copyWith(
-                              color: scheme.onSurfaceVariant,
-                            ),
-                          )
-                        else if (width <= 90)
-                          Text(
-                            widget.stages[i].label,
-                            style: textTheme.labelSmall!.copyWith(
-                              color: scheme.onSurfaceVariant,
+                        if (trailingText != null) ...[
+                          const SizedBox(width: 8),
+                          ConstrainedBox(
+                            constraints:
+                                BoxConstraints(maxWidth: trailingMaxWidth),
+                            child: Text(
+                              trailingText,
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                              style: textTheme.labelSmall!.copyWith(
+                                color: scheme.onSurfaceVariant,
+                              ),
                             ),
                           ),
+                        ],
                       ],
                     );
                   },

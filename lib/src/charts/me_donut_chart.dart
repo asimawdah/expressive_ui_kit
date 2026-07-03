@@ -2,7 +2,6 @@ import 'dart:math' as math;
 
 import 'package:flutter/material.dart';
 
-import '../theme/me_motion.dart';
 import '../theme/me_theme.dart';
 
 /// A segment of an [MEDonutChart].
@@ -188,8 +187,7 @@ class _MEDonutChartState extends State<MEDonutChart> {
                       mainAxisSize: MainAxisSize.min,
                       children: [
                         AnimatedContainer(
-                          duration:
-                              motion.fastSpatial.approximateDuration,
+                          duration: motion.fastSpatial.approximateDuration,
                           curve: motion.fastSpatial.curve,
                           width: _selected == i ? 14 : 10,
                           height: _selected == i ? 14 : 10,

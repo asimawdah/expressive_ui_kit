@@ -105,7 +105,9 @@ class _MEKnobState extends State<MEKnob> with TickerProviderStateMixin {
       var angle = math.atan2(local.dy, local.dx);
       // Normalize into the arc's range.
       angle -= _startAngle;
-      while (angle < 0) angle += 2 * math.pi;
+      while (angle < 0) {
+        angle += 2 * math.pi;
+      }
       if (angle <= _sweepAngle) {
         _update(angle / _sweepAngle);
         return;
@@ -163,10 +165,9 @@ class _MEKnobState extends State<MEKnob> with TickerProviderStateMixin {
                       color: scheme.onSurfaceVariant,
                     ),
                     child: DefaultTextStyle.merge(
-                      style:
-                          Theme.of(context).textTheme.labelMedium!.copyWith(
-                                color: scheme.onSurfaceVariant,
-                              ),
+                      style: Theme.of(context).textTheme.labelMedium!.copyWith(
+                            color: scheme.onSurfaceVariant,
+                          ),
                       child: widget.label ?? const SizedBox.shrink(),
                     ),
                   ),
@@ -248,8 +249,8 @@ class _KnobPainter extends CustomPainter {
 
     // Indicator dot at the current angle.
     final angle = startAngle + sweepAngle * value;
-    final dotCenter = center +
-        Offset(math.cos(angle), math.sin(angle)) * (faceRadius * 0.7);
+    final dotCenter =
+        center + Offset(math.cos(angle), math.sin(angle)) * (faceRadius * 0.7);
     canvas.drawCircle(
       dotCenter,
       stroke * (0.9 + 0.3 * grab.clamp(0.0, 1.0)),

@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 
-import '../theme/me_motion.dart';
 import '../theme/me_shapes.dart';
 import '../theme/me_theme.dart';
 
@@ -146,7 +145,10 @@ class _StepIndicator extends StatelessWidget {
     final (Color bg, Color fg) = switch (state) {
       _StepState.complete => (colors.primary, colors.onPrimary),
       _StepState.active => (colors.primaryContainer, colors.onPrimaryContainer),
-      _StepState.upcoming => (colors.surfaceContainerHighest, colors.onSurfaceVariant),
+      _StepState.upcoming => (
+          colors.surfaceContainerHighest,
+          colors.onSurfaceVariant
+        ),
     };
 
     return AnimatedContainer(

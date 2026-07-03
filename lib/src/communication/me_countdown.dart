@@ -2,7 +2,6 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 
-import '../theme/me_theme.dart';
 import 'me_number_ticker.dart';
 
 /// A Material 3 Expressive countdown timer.
@@ -77,8 +76,8 @@ class _MECountdownState extends State<MECountdown> {
   Widget build(BuildContext context) {
     final scheme = Theme.of(context).colorScheme;
     final text = Theme.of(context).textTheme;
-    final style = (widget.compact ? text.titleLarge : text.headlineMedium)!
-        .copyWith(
+    final style =
+        (widget.compact ? text.titleLarge : text.headlineMedium)!.copyWith(
       fontWeight: FontWeight.w700,
       fontFeatures: const [FontFeature.tabularFigures()],
       color: scheme.onPrimaryContainer,

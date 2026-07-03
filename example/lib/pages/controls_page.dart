@@ -54,7 +54,7 @@ class _ControlsPageState extends State<ControlsPage> {
           children: <Widget>[
             MECheckbox(
               value: _checkbox,
-              onChanged: (v) => setState(() => _checkbox = v ?? false),
+              onChanged: (v) => setState(() => _checkbox = v),
             ),
             const SizedBox(width: 16),
             Text(_checkbox ? 'Checked' : 'Unchecked'),
@@ -70,7 +70,7 @@ class _ControlsPageState extends State<ControlsPage> {
                 MERadio<int>(
                   value: i,
                   groupValue: _radio,
-                  onChanged: (v) => setState(() => _radio = v ?? 0),
+                  onChanged: (v) => setState(() => _radio = v),
                 ),
                 const SizedBox(width: 12),
                 Text('Option ${i + 1}'),
