@@ -85,8 +85,7 @@ class _Firework {
   static const double burstDuration = 1.6;
 
   bool exploded(double now) => now - startTime >= flightDuration;
-  bool done(double now) =>
-      now - startTime >= flightDuration + burstDuration;
+  bool done(double now) => now - startTime >= flightDuration + burstDuration;
 }
 
 class _MEFireworksState extends State<MEFireworks>
@@ -106,7 +105,7 @@ class _MEFireworksState extends State<MEFireworks>
     _clock = AnimationController(
       vsync: this,
       duration: const Duration(seconds: 3600),
-    );
+    )..addListener(_tick);
     widget.controller?._state = this;
     if (widget.autoPlay) {
       _clock.repeat();
@@ -140,7 +139,8 @@ class _MEFireworksState extends State<MEFireworks>
     _ensureRunning();
     final colorIndex = _random.nextInt(3);
     final scheme = Theme.of(context).colorScheme;
-    final color = [scheme.primary, scheme.tertiary, scheme.secondary][colorIndex];
+    final color =
+        [scheme.primary, scheme.tertiary, scheme.secondary][colorIndex];
 
     final target = at ??
         Offset(
@@ -230,7 +230,6 @@ class _MEFireworksState extends State<MEFireworks>
             child: AnimatedBuilder(
               animation: _clock,
               builder: (context, _) {
-                _tick();
                 return CustomPaint(
                   painter: _FireworksPainter(
                     fireworks: List.of(_fireworks),
@@ -276,8 +275,7 @@ class _FireworksPainter extends CustomPainter {
             (f.target.dx - f.origin.dx) * eased +
             math.sin(t * math.pi * 3) * 0.01) *
         size.width;
-    final y =
-        (f.origin.dy + (f.target.dy - f.origin.dy) * eased) * size.height;
+    final y = (f.origin.dy + (f.target.dy - f.origin.dy) * eased) * size.height;
 
     final paint = Paint()..color = f.color;
     canvas.drawCircle(Offset(x, y), 2.5, paint);
@@ -285,8 +283,8 @@ class _FireworksPainter extends CustomPainter {
     for (var i = 1; i <= 3; i++) {
       final trailT = (t - i * 0.05).clamp(0.0, 1.0);
       final trailEased = 1 - (1 - trailT) * (1 - trailT);
-      final tx = (f.origin.dx + (f.target.dx - f.origin.dx) * trailEased) *
-          size.width;
+      final tx =
+          (f.origin.dx + (f.target.dx - f.origin.dx) * trailEased) * size.width;
       final ty = (f.origin.dy + (f.target.dy - f.origin.dy) * trailEased) *
           size.height;
       canvas.drawCircle(
@@ -317,8 +315,7 @@ class _FireworksPainter extends CustomPainter {
             math.sin(spark.angle) * distance + droop,
           );
       // Twinkle: alpha oscillates as it fades.
-      final twinkle =
-          0.6 + 0.4 * math.sin(t * 14 + spark.twinklePhase);
+      final twinkle = 0.6 + 0.4 * math.sin(t * 14 + spark.twinklePhase);
       canvas.drawCircle(
         pos,
         2.2 * fade + 0.4,

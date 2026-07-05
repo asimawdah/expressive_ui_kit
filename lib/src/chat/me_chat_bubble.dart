@@ -249,7 +249,7 @@ class _MEChatTypingIndicatorState extends State<MEChatTypingIndicator>
                         (1 - phase / 0.4)
                     : 0.0;
                 return Padding(
-                  padding: EdgeInsets.only(right: i < 2 ? 5 : 0),
+                  padding: EdgeInsets.only(right: i < 2 ? 8 : 0),
                   child: Transform.translate(
                     offset: Offset(0, -5 * bounce),
                     child: Container(
