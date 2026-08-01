@@ -14,12 +14,17 @@ Future<T?> showMEBottomSheet<T>({
   bool isDismissible = true,
   bool enableDrag = true,
   bool showDragHandle = true,
+  bool useRootNavigator = true,
 }) {
   final motion = METheme.of(context).motion;
   final scheme = Theme.of(context).colorScheme;
+  const radius = BorderRadius.vertical(
+    top: Radius.circular(MECorners.extraLargeIncreased),
+  );
 
   return showModalBottomSheet<T>(
     context: context,
+    useRootNavigator: useRootNavigator,
     isDismissible: isDismissible,
     enableDrag: enableDrag,
     showDragHandle: false,
@@ -31,32 +36,31 @@ Future<T?> showMEBottomSheet<T>({
       reverseDuration: const Duration(milliseconds: 200),
       reverseCurve: Curves.easeInCubic,
     ),
-    builder: (context) => Container(
-      decoration: BoxDecoration(
+    // ClipRRect + rectangular Material avoids an intermediate DecoratedBox
+    // between Material and ListTiles (which triggers ink-splash asserts).
+    builder: (context) => ClipRRect(
+      borderRadius: radius,
+      child: Material(
         color: scheme.surfaceContainerLow,
-        borderRadius: const BorderRadius.vertical(
-          top: Radius.circular(MECorners.extraLargeIncreased),
-        ),
-      ),
-      clipBehavior: Clip.antiAlias,
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          if (showDragHandle)
-            Padding(
-              padding: const EdgeInsets.only(top: 16, bottom: 8),
-              child: Container(
-                width: 48,
-                height: 6,
-                decoration: BoxDecoration(
-                  color: scheme.outlineVariant,
-                  borderRadius: BorderRadius.circular(3),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            if (showDragHandle)
+              Padding(
+                padding: const EdgeInsets.only(top: 16, bottom: 8),
+                child: Container(
+                  width: 48,
+                  height: 6,
+                  decoration: BoxDecoration(
+                    color: scheme.outlineVariant,
+                    borderRadius: BorderRadius.circular(3),
+                  ),
                 ),
               ),
-            ),
-          Flexible(child: builder(context)),
-          SizedBox(height: MediaQuery.of(context).padding.bottom),
-        ],
+            Flexible(child: builder(context)),
+            SizedBox(height: MediaQuery.of(context).padding.bottom),
+          ],
+        ),
       ),
     ),
   );

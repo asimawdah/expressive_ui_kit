@@ -119,6 +119,8 @@ class _MENavigationBarState extends State<MENavigationBar>
           child: LayoutBuilder(
             builder: (context, constraints) {
               final itemWidth = constraints.maxWidth / count;
+              final isRtl =
+                  Directionality.of(context) == TextDirection.rtl;
 
               return AnimatedBuilder(
                 animation: Listenable.merge([_indicator, _iconBounce]),
@@ -128,7 +130,11 @@ class _MENavigationBarState extends State<MENavigationBar>
                   // stretch tracks how far it still has to go.
                   final remaining = (pos - widget.selectedIndex).abs();
                   final stretch = 1.0 + remaining.clamp(0.0, 1.0) * 0.55;
-                  final cx = itemWidth * pos + itemWidth / 2;
+                  // Row mirrors children in RTL, so map logical index →
+                  // visual x using the mirrored position.
+                  final visualPos =
+                      isRtl ? (count - 1) - pos : pos;
+                  final cx = itemWidth * visualPos + itemWidth / 2;
 
                   const indicatorHeight = 32.0;
                   final indicatorWidth =

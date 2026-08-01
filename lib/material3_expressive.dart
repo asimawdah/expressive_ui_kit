@@ -155,6 +155,7 @@
 library;
 
 export 'src/buttons/me_button.dart';
+export 'src/buttons/expressive_button.dart';
 export 'src/buttons/me_button_group.dart';
 export 'src/buttons/me_fab.dart';
 export 'src/buttons/me_fab_menu.dart';
@@ -261,6 +262,9 @@ export 'src/inputs/me_pin_pad.dart';
 export 'src/inputs/me_search_bar.dart';
 export 'src/inputs/me_tag_input.dart';
 export 'src/inputs/me_text_field.dart';
+export 'src/containers/expressive_icon_container.dart';
+export 'src/lists/action_item.dart';
+export 'src/lists/item_position.dart';
 export 'src/lists/me_accordion.dart';
 export 'src/lists/me_data_table.dart';
 export 'src/markdown/me_markdown.dart';
