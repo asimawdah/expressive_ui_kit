@@ -41,7 +41,8 @@ class MENavigationDestination {
 /// Replaces [NavigationBar] / [BottomNavigationBar]. Implements the M3E
 /// spec:
 ///
-/// * shorter 64dp bar (56dp when labels are hidden)
+/// * shorter 64dp bar by default (56dp when labels are hidden);
+///   pass [height] (e.g. 80) to match Material [NavigationBar]
 /// * a spring-animated pill indicator that stretches while traveling
 ///   between destinations and settles with a bounce
 /// * icons bounce-scale on selection
@@ -55,6 +56,7 @@ class MENavigationBar extends StatefulWidget {
     required this.onDestinationSelected,
     this.labelBehavior = MENavigationLabelBehavior.alwaysShow,
     this.backgroundColor,
+    this.height,
   }) : assert(destinations.length >= 2);
 
   final List<MENavigationDestination> destinations;
@@ -62,6 +64,10 @@ class MENavigationBar extends StatefulWidget {
   final ValueChanged<int> onDestinationSelected;
   final MENavigationLabelBehavior labelBehavior;
   final Color? backgroundColor;
+
+  /// Bar content height (excluding safe-area inset).
+  /// Defaults to 64 with labels, 56 without.
+  final double? height;
 
   @override
   State<MENavigationBar> createState() => _MENavigationBarState();
@@ -103,15 +109,24 @@ class _MENavigationBarState extends State<MENavigationBar>
   bool get _showLabels =>
       widget.labelBehavior != MENavigationLabelBehavior.alwaysHide;
 
-  double get _barHeight => _showLabels ? 64 : 56;
+  double get _barHeight =>
+      widget.height ?? (_showLabels ? 64 : 56);
 
   @override
   Widget build(BuildContext context) {
     final colors = Theme.of(context).colorScheme;
+    final navigationBarTheme = NavigationBarTheme.of(context);
     final count = widget.destinations.length;
+    final backgroundColor = widget.backgroundColor ??
+        navigationBarTheme.backgroundColor ??
+        colors.surfaceContainer;
 
     return Material(
-      color: widget.backgroundColor ?? colors.surfaceContainer,
+      color: backgroundColor,
+      elevation: navigationBarTheme.elevation ?? 3,
+      shadowColor: navigationBarTheme.shadowColor ?? Colors.transparent,
+      surfaceTintColor:
+          navigationBarTheme.surfaceTintColor ?? Colors.transparent,
       child: SafeArea(
         top: false,
         child: SizedBox(
@@ -142,15 +157,21 @@ class _MENavigationBarState extends State<MENavigationBar>
                   // The pill squashes vertically as it stretches, like a
                   // liquid blob.
                   final squash = 1.0 - (stretch - 1.0) * 0.25;
+                  // Keep the pill aligned with the icon row as bar height
+                  // changes (default 64, Material NavigationBar is 80).
+                  const iconSlot = 32.0;
+                  const labelBlock = 16.0; // gap + label
+                  final iconAreaTop = _showLabels
+                      ? (_barHeight - iconSlot - labelBlock) / 2
+                      : (_barHeight - iconSlot) / 2;
 
                   return Stack(
                     clipBehavior: Clip.none,
                     children: [
                       Positioned(
                         left: cx - indicatorWidth * stretch / 2,
-                        top: _showLabels
-                            ? 8 + indicatorHeight * (1 - squash) / 2
-                            : (_barHeight - indicatorHeight * squash) / 2,
+                        top: iconAreaTop +
+                            indicatorHeight * (1 - squash) / 2,
                         child: Container(
                           width: indicatorWidth * stretch,
                           height: indicatorHeight * squash,
@@ -228,11 +249,9 @@ class _MENavigationBarState extends State<MENavigationBar>
       child: Tooltip(
         message: destination.tooltip ?? destination.label,
         waitDuration: const Duration(milliseconds: 800),
-        child: InkResponse(
+        child: GestureDetector(
+          behavior: HitTestBehavior.opaque,
           onTap: () => widget.onDestinationSelected(i),
-          highlightShape: BoxShape.rectangle,
-          containedInkWell: false,
-          radius: 40,
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
