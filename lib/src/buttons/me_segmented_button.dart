@@ -21,7 +21,7 @@ class MESegment<T> {
 /// In single-selection mode a stadium indicator slides between segments
 /// (similar to [NavigationBar]), with no hard divider between options.
 ///
-/// Set [expanded] to `true` so segments share the parent's width equally.
+/// Set [expanded] to `false` for a compact intrinsic-width control.
 class MESegmentedButton<T> extends StatefulWidget {
   const MESegmentedButton({
     super.key,
@@ -31,7 +31,7 @@ class MESegmentedButton<T> extends StatefulWidget {
     this.multiSelectionEnabled = false,
     this.emptySelectionAllowed = false,
     this.showCheckmark = true,
-    this.expanded = false,
+    this.expanded = true,
     this.height = 40,
     this.animationDuration = const Duration(milliseconds: 350),
     this.animationCurve = Curves.easeInOutCubicEmphasized,
@@ -46,8 +46,8 @@ class MESegmentedButton<T> extends StatefulWidget {
   final bool emptySelectionAllowed;
   final bool showCheckmark;
 
-  /// When true, the control fills available width and each segment expands
-  /// equally with centered content.
+  /// When true (default), the control fills available width and each segment
+  /// expands equally with centered content.
   final bool expanded;
   final double height;
   final Duration animationDuration;
