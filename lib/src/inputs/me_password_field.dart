@@ -77,6 +77,7 @@ class _MEPasswordFieldState extends State<MEPasswordField> {
     }
 
     return Column(
+      mainAxisSize: MainAxisSize.min,
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         METextField(

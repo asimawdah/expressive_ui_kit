@@ -241,22 +241,26 @@ class MEButton extends StatelessWidget {
       child: Container(
         height: spec.height,
         padding: EdgeInsets.symmetric(horizontal: spec.horizontalPadding),
-        child: Row(
-          mainAxisSize: MainAxisSize.min,
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            if (icon != null) ...[
-              IconTheme.merge(
-                data: IconThemeData(size: spec.iconSize, color: effectiveFg),
-                child: icon!,
+        alignment: Alignment.center,
+        child: FittedBox(
+          fit: BoxFit.scaleDown,
+          child: Row(
+            mainAxisSize: MainAxisSize.min,
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              if (icon != null) ...[
+                IconTheme.merge(
+                  data: IconThemeData(size: spec.iconSize, color: effectiveFg),
+                  child: icon!,
+                ),
+                SizedBox(width: spec.gap),
+              ],
+              DefaultTextStyle.merge(
+                style: spec.textStyle(textTheme).copyWith(color: effectiveFg),
+                child: child,
               ),
-              SizedBox(width: spec.gap),
             ],
-            DefaultTextStyle.merge(
-              style: spec.textStyle(textTheme).copyWith(color: effectiveFg),
-              child: child,
-            ),
-          ],
+          ),
         ),
       ),
     );

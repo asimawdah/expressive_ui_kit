@@ -15,6 +15,7 @@ class MEChatInput extends StatefulWidget {
     this.hintText = 'Message',
     this.onSend,
     this.leading,
+    this.trailingWhenEmpty,
     this.enabled = true,
   });
 
@@ -29,6 +30,11 @@ class MEChatInput extends StatefulWidget {
 
   /// Optional leading widget (e.g. an attach icon button).
   final Widget? leading;
+
+  /// Shown to the right of the field when it is empty (e.g. a mic button for
+  /// voice messages). Replaced by the send button once there is text.
+  final Widget? trailingWhenEmpty;
+
   final bool enabled;
 
   @override
@@ -140,21 +146,29 @@ class _MEChatInputState extends State<MEChatInput>
             ),
           ),
         ),
-        // Send button springs in when there is text.
+        // Send button springs in when there is text; otherwise show optional
+        // empty trailing (e.g. voice mic).
         AnimatedBuilder(
           animation: _sendAnim,
           builder: (context, child) {
             final t = _sendAnim.value;
             final scale = t.clamp(0.0, 1.2);
             final width = (60.0 * t).clamp(0.0, 72.0);
-            return SizedBox(
-              width: width,
-              child: scale <= 0.01
-                  ? null
-                  : Padding(
-                      padding: const EdgeInsets.only(left: 8),
-                      child: Transform.scale(scale: scale, child: child),
-                    ),
+            if (scale > 0.01) {
+              return SizedBox(
+                width: width,
+                child: Padding(
+                  padding: const EdgeInsets.only(left: 8),
+                  child: Transform.scale(scale: scale, child: child),
+                ),
+              );
+            }
+            if (widget.trailingWhenEmpty == null) {
+              return const SizedBox.shrink();
+            }
+            return Padding(
+              padding: const EdgeInsets.only(left: 8),
+              child: widget.trailingWhenEmpty,
             );
           },
           child: SizedBox(

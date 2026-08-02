@@ -297,29 +297,32 @@ class MEMarkdown extends StatelessWidget {
       }
 
       // Image on its own line: ![alt](url)
-      final image =
-          RegExp(r'^!\[([^\]]*)\]\(([^)]+)\)$').firstMatch(trimmed);
-      if (image != null) {
-        blocks.add(_MdBlock(
-          type: _MdBlockType.image,
-          text: image.group(1)!,
-          url: image.group(2),
-        ));
-        i++;
-        continue;
+      // Avoid RegExp on long URLs (e.g. data:) — can StackOverflow.
+      if (trimmed.startsWith('![') && trimmed.endsWith(')')) {
+        final mid = trimmed.indexOf('](');
+        if (mid > 1) {
+          blocks.add(_MdBlock(
+            type: _MdBlockType.image,
+            text: trimmed.substring(2, mid),
+            url: trimmed.substring(mid + 2, trimmed.length - 1),
+          ));
+          i++;
+          continue;
+        }
       }
 
       // File attachment on its own line: [file:name.ext](url)
-      final file =
-          RegExp(r'^\[file:([^\]]+)\]\(([^)]+)\)$').firstMatch(trimmed);
-      if (file != null) {
-        blocks.add(_MdBlock(
-          type: _MdBlockType.file,
-          text: file.group(1)!.trim(),
-          url: file.group(2),
-        ));
-        i++;
-        continue;
+      if (trimmed.startsWith('[file:') && trimmed.endsWith(')')) {
+        final mid = trimmed.indexOf('](');
+        if (mid > 6) {
+          blocks.add(_MdBlock(
+            type: _MdBlockType.file,
+            text: trimmed.substring(6, mid).trim(),
+            url: trimmed.substring(mid + 2, trimmed.length - 1),
+          ));
+          i++;
+          continue;
+        }
       }
 
       // Heading.
@@ -396,14 +399,29 @@ class MEMarkdown extends StatelessWidget {
   }
 
   static bool _isBlockStart(String trimmed) {
-    return trimmed.startsWith('#') ||
+    if (trimmed.startsWith('#') ||
         trimmed.startsWith('```') ||
         trimmed.startsWith('> ') ||
-        RegExp(r'^[-*]\s').hasMatch(trimmed) ||
+        trimmed.startsWith('>')) {
+      return true;
+    }
+    if (RegExp(r'^[-*]\s').hasMatch(trimmed) ||
         RegExp(r'^\d+\.\s').hasMatch(trimmed) ||
-        RegExp(r'^(-{3,}|\*{3,}|_{3,})$').hasMatch(trimmed) ||
-        RegExp(r'^!\[[^\]]*\]\([^)]+\)$').hasMatch(trimmed) ||
-        RegExp(r'^\[file:[^\]]+\]\([^)]+\)$').hasMatch(trimmed);
+        RegExp(r'^(-{3,}|\*{3,}|_{3,})$').hasMatch(trimmed)) {
+      return true;
+    }
+    // Prefix checks only — never run URL-capturing regexes on huge lines.
+    if (trimmed.startsWith('![') &&
+        trimmed.contains('](') &&
+        trimmed.endsWith(')')) {
+      return true;
+    }
+    if (trimmed.startsWith('[file:') &&
+        trimmed.contains('](') &&
+        trimmed.endsWith(')')) {
+      return true;
+    }
+    return false;
   }
 }
 

@@ -123,6 +123,7 @@ class _METextFieldState extends State<METextField>
         final borderWidth = 1.0 + 1.5 * t;
 
         return Column(
+          mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             TextField(

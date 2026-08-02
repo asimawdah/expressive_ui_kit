@@ -137,60 +137,61 @@ class _MENavigationBarState extends State<MENavigationBar>
               final isRtl =
                   Directionality.of(context) == TextDirection.rtl;
 
-              return AnimatedBuilder(
-                animation: Listenable.merge([_indicator, _iconBounce]),
-                builder: (context, _) {
-                  final pos = _indicator.value;
-                  // Stretch the pill while it travels; the amount of
-                  // stretch tracks how far it still has to go.
-                  final remaining = (pos - widget.selectedIndex).abs();
-                  final stretch = 1.0 + remaining.clamp(0.0, 1.0) * 0.55;
-                  // Row mirrors children in RTL, so map logical index →
-                  // visual x using the mirrored position.
-                  final visualPos =
-                      isRtl ? (count - 1) - pos : pos;
-                  final cx = itemWidth * visualPos + itemWidth / 2;
+              return Stack(
+                clipBehavior: Clip.none,
+                children: [
+                  AnimatedBuilder(
+                    animation: Listenable.merge([_indicator, _iconBounce]),
+                    builder: (context, _) {
+                      final pos = _indicator.value;
+                      // Stretch the pill while it travels; the amount of
+                      // stretch tracks how far it still has to go.
+                      final remaining = (pos - widget.selectedIndex).abs();
+                      final stretch = 1.0 + remaining.clamp(0.0, 1.0) * 0.55;
+                      // Row mirrors children in RTL, so map logical index →
+                      // visual x using the mirrored position.
+                      final visualPos = isRtl ? (count - 1) - pos : pos;
+                      final cx = itemWidth * visualPos + itemWidth / 2;
 
-                  const indicatorHeight = 32.0;
-                  final indicatorWidth =
-                      (itemWidth - 24).clamp(40.0, 64.0);
-                  // The pill squashes vertically as it stretches, like a
-                  // liquid blob.
-                  final squash = 1.0 - (stretch - 1.0) * 0.25;
-                  // Keep the pill aligned with the icon row as bar height
-                  // changes (default 64, Material NavigationBar is 80).
-                  const iconSlot = 32.0;
-                  const labelBlock = 16.0; // gap + label
-                  final iconAreaTop = _showLabels
-                      ? (_barHeight - iconSlot - labelBlock) / 2
-                      : (_barHeight - iconSlot) / 2;
+                      const indicatorHeight = 32.0;
+                      final indicatorWidth =
+                          (itemWidth - 24).clamp(40.0, 64.0);
+                      // The pill squashes vertically as it stretches, like a
+                      // liquid blob.
+                      final squash = 1.0 - (stretch - 1.0) * 0.25;
+                      // Keep the pill aligned with the icon row as bar height
+                      // changes (default 64, Material NavigationBar is 80).
+                      const iconSlot = 32.0;
+                      const labelBlock = 16.0; // gap + label
+                      final iconAreaTop = _showLabels
+                          ? (_barHeight - iconSlot - labelBlock) / 2
+                          : (_barHeight - iconSlot) / 2;
 
-                  return Stack(
-                    clipBehavior: Clip.none,
-                    children: [
-                      Positioned(
+                      return Positioned(
                         left: cx - indicatorWidth * stretch / 2,
                         top: iconAreaTop +
                             indicatorHeight * (1 - squash) / 2,
-                        child: Container(
-                          width: indicatorWidth * stretch,
-                          height: indicatorHeight * squash,
-                          decoration: BoxDecoration(
-                            color: colors.secondaryContainer,
-                            borderRadius: BorderRadius.circular(
-                                indicatorHeight * squash / 2),
+                        child: IgnorePointer(
+                          child: Container(
+                            width: indicatorWidth * stretch,
+                            height: indicatorHeight * squash,
+                            decoration: BoxDecoration(
+                              color: colors.secondaryContainer,
+                              borderRadius: BorderRadius.circular(
+                                  indicatorHeight * squash / 2),
+                            ),
                           ),
                         ),
-                      ),
-                      Row(
-                        children: [
-                          for (var i = 0; i < count; i++)
-                            Expanded(child: _buildItem(context, i)),
-                        ],
-                      ),
+                      );
+                    },
+                  ),
+                  Row(
+                    children: [
+                      for (var i = 0; i < count; i++)
+                        Expanded(child: _buildItem(context, i)),
                     ],
-                  );
-                },
+                  ),
+                ],
               );
             },
           ),
@@ -221,8 +222,14 @@ class _MENavigationBarState extends State<MENavigationBar>
     );
 
     if (selected) {
-      iconWidget = Transform.scale(
-        scale: _iconBounce.value.clamp(0.7, 1.15),
+      iconWidget = AnimatedBuilder(
+        animation: _iconBounce,
+        builder: (context, child) {
+          return Transform.scale(
+            scale: _iconBounce.value.clamp(0.7, 1.15),
+            child: child,
+          );
+        },
         child: iconWidget,
       );
     }
@@ -263,8 +270,7 @@ class _MENavigationBarState extends State<MENavigationBar>
                   style: textTheme.labelMedium!.copyWith(
                     color:
                         selected ? colors.onSurface : colors.onSurfaceVariant,
-                    fontWeight:
-                        selected ? FontWeight.w700 : FontWeight.w500,
+                    fontWeight: selected ? FontWeight.w700 : FontWeight.w500,
                   ),
                   child: Text(destination.label),
                 ),
