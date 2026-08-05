@@ -37,42 +37,50 @@ class MEEmptyState extends StatelessWidget {
     final colors = Theme.of(context).colorScheme;
     final textTheme = Theme.of(context).textTheme;
 
+    // FittedBox keeps intrinsic sizing (needed by SliverFillRemaining) while
+    // scaling down when the remaining viewport is shorter than the content.
     return Center(
       child: Padding(
-        padding: const EdgeInsets.all(32),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            MEMorphingShape(
-              size: shapeSize,
-              child: icon == null
-                  ? null
-                  : Icon(
-                      icon,
-                      size: shapeSize * 0.32,
-                      color: colors.onPrimaryContainer,
-                    ),
+        padding: const EdgeInsets.all(24),
+        child: FittedBox(
+          fit: BoxFit.scaleDown,
+          child: ConstrainedBox(
+            constraints: const BoxConstraints(maxWidth: 420),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                MEMorphingShape(
+                  size: shapeSize,
+                  child: icon == null
+                      ? null
+                      : Icon(
+                          icon,
+                          size: shapeSize * 0.32,
+                          color: colors.onPrimaryContainer,
+                        ),
+                ),
+                const SizedBox(height: 20),
+                DefaultTextStyle.merge(
+                  style: textTheme.titleLarge,
+                  textAlign: TextAlign.center,
+                  child: title,
+                ),
+                if (message != null) ...[
+                  const SizedBox(height: 8),
+                  DefaultTextStyle.merge(
+                    style: textTheme.bodyMedium!
+                        .copyWith(color: colors.onSurfaceVariant),
+                    textAlign: TextAlign.center,
+                    child: message!,
+                  ),
+                ],
+                if (action != null) ...[
+                  const SizedBox(height: 24),
+                  action!,
+                ],
+              ],
             ),
-            const SizedBox(height: 24),
-            DefaultTextStyle.merge(
-              style: textTheme.titleLarge,
-              textAlign: TextAlign.center,
-              child: title,
-            ),
-            if (message != null) ...[
-              const SizedBox(height: 8),
-              DefaultTextStyle.merge(
-                style: textTheme.bodyMedium!
-                    .copyWith(color: colors.onSurfaceVariant),
-                textAlign: TextAlign.center,
-                child: message!,
-              ),
-            ],
-            if (action != null) ...[
-              const SizedBox(height: 24),
-              action!,
-            ],
-          ],
+          ),
         ),
       ),
     );

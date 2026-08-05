@@ -23,6 +23,7 @@ class METextField extends StatefulWidget {
     this.leadingIcon,
     this.trailingIcon,
     this.onTrailingIconPressed,
+    this.trailing,
     this.keyboardType,
     this.textInputAction,
     this.inputFormatters,
@@ -33,6 +34,7 @@ class METextField extends StatefulWidget {
     this.minLines,
     this.onChanged,
     this.onSubmitted,
+    this.onTap,
     this.textCapitalization = TextCapitalization.none,
     this.autofocus = false,
   });
@@ -46,6 +48,9 @@ class METextField extends StatefulWidget {
   final Widget? leadingIcon;
   final Widget? trailingIcon;
   final VoidCallback? onTrailingIconPressed;
+
+  /// Custom suffix widget. When set, takes precedence over [trailingIcon].
+  final Widget? trailing;
   final TextInputType? keyboardType;
   final TextInputAction? textInputAction;
   final List<TextInputFormatter>? inputFormatters;
@@ -56,6 +61,7 @@ class METextField extends StatefulWidget {
   final int? minLines;
   final ValueChanged<String>? onChanged;
   final ValueChanged<String>? onSubmitted;
+  final VoidCallback? onTap;
   final TextCapitalization textCapitalization;
   final bool autofocus;
 
@@ -139,18 +145,20 @@ class _METextFieldState extends State<METextField>
               minLines: widget.minLines,
               onChanged: widget.onChanged,
               onSubmitted: widget.onSubmitted,
+              onTap: widget.onTap,
               textCapitalization: widget.textCapitalization,
               autofocus: widget.autofocus,
               decoration: InputDecoration(
                 labelText: widget.label,
                 hintText: widget.hintText,
                 prefixIcon: widget.leadingIcon,
-                suffixIcon: widget.trailingIcon == null
-                    ? null
-                    : IconButton(
-                        icon: widget.trailingIcon!,
-                        onPressed: widget.onTrailingIconPressed,
-                      ),
+                suffixIcon: widget.trailing ??
+                    (widget.trailingIcon == null
+                        ? null
+                        : IconButton(
+                            icon: widget.trailingIcon!,
+                            onPressed: widget.onTrailingIconPressed,
+                          )),
                 filled: true,
                 fillColor: scheme.surfaceContainerHigh,
                 contentPadding: const EdgeInsets.symmetric(

@@ -41,8 +41,9 @@ class MENavigationDestination {
 /// Replaces [NavigationBar] / [BottomNavigationBar]. Implements the M3E
 /// spec:
 ///
-/// * shorter 64dp bar by default (56dp when labels are hidden);
-///   pass [height] (e.g. 80) to match Material [NavigationBar]
+/// * 80dp bar by default to match Material [NavigationBar]
+///   (56dp when labels are hidden); override with [height] or
+///   [NavigationBarThemeData.height]
 /// * a spring-animated pill indicator that stretches while traveling
 ///   between destinations and settles with a bounce
 /// * icons bounce-scale on selection
@@ -59,6 +60,9 @@ class MENavigationBar extends StatefulWidget {
     this.height,
   }) : assert(destinations.length >= 2);
 
+  /// Matches Material [NavigationBar] default height.
+  static const double defaultHeight = 80;
+
   final List<MENavigationDestination> destinations;
   final int selectedIndex;
   final ValueChanged<int> onDestinationSelected;
@@ -66,7 +70,7 @@ class MENavigationBar extends StatefulWidget {
   final Color? backgroundColor;
 
   /// Bar content height (excluding safe-area inset).
-  /// Defaults to 64 with labels, 56 without.
+  /// Defaults to [defaultHeight] with labels, 56 without.
   final double? height;
 
   @override
@@ -109,9 +113,6 @@ class _MENavigationBarState extends State<MENavigationBar>
   bool get _showLabels =>
       widget.labelBehavior != MENavigationLabelBehavior.alwaysHide;
 
-  double get _barHeight =>
-      widget.height ?? (_showLabels ? 64 : 56);
-
   @override
   Widget build(BuildContext context) {
     final colors = Theme.of(context).colorScheme;
@@ -120,6 +121,9 @@ class _MENavigationBarState extends State<MENavigationBar>
     final backgroundColor = widget.backgroundColor ??
         navigationBarTheme.backgroundColor ??
         colors.surfaceContainer;
+    final barHeight = widget.height ??
+        navigationBarTheme.height ??
+        (_showLabels ? MENavigationBar.defaultHeight : 56);
 
     return Material(
       color: backgroundColor,
@@ -130,7 +134,7 @@ class _MENavigationBarState extends State<MENavigationBar>
       child: SafeArea(
         top: false,
         child: SizedBox(
-          height: _barHeight,
+          height: barHeight,
           child: LayoutBuilder(
             builder: (context, constraints) {
               final itemWidth = constraints.maxWidth / count;
@@ -160,12 +164,12 @@ class _MENavigationBarState extends State<MENavigationBar>
                       // liquid blob.
                       final squash = 1.0 - (stretch - 1.0) * 0.25;
                       // Keep the pill aligned with the icon row as bar height
-                      // changes (default 64, Material NavigationBar is 80).
+                      // changes (Material NavigationBar default is 80).
                       const iconSlot = 32.0;
                       const labelBlock = 16.0; // gap + label
                       final iconAreaTop = _showLabels
-                          ? (_barHeight - iconSlot - labelBlock) / 2
-                          : (_barHeight - iconSlot) / 2;
+                          ? (barHeight - iconSlot - labelBlock) / 2
+                          : (barHeight - iconSlot) / 2;
 
                       return Positioned(
                         left: cx - indicatorWidth * stretch / 2,

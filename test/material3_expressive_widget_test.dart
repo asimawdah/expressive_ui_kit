@@ -88,6 +88,58 @@ void main() {
     expect(find.text('Expressive tooltip'), findsOneWidget);
   });
 
+  testWidgets('METabBar RTL keeps pill under the tapped tab', (tester) async {
+    var selected = 0;
+
+    await tester.pumpWidget(
+      MaterialApp(
+        theme: ThemeData(useMaterial3: true),
+        home: Directionality(
+          textDirection: TextDirection.rtl,
+          child: Scaffold(
+            body: Center(
+              child: SizedBox(
+                width: 240,
+                child: StatefulBuilder(
+                  builder: (context, setState) {
+                    return METabBar(
+                      tabs: const [
+                        METab(label: 'Import'),
+                        METab(label: 'Export'),
+                      ],
+                      selectedIndex: selected,
+                      onSelected: (i) => setState(() => selected = i),
+                    );
+                  },
+                ),
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
+
+    await tester.pumpAndSettle();
+
+    final bar = tester.getRect(find.byType(METabBar));
+
+    // RTL: logical index 0 is on the right. Tap right → Import.
+    await tester.tapAt(Offset(bar.right - 30, bar.center.dy));
+    await tester.pumpAndSettle();
+    expect(selected, 0);
+
+    // Tap left → Export.
+    await tester.tapAt(Offset(bar.left + 30, bar.center.dy));
+    await tester.pumpAndSettle();
+    expect(selected, 1);
+
+    // With Export selected, tap the pill side (start/right for index 1 = left)
+    // again must stay on Export — not flip to Import.
+    await tester.tapAt(Offset(bar.left + 30, bar.center.dy));
+    await tester.pumpAndSettle();
+    expect(selected, 1);
+  });
+
   testWidgets('MEDataTable renders headers and rows', (tester) async {
     await tester.pumpWidget(
       _host(

@@ -88,6 +88,11 @@ class _ActionItemState extends State<ActionItem> {
     return textPainter.didExceedMaxLines;
   }
 
+  void _setPressed(bool value) {
+    if (!mounted || _pressed == value) return;
+    setState(() => _pressed = value);
+  }
+
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
@@ -139,7 +144,10 @@ class _ActionItemState extends State<ActionItem> {
 
               return GestureDetector(
                 behavior: HitTestBehavior.translucent,
-                onTap: () => setState(() => _isTitleExpanded = true),
+                onTap: () {
+                  if (!mounted) return;
+                  setState(() => _isTitleExpanded = true);
+                },
                 child: textWidget,
               );
             },
@@ -173,12 +181,9 @@ class _ActionItemState extends State<ActionItem> {
                 ? const EdgeInsets.symmetric(vertical: 2)
                 : widget.itemPosition.padding),
         child: Listener(
-          onPointerDown:
-              isInteractive ? (_) => setState(() => _pressed = true) : null,
-          onPointerUp:
-              isInteractive ? (_) => setState(() => _pressed = false) : null,
-          onPointerCancel:
-              isInteractive ? (_) => setState(() => _pressed = false) : null,
+          onPointerDown: isInteractive ? (_) => _setPressed(true) : null,
+          onPointerUp: isInteractive ? (_) => _setPressed(false) : null,
+          onPointerCancel: isInteractive ? (_) => _setPressed(false) : null,
           child: AnimatedScale(
             scale: _pressed ? 0.97 : 1.0,
             duration: Duration(milliseconds: _pressed ? 100 : 350),

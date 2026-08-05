@@ -79,11 +79,12 @@ class _MESegmentedButtonState<T> extends State<MESegmentedButton<T>> {
     return index < 0 ? 0 : index;
   }
 
-  Alignment get _thumbAlignment {
+  AlignmentGeometry get _thumbAlignment {
     final count = widget.segments.length;
-    if (count <= 1) return Alignment.center;
+    if (count <= 1) return AlignmentDirectional.center;
     final t = _selectedIndex / (count - 1);
-    return Alignment(-1.0 + 2.0 * t, 0);
+    // Directional so the thumb tracks the mirrored Row in RTL.
+    return AlignmentDirectional(-1.0 + 2.0 * t, 0);
   }
 
   bool get _useSlidingThumb => !widget.multiSelectionEnabled;

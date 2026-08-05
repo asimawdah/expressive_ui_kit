@@ -57,12 +57,17 @@ class MESliverList extends StatelessWidget {
 ///
 /// Replaces [SliverGrid]. Every tile is clipped to the expressive large
 /// corner radius with uniform gaps.
+///
+/// Pass [maxCrossAxisExtent] for a YouTube-style responsive grid that
+/// grows more columns as the viewport widens. Otherwise [crossAxisCount]
+/// is used.
 class MESliverGrid extends StatelessWidget {
   const MESliverGrid({
     super.key,
     required this.itemCount,
     required this.itemBuilder,
     this.crossAxisCount = 2,
+    this.maxCrossAxisExtent,
     this.spacing = 8,
     this.childAspectRatio = 1,
   });
@@ -70,18 +75,30 @@ class MESliverGrid extends StatelessWidget {
   final int itemCount;
   final IndexedWidgetBuilder itemBuilder;
   final int crossAxisCount;
+
+  /// When set, columns adapt to width (like YouTube thumbnails).
+  final double? maxCrossAxisExtent;
   final double spacing;
   final double childAspectRatio;
 
   @override
   Widget build(BuildContext context) {
+    final SliverGridDelegate gridDelegate = maxCrossAxisExtent != null
+        ? SliverGridDelegateWithMaxCrossAxisExtent(
+            maxCrossAxisExtent: maxCrossAxisExtent!,
+            mainAxisSpacing: spacing,
+            crossAxisSpacing: spacing,
+            childAspectRatio: childAspectRatio,
+          )
+        : SliverGridDelegateWithFixedCrossAxisCount(
+            crossAxisCount: crossAxisCount,
+            mainAxisSpacing: spacing,
+            crossAxisSpacing: spacing,
+            childAspectRatio: childAspectRatio,
+          );
+
     return SliverGrid.builder(
-      gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-        crossAxisCount: crossAxisCount,
-        mainAxisSpacing: spacing,
-        crossAxisSpacing: spacing,
-        childAspectRatio: childAspectRatio,
-      ),
+      gridDelegate: gridDelegate,
       itemCount: itemCount,
       itemBuilder: (context, index) => ClipRRect(
         borderRadius: BorderRadius.circular(MECorners.large),

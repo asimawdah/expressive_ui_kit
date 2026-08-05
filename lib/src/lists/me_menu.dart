@@ -64,6 +64,7 @@ class _MEMenuAnchorState<T> extends State<MEMenuAnchor<T>> {
         position: position,
         items: widget.items,
         spring: motion.defaultSpatial,
+        textDirection: Directionality.of(context),
       ),
     );
     if (selected != null) widget.onSelected(selected);
@@ -84,11 +85,13 @@ class _MEMenuRoute<T> extends PopupRoute<T> {
     required this.position,
     required this.items,
     required this.spring,
+    required this.textDirection,
   });
 
   final RelativeRect position;
   final List<MEMenuItem<T>> items;
   final MESpringSpec spring;
+  final TextDirection textDirection;
 
   @override
   Color? get barrierColor => null;
@@ -110,12 +113,15 @@ class _MEMenuRoute<T> extends PopupRoute<T> {
   ) {
     final scheme = Theme.of(context).colorScheme;
     final curved = CurvedAnimation(parent: animation, curve: spring.curve);
+    final scaleAlignment = textDirection == TextDirection.rtl
+        ? Alignment.topRight
+        : Alignment.topLeft;
 
     return CustomSingleChildLayout(
-      delegate: _MEMenuLayout(position),
+      delegate: _MEMenuLayout(position, textDirection: textDirection),
       child: ScaleTransition(
         scale: curved,
-        alignment: Alignment.topLeft,
+        alignment: scaleAlignment,
         child: FadeTransition(
           opacity: animation,
           child: Material(
@@ -183,9 +189,12 @@ class _MEMenuRoute<T> extends PopupRoute<T> {
 }
 
 class _MEMenuLayout extends SingleChildLayoutDelegate {
-  _MEMenuLayout(this.position);
+  _MEMenuLayout(this.position, {required this.textDirection});
 
   final RelativeRect position;
+  final TextDirection textDirection;
+
+  static const double _margin = 8;
 
   @override
   BoxConstraints getConstraintsForChild(BoxConstraints constraints) {
@@ -194,18 +203,36 @@ class _MEMenuLayout extends SingleChildLayoutDelegate {
 
   @override
   Offset getPositionForChild(Size size, Size childSize) {
-    double x = position.left;
-    double y = position.top + (size.height - position.top - position.bottom);
-    if (x + childSize.width > size.width) {
-      x = size.width - childSize.width - 8;
+    final anchorTop = position.top;
+    final anchorBottom = size.height - position.bottom;
+    final anchorLeft = position.left;
+    final anchorRight = size.width - position.right;
+
+    final maxY = (size.height - childSize.height - _margin)
+        .clamp(_margin, double.infinity);
+    final maxX = (size.width - childSize.width - _margin)
+        .clamp(_margin, double.infinity);
+
+    // Prefer below the anchor; fall back above when there isn't room.
+    var y = anchorBottom;
+    if (y + childSize.height > size.height - _margin) {
+      y = anchorTop - childSize.height;
     }
-    if (y + childSize.height > size.height) {
-      y = size.height - childSize.height - 8;
+    y = y.clamp(_margin, maxY);
+
+    // Align to the anchor's start edge (RTL-aware), keep on-screen.
+    final double x;
+    if (textDirection == TextDirection.rtl) {
+      x = (anchorRight - childSize.width).clamp(_margin, maxX);
+    } else {
+      x = anchorLeft.clamp(_margin, maxX);
     }
-    return Offset(x.clamp(8, double.infinity), y.clamp(8, double.infinity));
+
+    return Offset(x, y);
   }
 
   @override
   bool shouldRelayout(_MEMenuLayout oldDelegate) =>
-      position != oldDelegate.position;
+      position != oldDelegate.position ||
+      textDirection != oldDelegate.textDirection;
 }

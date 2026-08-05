@@ -81,9 +81,15 @@ class _MECreditCardState extends State<MECreditCard>
     return buffer.toString();
   }
 
+  /// Design reference width; layout scales from this size.
+  static const double _designWidth = 320;
+
+  double get _scale => (widget.width / _designWidth).clamp(0.55, 1.25);
+
   @override
   Widget build(BuildContext context) {
     final double height = widget.width / 1.586;
+    final scale = _scale;
 
     return Semantics(
       button: true,
@@ -109,9 +115,9 @@ class _MECreditCardState extends State<MECreditCard>
                   ? Transform(
                       alignment: Alignment.center,
                       transform: Matrix4.identity()..rotateY(math.pi),
-                      child: _back(context, height),
+                      child: _back(context, height, scale),
                     )
-                  : _front(context, height),
+                  : _front(context, height, scale),
             );
           },
         ),
@@ -119,13 +125,18 @@ class _MECreditCardState extends State<MECreditCard>
     );
   }
 
-  Widget _front(BuildContext context, double height) {
+  Widget _front(BuildContext context, double height, double scale) {
     final scheme = Theme.of(context).colorScheme;
     final textTheme = Theme.of(context).textTheme;
+    final pad = 20 * scale;
+    final chipW = 38 * scale;
+    final chipH = 28 * scale;
+    final gap = 12 * scale;
+
     return Container(
       width: widget.width,
       height: height,
-      padding: const EdgeInsets.all(20),
+      padding: EdgeInsets.all(pad),
       decoration: BoxDecoration(
         color: scheme.primaryContainer,
         borderRadius: BorderRadius.circular(MECorners.large),
@@ -136,10 +147,9 @@ class _MECreditCardState extends State<MECreditCard>
         children: [
           Row(
             children: [
-              // Chip.
               Container(
-                width: 38,
-                height: 28,
+                width: chipW,
+                height: chipH,
                 decoration: BoxDecoration(
                   color: scheme.tertiaryContainer,
                   borderRadius: BorderRadius.circular(MECorners.extraSmall),
@@ -148,40 +158,61 @@ class _MECreditCardState extends State<MECreditCard>
               ),
               const Spacer(),
               if (widget.brand != null)
-                DefaultTextStyle(
-                  style: textTheme.titleMedium!.copyWith(
-                    color: scheme.onPrimaryContainer,
-                    fontStyle: FontStyle.italic,
+                Flexible(
+                  child: DefaultTextStyle(
+                    style: textTheme.titleMedium!.copyWith(
+                      color: scheme.onPrimaryContainer,
+                      fontStyle: FontStyle.italic,
+                      fontSize:
+                          (textTheme.titleMedium?.fontSize ?? 16) * scale,
+                    ),
+                    overflow: TextOverflow.ellipsis,
+                    maxLines: 1,
+                    child: widget.brand!,
                   ),
-                  child: widget.brand!,
                 ),
             ],
           ),
           const Spacer(),
-          Text(
-            _spacedNumber,
-            style: textTheme.titleLarge?.copyWith(
-              color: scheme.onPrimaryContainer,
-              fontFeatures: const [FontFeature.tabularFigures()],
-              letterSpacing: 1.2,
+          FittedBox(
+            fit: BoxFit.scaleDown,
+            alignment: AlignmentDirectional.centerStart,
+            child: Text(
+              _spacedNumber,
+              maxLines: 1,
+              softWrap: false,
+              style: textTheme.titleLarge?.copyWith(
+                color: scheme.onPrimaryContainer,
+                fontFeatures: const [FontFeature.tabularFigures()],
+                letterSpacing: 1.2 * scale,
+                fontSize: (textTheme.titleLarge?.fontSize ?? 22) * scale,
+              ),
             ),
           ),
-          const SizedBox(height: 12),
+          SizedBox(height: gap),
           Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Text(
-                widget.holder.toUpperCase(),
-                style: textTheme.labelMedium?.copyWith(
-                  color: scheme.onPrimaryContainer,
-                  letterSpacing: 1.5,
+              Expanded(
+                child: Text(
+                  widget.holder.toUpperCase(),
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: textTheme.labelMedium?.copyWith(
+                    color: scheme.onPrimaryContainer,
+                    letterSpacing: 1.5 * scale,
+                    fontSize:
+                        (textTheme.labelMedium?.fontSize ?? 12) * scale,
+                  ),
                 ),
               ),
+              SizedBox(width: 8 * scale),
               Text(
                 widget.expiry,
+                maxLines: 1,
                 style: textTheme.labelMedium?.copyWith(
                   color: scheme.onPrimaryContainer,
                   fontFeatures: const [FontFeature.tabularFigures()],
+                  fontSize: (textTheme.labelMedium?.fontSize ?? 12) * scale,
                 ),
               ),
             ],
@@ -191,9 +222,11 @@ class _MECreditCardState extends State<MECreditCard>
     );
   }
 
-  Widget _back(BuildContext context, double height) {
+  Widget _back(BuildContext context, double height, double scale) {
     final scheme = Theme.of(context).colorScheme;
     final textTheme = Theme.of(context).textTheme;
+    final pad = 20 * scale;
+
     return Container(
       width: widget.width,
       height: height,
@@ -205,21 +238,19 @@ class _MECreditCardState extends State<MECreditCard>
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const SizedBox(height: 20),
-          // Magnetic stripe.
+          SizedBox(height: pad),
           Container(
             height: height * 0.22,
             color: scheme.inverseSurface,
           ),
-          const SizedBox(height: 16),
+          SizedBox(height: 16 * scale),
           Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 20),
+            padding: EdgeInsets.symmetric(horizontal: pad),
             child: Row(
               children: [
-                // Signature strip.
                 Expanded(
                   child: Container(
-                    height: 32,
+                    height: 32 * scale,
                     decoration: BoxDecoration(
                       color: scheme.surface,
                       borderRadius:
@@ -227,12 +258,11 @@ class _MECreditCardState extends State<MECreditCard>
                     ),
                   ),
                 ),
-                const SizedBox(width: 12),
-                // CVC box.
+                SizedBox(width: 12 * scale),
                 Container(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 10,
-                    vertical: 7,
+                  padding: EdgeInsets.symmetric(
+                    horizontal: 10 * scale,
+                    vertical: 7 * scale,
                   ),
                   decoration: BoxDecoration(
                     color: scheme.surface,
@@ -244,6 +274,8 @@ class _MECreditCardState extends State<MECreditCard>
                     style: textTheme.labelLarge?.copyWith(
                       color: scheme.onSurface,
                       fontFeatures: const [FontFeature.tabularFigures()],
+                      fontSize:
+                          (textTheme.labelLarge?.fontSize ?? 14) * scale,
                     ),
                   ),
                 ),
@@ -252,11 +284,14 @@ class _MECreditCardState extends State<MECreditCard>
           ),
           const Spacer(),
           Padding(
-            padding: const EdgeInsets.only(left: 20, bottom: 14),
+            padding: EdgeInsets.only(left: pad, bottom: 14 * scale),
             child: Text(
               'Tap to flip back',
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
               style: textTheme.labelSmall?.copyWith(
                 color: scheme.onPrimaryContainer.withValues(alpha: 0.7),
+                fontSize: (textTheme.labelSmall?.fontSize ?? 11) * scale,
               ),
             ),
           ),

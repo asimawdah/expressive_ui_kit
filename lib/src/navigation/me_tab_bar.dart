@@ -74,14 +74,16 @@ class _METabBarState extends State<METabBar>
       child: LayoutBuilder(
         builder: (context, constraints) {
           final tabWidth = constraints.maxWidth / count;
+          // Row mirrors children in RTL; PositionedDirectional.start keeps the
+          // pill aligned with the same logical tab under either direction.
           return Stack(
             children: [
               AnimatedBuilder(
                 animation: _anim,
                 builder: (context, _) {
                   final x = _anim.value.clamp(-0.25, count - 0.75);
-                  return Positioned(
-                    left: x * tabWidth,
+                  return PositionedDirectional(
+                    start: x * tabWidth,
                     top: 0,
                     bottom: 0,
                     width: tabWidth,

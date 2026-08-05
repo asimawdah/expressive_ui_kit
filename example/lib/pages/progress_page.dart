@@ -18,6 +18,7 @@ class _ProgressPageState extends State<ProgressPage> {
     return MERefreshIndicator(
       onRefresh: () => Future<void>.delayed(const Duration(seconds: 2)),
       child: ListView(
+      physics: const AlwaysScrollableScrollPhysics(),
       padding: const EdgeInsets.all(24),
       children: <Widget>[
         Text('Pull down to see MERefreshIndicator',

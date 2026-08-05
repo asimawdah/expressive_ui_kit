@@ -117,9 +117,19 @@ class _MESliverScaffoldState extends State<MESliverScaffold> {
       );
     }
 
-    final contentScrollView = CustomScrollView(
+    // One CustomScrollView (app bar + content) so overscroll reaches the
+    // refresh indicator — NestedScrollView splits header/body and breaks
+    // pull-to-refresh with collapsing large app bars. Indicator UX matches
+    // maham's forked Material RefreshIndicator.
+    final scrollView = CustomScrollView(
+      controller: _scrollController,
       shrinkWrap: widget.shrinkWrap,
+      physics: widget.onRefresh != null
+          ? const AlwaysScrollableScrollPhysics()
+          : null,
       slivers: [
+        if (!(widget.hideAppBar || widget.withoutAppBar))
+          _buildAppBar(context),
         if (widget.spacer > 0)
           SliverToBoxAdapter(child: SizedBox(height: widget.spacer)),
         ..._buildSlivers(widget.slivers),
@@ -127,23 +137,43 @@ class _MESliverScaffoldState extends State<MESliverScaffold> {
       ],
     );
 
-    return NestedScrollView(
-      controller: _scrollController,
-      headerSliverBuilder: (context, innerBoxIsScrolled) =>
-          (widget.hideAppBar || widget.withoutAppBar)
-              ? []
-              : [_buildAppBar(context)],
-      body: widget.onRefresh != null
-          ? MERefreshIndicator(
-              onRefresh: () async {
-                final onRefresh = widget.onRefresh;
-                if (onRefresh != null) await onRefresh();
-                await Future<void>.delayed(const Duration(seconds: 3));
-              },
-              child: contentScrollView,
-            )
-          : contentScrollView,
+    final onRefresh = widget.onRefresh;
+    if (onRefresh == null) return scrollView;
+
+    return MERefreshIndicator(
+      // Sit below the status bar + pinned app bar, not over the device chrome.
+      edgeOffset: _refreshIndicatorEdgeOffset(context),
+      displacement: 16,
+      onRefresh: () async {
+        // Fire page reload, then hold the spinner briefly (maham pattern).
+        await onRefresh();
+        await Future<void>.delayed(const Duration(seconds: 3));
+      },
+      child: scrollView,
     );
+  }
+
+  /// Top inset so [MERefreshIndicator] settles under the app bar.
+  double _refreshIndicatorEdgeOffset(BuildContext context) {
+    final topPadding = MediaQuery.paddingOf(context).top;
+    if (widget.hideAppBar || widget.withoutAppBar) return topPadding;
+
+    final custom = widget.customAppBar;
+    if (custom is AppBar) {
+      var offset = topPadding + (custom.toolbarHeight ?? kToolbarHeight);
+      final bottom = custom.bottom;
+      if (bottom != null) offset += bottom.preferredSize.height;
+      return offset;
+    }
+    if (custom is PreferredSizeWidget) {
+      return topPadding + custom.preferredSize.height;
+    }
+
+    var offset = topPadding + kToolbarHeight;
+    if (widget.appBarBottom != null) offset += 60;
+    // Expanded large app bars still collapse to the toolbar while pinned;
+    // pull-to-refresh at the top edge uses the collapsed chrome height.
+    return offset;
   }
 
   List<Widget> _buildSlivers(List<Widget> slivers) {
@@ -202,6 +232,7 @@ class _MESliverScaffoldState extends State<MESliverScaffold> {
     if (widget.extendedAppBar) {
       return SliverAppBar.large(
         leading: widget.leadingAppBar,
+        automaticallyImplyLeading: false,
         centerTitle: widget.centerTitle,
         backgroundColor: widget.backgroundColor,
         surfaceTintColor: Colors.transparent,
@@ -226,6 +257,7 @@ class _MESliverScaffoldState extends State<MESliverScaffold> {
 
     return SliverAppBar(
       leading: widget.leadingAppBar,
+      automaticallyImplyLeading: false,
       centerTitle: widget.centerTitle,
       title: widget.title != null
           ? Text(

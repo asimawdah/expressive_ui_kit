@@ -133,43 +133,56 @@ class _MENavigationRailState extends State<MENavigationRail>
                           ? constraints.maxWidth - 24
                           : _pillWidth;
 
-                      return Stack(
-                        clipBehavior: Clip.none,
-                        children: [
-                          Positioned(
-                            top: pillTop,
-                            left: pillLeft,
-                            child: Container(
-                              width: pillW,
-                              height: pillH,
-                              decoration: BoxDecoration(
-                                color: colors.secondaryContainer,
-                                borderRadius: BorderRadius.circular(pillH / 2),
-                              ),
-                            ),
-                          ),
-                          Column(
+                      // Scroll when destinations exceed available height
+                      // (e.g. landscape / split-screen). Pill stays in the
+                      // same scrollable so it tracks the selected item.
+                      return SingleChildScrollView(
+                        child: SizedBox(
+                          height: itemHeight * count,
+                          width: constraints.maxWidth,
+                          child: Stack(
+                            clipBehavior: Clip.none,
                             children: [
-                              for (var i = 0; i < count; i++)
-                                SizedBox(
-                                  height: itemHeight,
-                                  width: double.infinity,
-                                  child: _RailItem(
-                                    destination: widget.destinations[i],
-                                    selected: i == widget.selectedIndex,
-                                    expanded: widget.expanded,
-                                    bounceScale: i == widget.selectedIndex
-                                        ? _iconBounce.value.clamp(0.7, 1.15)
-                                        : 1,
-                                    onTap: () =>
-                                        widget.onDestinationSelected(i),
-                                    colors: colors,
-                                    textTheme: textTheme,
+                              Positioned(
+                                top: pillTop,
+                                left: pillLeft,
+                                child: Container(
+                                  width: pillW,
+                                  height: pillH,
+                                  decoration: BoxDecoration(
+                                    color: colors.secondaryContainer,
+                                    borderRadius:
+                                        BorderRadius.circular(pillH / 2),
                                   ),
                                 ),
+                              ),
+                              Column(
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  for (var i = 0; i < count; i++)
+                                    SizedBox(
+                                      height: itemHeight,
+                                      width: double.infinity,
+                                      child: _RailItem(
+                                        destination: widget.destinations[i],
+                                        selected: i == widget.selectedIndex,
+                                        expanded: widget.expanded,
+                                        bounceScale: i ==
+                                                widget.selectedIndex
+                                            ? _iconBounce.value
+                                                .clamp(0.7, 1.15)
+                                            : 1,
+                                        onTap: () =>
+                                            widget.onDestinationSelected(i),
+                                        colors: colors,
+                                        textTheme: textTheme,
+                                      ),
+                                    ),
+                                ],
+                              ),
                             ],
                           ),
-                        ],
+                        ),
                       );
                     },
                   );
