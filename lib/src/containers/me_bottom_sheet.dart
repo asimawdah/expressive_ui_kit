@@ -38,30 +38,42 @@ Future<T?> showMEBottomSheet<T>({
     ),
     // ClipRRect + rectangular Material avoids an intermediate DecoratedBox
     // between Material and ListTiles (which triggers ink-splash asserts).
-    builder: (context) => ClipRRect(
-      borderRadius: radius,
-      child: Material(
-        color: scheme.surfaceContainerLow,
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            if (showDragHandle)
-              Padding(
-                padding: const EdgeInsets.only(top: 16, bottom: 8),
-                child: Container(
-                  width: 48,
-                  height: 6,
-                  decoration: BoxDecoration(
-                    color: scheme.outlineVariant,
-                    borderRadius: BorderRadius.circular(3),
-                  ),
-                ),
+    builder: (context) {
+      final media = MediaQuery.of(context);
+      // Cap height so keyboard / short screens can't overflow the Column.
+      final maxHeight = media.size.height - media.viewInsets.bottom;
+
+      return Padding(
+        padding: EdgeInsets.only(bottom: media.viewInsets.bottom),
+        child: ClipRRect(
+          borderRadius: radius,
+          child: Material(
+            color: scheme.surfaceContainerLow,
+            child: ConstrainedBox(
+              constraints: BoxConstraints(maxHeight: maxHeight),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  if (showDragHandle)
+                    Padding(
+                      padding: const EdgeInsets.only(top: 16, bottom: 8),
+                      child: Container(
+                        width: 48,
+                        height: 6,
+                        decoration: BoxDecoration(
+                          color: scheme.outlineVariant,
+                          borderRadius: BorderRadius.circular(3),
+                        ),
+                      ),
+                    ),
+                  Flexible(child: builder(context)),
+                  SizedBox(height: media.padding.bottom),
+                ],
               ),
-            Flexible(child: builder(context)),
-            SizedBox(height: MediaQuery.of(context).padding.bottom),
-          ],
+            ),
+          ),
         ),
-      ),
-    ),
+      );
+    },
   );
 }

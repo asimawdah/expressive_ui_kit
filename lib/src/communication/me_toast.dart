@@ -26,6 +26,7 @@ void showMEToast(
   METoastKind kind = METoastKind.info,
   IconData? icon,
   Duration duration = const Duration(seconds: 3),
+  OverlayState? overlay,
 }) {
   _METoastController.instance.show(
     context,
@@ -33,6 +34,7 @@ void showMEToast(
     kind: kind,
     icon: icon,
     duration: duration,
+    overlay: overlay,
   );
 }
 
@@ -52,7 +54,13 @@ class _METoastController {
     required METoastKind kind,
     IconData? icon,
     required Duration duration,
+    OverlayState? overlay,
   }) {
+    final resolved = overlay ??
+        Overlay.maybeOf(context, rootOverlay: true) ??
+        Navigator.maybeOf(context, rootNavigator: true)?.overlay;
+    if (resolved == null) return;
+
     _timer?.cancel();
     // Replace any visible toast immediately.
     _entry?.remove();
@@ -65,7 +73,7 @@ class _METoastController {
         onDismissed: _removeEntry,
       ),
     );
-    Overlay.of(context, rootOverlay: true).insert(_entry!);
+    resolved.insert(_entry!);
     _timer = Timer(duration, () => _key.currentState?.hide());
   }
 
