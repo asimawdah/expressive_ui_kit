@@ -955,7 +955,10 @@ AnimatedContainer(curve: motion.defaultSpatial.curve, ...);
 ```
 
 Pass `METhemeData.standard` to tone the bounce down (reduced-motion
-friendly).
+friendly). When the platform's **Reduce motion** accessibility setting is
+enabled (`MediaQuery.disableAnimations`), [METheme.of] automatically
+switches to [MEMotionScheme.reduced] so springs snap instantly with no
+bounce or overshoot.
 
 ## Example
 

@@ -48,7 +48,11 @@ class METheme extends InheritedWidget {
 
   static METhemeData of(BuildContext context) {
     final theme = context.dependOnInheritedWidgetOfExactType<METheme>();
-    return theme?.data ?? METhemeData.expressive;
+    final data = theme?.data ?? METhemeData.expressive;
+    if (MediaQuery.disableAnimationsOf(context)) {
+      return data.copyWith(motion: MEMotionScheme.reduced);
+    }
+    return data;
   }
 
   @override

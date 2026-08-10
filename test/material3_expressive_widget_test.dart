@@ -3,6 +3,130 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:material3_expressive/material3_expressive.dart';
 
 void main() {
+  group('MEButton', () {
+    testWidgets('fires onPressed when tapped', (tester) async {
+      var pressed = false;
+
+      await tester.pumpWidget(
+        _host(
+          MEButton.filled(
+            onPressed: () => pressed = true,
+            child: const Text('Tap me'),
+          ),
+        ),
+      );
+
+      await tester.tap(find.text('Tap me'));
+      await tester.pump();
+
+      expect(pressed, isTrue);
+    });
+
+    testWidgets('does not fire when disabled', (tester) async {
+      var pressed = false;
+
+      await tester.pumpWidget(
+        _host(
+          MEButton.filled(
+            onPressed: null,
+            child: const Text('Disabled'),
+          ),
+        ),
+      );
+
+      await tester.tap(find.text('Disabled'));
+      await tester.pump();
+
+      expect(pressed, isFalse);
+    });
+  });
+
+  group('MESwitch', () {
+    testWidgets('toggles value on tap', (tester) async {
+      var value = false;
+
+      await tester.pumpWidget(
+        _host(
+          StatefulBuilder(
+            builder: (context, setState) {
+              return MESwitch(
+                value: value,
+                semanticsLabel: 'Notifications',
+                onChanged: (v) => setState(() => value = v),
+              );
+            },
+          ),
+        ),
+      );
+
+      expect(value, isFalse);
+      expect(find.bySemanticsLabel('Notifications'), findsOneWidget);
+
+      await tester.tap(find.byType(MESwitch));
+      await tester.pump();
+
+      expect(value, isTrue);
+    });
+  });
+
+  group('Reduced motion', () {
+    testWidgets('METheme.of returns reduced motion when animations disabled',
+        (tester) async {
+      MEMotionScheme? motion;
+
+      await tester.pumpWidget(
+        MaterialApp(
+          theme: ThemeData(useMaterial3: true),
+          home: MediaQuery(
+            data: const MediaQueryData(disableAnimations: true),
+            child: METheme(
+              data: METhemeData.expressive,
+              child: Builder(
+                builder: (context) {
+                  motion = METheme.of(context).motion;
+                  return const SizedBox.shrink();
+                },
+              ),
+            ),
+          ),
+        ),
+      );
+
+      expect(motion, MEMotionScheme.reduced);
+      expect(motion!.defaultSpatial.instant, isTrue);
+    });
+
+    testWidgets('MEButton snaps instantly with reduced motion', (tester) async {
+      await tester.pumpWidget(
+        MaterialApp(
+          theme: ThemeData(useMaterial3: true),
+          home: MediaQuery(
+            data: const MediaQueryData(disableAnimations: true),
+            child: METheme(
+              data: METhemeData.expressive,
+              child: Scaffold(
+                body: Center(
+                  child: MEButton.filled(
+                    onPressed: () {},
+                    child: const Text('Press'),
+                  ),
+                ),
+              ),
+            ),
+          ),
+        ),
+      );
+
+      await tester.tap(find.text('Press'));
+      await tester.pump();
+
+      expect(tester.takeException(), isNull);
+      expect(METheme.of(
+        tester.element(find.text('Press')),
+      ).motion, MEMotionScheme.reduced);
+    });
+  });
+
   testWidgets('MECheckbox emits toggled values', (tester) async {
     var checked = false;
 
@@ -306,6 +430,10 @@ void main() {
 Widget _host(Widget child) {
   return MaterialApp(
     theme: ThemeData(useMaterial3: true),
+    builder: (context, child) => METheme(
+      data: METhemeData.expressive,
+      child: child!,
+    ),
     home: Scaffold(
       body: Center(child: child),
     ),

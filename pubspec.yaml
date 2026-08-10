@@ -5,6 +5,8 @@ description: >-
   sliders and more — drop-in replacements for standard Material widgets.
 version: 0.1.0
 homepage: https://m3.material.io
+repository: https://github.com/asimawdah/material_expressive
+issue_tracker: https://github.com/asimawdah/material_expressive/issues
 
 environment:
   sdk: ">=3.4.0 <4.0.0"

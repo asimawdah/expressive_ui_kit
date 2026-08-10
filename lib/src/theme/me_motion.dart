@@ -13,13 +13,27 @@ import 'package:flutter/widgets.dart';
 ///   critically damped and never bounce.
 @immutable
 class MESpringSpec {
-  const MESpringSpec({required this.dampingRatio, required this.stiffness});
+  const MESpringSpec({
+    required this.dampingRatio,
+    required this.stiffness,
+    this.instant = false,
+  });
+
+  /// A zero-duration spec used when the platform requests reduced motion.
+  static const instant = MESpringSpec(
+    dampingRatio: 1.0,
+    stiffness: 1.0,
+    instant: true,
+  );
 
   /// Damping ratio. 1.0 is critically damped (no bounce), < 1.0 bounces.
   final double dampingRatio;
 
   /// Spring stiffness. Higher values settle faster.
   final double stiffness;
+
+  /// When true, animations snap to their target with no spring simulation.
+  final bool instant;
 
   /// Converts this spec into a [SpringDescription] usable with
   /// [SpringSimulation] or `AnimationController.animateWith`.
@@ -34,6 +48,7 @@ class MESpringSpec {
   /// An approximate [Duration] for the spring to settle, useful when a
   /// widget needs a bounded [AnimationController].
   Duration get approximateDuration {
+    if (instant) return Duration.zero;
     // Settle time approximation for an underdamped/critically damped spring.
     final double omega = stiffness <= 0 ? 1 : stiffness;
     final double seconds = 8.0 / (dampingRatio * math.sqrt(omega));
@@ -42,7 +57,8 @@ class MESpringSpec {
 
   /// A [Curve] that follows this spring's motion, for use with standard
   /// curve-driven animations (implicit animations, transitions, etc).
-  Curve get curve => MESpringCurve(this);
+  Curve get curve =>
+      instant ? const Threshold(0.0) : MESpringCurve(this);
 }
 
 /// A [Curve] backed by a [SpringSimulation], allowing spring physics to be
@@ -111,6 +127,17 @@ class MEMotionScheme {
     defaultEffects: MESpringSpec(dampingRatio: 1.0, stiffness: 1600),
     slowEffects: MESpringSpec(dampingRatio: 1.0, stiffness: 800),
   );
+
+  /// Instant motion for reduced-motion accessibility settings. All springs
+  /// snap to their targets with no bounce or overshoot.
+  static const MEMotionScheme reduced = MEMotionScheme(
+    fastSpatial: MESpringSpec.instant,
+    defaultSpatial: MESpringSpec.instant,
+    slowSpatial: MESpringSpec.instant,
+    fastEffects: MESpringSpec.instant,
+    defaultEffects: MESpringSpec.instant,
+    slowEffects: MESpringSpec.instant,
+  );
 }
 
 /// Drives an [AnimationController] with a spring simulation toward [target]
@@ -121,6 +148,10 @@ void springTo(
   double target,
   MESpringSpec spec,
 ) {
+  if (spec.instant) {
+    controller.value = target;
+    return;
+  }
   final simulation = SpringSimulation(
     spec.toSpringDescription(),
     controller.value,
