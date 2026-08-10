@@ -42,8 +42,7 @@ class _NavigationPageState extends State<NavigationPage> {
             children: <Widget>[
               MENavigationRail(
                 selectedIndex: _railIndex,
-                onDestinationSelected: (i) =>
-                    setState(() => _railIndex = i),
+                onDestinationSelected: (i) => setState(() => _railIndex = i),
                 destinations: const <MENavigationDestination>[
                   MENavigationDestination(
                     icon: Icon(Icons.home_outlined),
@@ -74,9 +73,12 @@ class _NavigationPageState extends State<NavigationPage> {
         const SizedBox(height: 16),
         MEBottomAppBar(
           actions: <Widget>[
-            MEIconButton(icon: const Icon(Icons.archive_outlined), onPressed: () {}),
-            MEIconButton(icon: const Icon(Icons.delete_outline), onPressed: () {}),
-            MEIconButton(icon: const Icon(Icons.reply_outlined), onPressed: () {}),
+            MEIconButton(
+                icon: const Icon(Icons.archive_outlined), onPressed: () {}),
+            MEIconButton(
+                icon: const Icon(Icons.delete_outline), onPressed: () {}),
+            MEIconButton(
+                icon: const Icon(Icons.reply_outlined), onPressed: () {}),
           ],
           fab: MEFab(
             size: MEFabSize.small,

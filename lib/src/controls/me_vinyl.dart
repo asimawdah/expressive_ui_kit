@@ -36,8 +36,7 @@ class MEVinyl extends StatefulWidget {
   State<MEVinyl> createState() => _MEVinylState();
 }
 
-class _MEVinylState extends State<MEVinyl>
-    with SingleTickerProviderStateMixin {
+class _MEVinylState extends State<MEVinyl> with SingleTickerProviderStateMixin {
   late final Ticker _ticker;
   Duration _last = Duration.zero;
   double _angle = 0; // record rotation, radians
@@ -53,9 +52,8 @@ class _MEVinylState extends State<MEVinyl>
   }
 
   void _tick(Duration now) {
-    final dt = _last == Duration.zero
-        ? 0.0
-        : (now - _last).inMicroseconds / 1e6;
+    final dt =
+        _last == Duration.zero ? 0.0 : (now - _last).inMicroseconds / 1e6;
     _last = now;
     if (dt <= 0) return;
 
@@ -70,8 +68,7 @@ class _MEVinylState extends State<MEVinyl>
     final armLerp = 1 - math.exp(-dt * 4);
     _arm += (targetArm - _arm) * armLerp;
 
-    final moving = _speed.abs() > 0.01 ||
-        (targetArm - _arm).abs() > 0.001;
+    final moving = _speed.abs() > 0.01 || (targetArm - _arm).abs() > 0.001;
     if (moving) {
       setState(() => _angle = (_angle + _speed * dt) % (2 * math.pi));
     }
@@ -125,8 +122,8 @@ class _MEVinylState extends State<MEVinyl>
                         CustomPaint(
                           size: Size(size, size),
                           painter: _GroovePainter(
-                            color: scheme.onInverseSurface
-                                .withValues(alpha: 0.12),
+                            color:
+                                scheme.onInverseSurface.withValues(alpha: 0.12),
                           ),
                         ),
                         // Center label.
@@ -146,8 +143,7 @@ class _MEVinylState extends State<MEVinyl>
                                     style: Theme.of(context)
                                         .textTheme
                                         .titleMedium!
-                                        .copyWith(
-                                            color: scheme.onPrimary),
+                                        .copyWith(color: scheme.onPrimary),
                                     child: SizedBox(
                                       width: labelSize,
                                       height: labelSize,
@@ -248,6 +244,5 @@ class _GroovePainter extends CustomPainter {
   }
 
   @override
-  bool shouldRepaint(_GroovePainter oldDelegate) =>
-      oldDelegate.color != color;
+  bool shouldRepaint(_GroovePainter oldDelegate) => oldDelegate.color != color;
 }

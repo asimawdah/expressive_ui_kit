@@ -28,8 +28,7 @@ class MEBadge extends StatefulWidget {
   State<MEBadge> createState() => _MEBadgeState();
 }
 
-class _MEBadgeState extends State<MEBadge>
-    with SingleTickerProviderStateMixin {
+class _MEBadgeState extends State<MEBadge> with SingleTickerProviderStateMixin {
   late final AnimationController _anim = AnimationController.unbounded(
     vsync: this,
     value: widget.visible ? 1 : 0,
@@ -70,30 +69,29 @@ class _MEBadgeState extends State<MEBadge>
         child: child,
       ),
       child: Container(
-              constraints: BoxConstraints(
-                minWidth: isDot ? 8 : 16,
-                minHeight: isDot ? 8 : 16,
+        constraints: BoxConstraints(
+          minWidth: isDot ? 8 : 16,
+          minHeight: isDot ? 8 : 16,
+        ),
+        padding:
+            isDot ? EdgeInsets.zero : const EdgeInsets.symmetric(horizontal: 4),
+        decoration: BoxDecoration(
+          color: scheme.error,
+          borderRadius: BorderRadius.circular(8),
+        ),
+        alignment: Alignment.center,
+        child: isDot
+            ? null
+            : Text(
+                widget.count! > 999 ? '999+' : '${widget.count}',
+                style: TextStyle(
+                  color: scheme.onError,
+                  fontSize: 11,
+                  fontWeight: FontWeight.w500,
+                  height: 1.2,
+                ),
               ),
-              padding: isDot
-                  ? EdgeInsets.zero
-                  : const EdgeInsets.symmetric(horizontal: 4),
-              decoration: BoxDecoration(
-                color: scheme.error,
-                borderRadius: BorderRadius.circular(8),
-              ),
-              alignment: Alignment.center,
-              child: isDot
-                  ? null
-                  : Text(
-                      widget.count! > 999 ? '999+' : '${widget.count}',
-                      style: TextStyle(
-                        color: scheme.onError,
-                        fontSize: 11,
-                        fontWeight: FontWeight.w500,
-                        height: 1.2,
-                      ),
-                    ),
-            ),
+      ),
     );
 
     // Standalone badge: render just the bubble.

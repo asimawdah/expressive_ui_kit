@@ -60,7 +60,8 @@ class _MEMarqueeState extends State<MEMarquee>
       await Future<void>.delayed(widget.pause);
       if (_disposed || !_scroll.hasClients) break;
       // One copy + spacing = half the scroll extent (two copies rendered).
-      final distance = _scroll.position.maxScrollExtent / 2 + widget.spacing / 2;
+      final distance =
+          _scroll.position.maxScrollExtent / 2 + widget.spacing / 2;
       final duration = Duration(
         milliseconds:
             (distance / widget.velocity * 1000).clamp(500, 60000).round(),

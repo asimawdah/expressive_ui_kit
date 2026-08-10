@@ -151,4 +151,3 @@ class _MEBreathingRingState extends State<MEBreathingRing>
     );
   }
 }
-

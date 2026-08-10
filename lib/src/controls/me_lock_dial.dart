@@ -90,9 +90,8 @@ class _MELockDialState extends State<MELockDial>
       target,
       METheme.of(context).motion.fastSpatial,
     );
-    final position =
-        ((target.round() % widget.positions) + widget.positions) %
-            widget.positions;
+    final position = ((target.round() % widget.positions) + widget.positions) %
+        widget.positions;
     widget.onEntry?.call(position);
   }
 
@@ -199,8 +198,7 @@ class _MELockDialPainter extends CustomPainter {
           text: TextSpan(text: '$i', style: textStyle),
           textDirection: TextDirection.ltr,
         )..layout();
-        final pos = dir * radius * 0.58 -
-            Offset(tp.width / 2, tp.height / 2);
+        final pos = dir * radius * 0.58 - Offset(tp.width / 2, tp.height / 2);
         tp.paint(canvas, pos);
       }
     }

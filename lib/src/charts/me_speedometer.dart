@@ -121,8 +121,7 @@ class _MESpeedometerState extends State<MESpeedometer>
                     children: [
                       Text(
                         (widget.min +
-                                t.clamp(0.0, 1.0) *
-                                    (widget.max - widget.min))
+                                t.clamp(0.0, 1.0) * (widget.max - widget.min))
                             .round()
                             .toString(),
                         style: textTheme.headlineSmall!.copyWith(

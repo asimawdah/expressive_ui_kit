@@ -80,8 +80,9 @@ class _MESliderState extends State<MESlider>
   Widget build(BuildContext context) {
     final colors = Theme.of(context).colorScheme;
     final enabled = widget.onChanged != null;
-    final activeColor =
-        enabled ? (widget.color ?? colors.primary) : colors.onSurface.withValues(alpha: 0.38);
+    final activeColor = enabled
+        ? (widget.color ?? colors.primary)
+        : colors.onSurface.withValues(alpha: 0.38);
     final inactiveColor = enabled
         ? (widget.trackColor ?? colors.secondaryContainer)
         : colors.onSurface.withValues(alpha: 0.12);
@@ -109,7 +110,8 @@ class _MESliderState extends State<MESlider>
                     widget.onChangeEnd?.call(widget.value);
                   }
                 : null,
-            onTapDown: enabled ? (d) => _handleDrag(d.localPosition, width) : null,
+            onTapDown:
+                enabled ? (d) => _handleDrag(d.localPosition, width) : null,
             child: SizedBox(
               height: 48,
               child: AnimatedBuilder(

@@ -37,8 +37,8 @@ class MEPageIndicator extends StatefulWidget {
 
 class _MEPageIndicatorState extends State<MEPageIndicator>
     with SingleTickerProviderStateMixin {
-  late final AnimationController _anim =
-      AnimationController.unbounded(vsync: this, value: widget.index.toDouble());
+  late final AnimationController _anim = AnimationController.unbounded(
+      vsync: this, value: widget.index.toDouble());
 
   @override
   void didUpdateWidget(MEPageIndicator oldWidget) {
@@ -83,8 +83,7 @@ class _MEPageIndicatorState extends State<MEPageIndicator>
     final proximity = (1 - (_anim.value - i).abs()).clamp(0.0, 1.0);
     final width =
         widget.dotSize + (widget.activeWidth - widget.dotSize) * proximity;
-    final color =
-        Color.lerp(colors.outlineVariant, colors.primary, proximity)!;
+    final color = Color.lerp(colors.outlineVariant, colors.primary, proximity)!;
 
     final dot = Container(
       width: width,

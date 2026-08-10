@@ -172,8 +172,7 @@ class _WavyCircularPainter extends CustomPainter {
     for (double a = 0; a <= sweep; a += step) {
       final angle = start + a;
       final r = radius +
-          math.sin(angle * waves + phase * 2 * math.pi * waves / 2) *
-              amplitude;
+          math.sin(angle * waves + phase * 2 * math.pi * waves / 2) * amplitude;
       final p = center + Offset(math.cos(angle), math.sin(angle)) * r;
       if (a == 0) {
         path.moveTo(p.dx, p.dy);

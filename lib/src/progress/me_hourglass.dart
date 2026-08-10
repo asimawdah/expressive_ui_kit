@@ -226,8 +226,10 @@ class _MEHourglassPainter extends CustomPainter {
       ..strokeWidth = 5
       ..strokeCap = StrokeCap.round
       ..color = frameColor;
-    canvas.drawLine(Offset(w * 0.02, h * 0.04), Offset(w * 0.98, h * 0.04), cap);
-    canvas.drawLine(Offset(w * 0.02, h * 0.96), Offset(w * 0.98, h * 0.96), cap);
+    canvas.drawLine(
+        Offset(w * 0.02, h * 0.04), Offset(w * 0.98, h * 0.04), cap);
+    canvas.drawLine(
+        Offset(w * 0.02, h * 0.96), Offset(w * 0.98, h * 0.96), cap);
   }
 
   @override

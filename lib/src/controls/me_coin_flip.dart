@@ -151,8 +151,7 @@ class _MECoinFlipState extends State<MECoinFlip>
             // Which face points at the viewer right now: it alternates
             // every half-turn away from the resting face.
             final elapsed = (angle / math.pi).round();
-            final headsUp =
-                elapsed.isEven ? _restingHeads : !_restingHeads;
+            final headsUp = elapsed.isEven ? _restingHeads : !_restingHeads;
             // Fold the angle so the visible face is always drawn upright.
             final foldedAngle = angle - elapsed * math.pi;
             // The coin lifts mid-flip and comes back down to land.

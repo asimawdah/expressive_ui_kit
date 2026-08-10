@@ -112,17 +112,15 @@ class _MERadarChartState extends State<MERadarChart>
                 for (var i = 0; i < _toValues.length; i++)
                   (_fromValues.length > i ? _fromValues[i] : 0.0) +
                       ((_toValues[i]) -
-                              (_fromValues.length > i
-                                  ? _fromValues[i]
-                                  : 0.0)) *
+                              (_fromValues.length > i ? _fromValues[i] : 0.0)) *
                           t,
               ],
               ringCount: widget.ringCount,
               webColor: scheme.outlineVariant,
               fillColor: color.withValues(alpha: 0.18),
               strokeColor: color,
-              labelStyle: text.labelSmall!
-                  .copyWith(color: scheme.onSurfaceVariant),
+              labelStyle:
+                  text.labelSmall!.copyWith(color: scheme.onSurfaceVariant),
             ),
           );
         },

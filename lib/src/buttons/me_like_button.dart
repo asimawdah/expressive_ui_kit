@@ -120,9 +120,8 @@ class _MELikeButtonState extends State<MELikeButton>
                   builder: (context, _) {
                     final t = _pop.value;
                     // Scale dips below 1 at t=0..squash then overshoots.
-                    final double scale = widget.liked
-                        ? (0.75 + 0.25 * t.clamp(-0.3, 1.6))
-                        : 1.0;
+                    final double scale =
+                        widget.liked ? (0.75 + 0.25 * t.clamp(-0.3, 1.6)) : 1.0;
                     return CustomPaint(
                       painter: _BurstPainter(
                         progress: _burst.isAnimating ? _burst.value : 0,
@@ -201,8 +200,7 @@ class _BurstPainter extends CustomPainter {
     final double dotSize = size.shortestSide * 0.045 * (1.0 - 0.5 * eased);
 
     final paint = Paint()..color = color.withValues(alpha: opacity);
-    final paint2 = Paint()
-      ..color = secondary.withValues(alpha: opacity * 0.85);
+    final paint2 = Paint()..color = secondary.withValues(alpha: opacity * 0.85);
 
     for (int i = 0; i < 8; i++) {
       final angle = i * math.pi / 4;
@@ -210,8 +208,8 @@ class _BurstPainter extends CustomPainter {
       canvas.drawCircle(pos, dotSize, paint);
       // Smaller offset satellite dot.
       final angle2 = angle + math.pi / 8;
-      final pos2 = center +
-          Offset(math.cos(angle2), math.sin(angle2)) * (travel * 0.8);
+      final pos2 =
+          center + Offset(math.cos(angle2), math.sin(angle2)) * (travel * 0.8);
       canvas.drawCircle(pos2, dotSize * 0.6, paint2);
     }
   }

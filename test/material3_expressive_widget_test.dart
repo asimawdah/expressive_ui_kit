@@ -27,9 +27,9 @@ void main() {
 
       await tester.pumpWidget(
         _host(
-          MEButton.filled(
+          const MEButton.filled(
             onPressed: null,
-            child: const Text('Disabled'),
+            child: Text('Disabled'),
           ),
         ),
       );
@@ -121,9 +121,11 @@ void main() {
       await tester.pump();
 
       expect(tester.takeException(), isNull);
-      expect(METheme.of(
-        tester.element(find.text('Press')),
-      ).motion, MEMotionScheme.reduced);
+      expect(
+          METheme.of(
+            tester.element(find.text('Press')),
+          ).motion,
+          MEMotionScheme.reduced);
     });
   });
 

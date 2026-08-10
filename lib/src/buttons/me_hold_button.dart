@@ -135,17 +135,15 @@ class _MEHoldButtonState extends State<MEHoldButton>
     final double shapeT = _shape.value.clamp(0.0, 1.2);
     final double radius = _confirmed
         ? MECorners.large
-        : (widget.height / 2) +
-            (MECorners.large - widget.height / 2) * shapeT;
+        : (widget.height / 2) + (MECorners.large - widget.height / 2) * shapeT;
 
     final Color surface =
         _confirmed ? scheme.errorContainer : scheme.surfaceContainerHigh;
     final Color fillColor = scheme.error;
     final double t = _fill.value;
 
-    final String label = _confirmed
-        ? (widget.confirmedLabel ?? widget.label)
-        : widget.label;
+    final String label =
+        _confirmed ? (widget.confirmedLabel ?? widget.label) : widget.label;
 
     // Foreground switches to onError once the fill has swept past center.
     final Color fg = _confirmed
@@ -187,9 +185,8 @@ class _MEHoldButtonState extends State<MEHoldButton>
                     if (widget.icon != null) ...[
                       IconTheme.merge(
                         data: IconThemeData(size: 20, color: fg),
-                        child: _confirmed
-                            ? const Icon(Icons.check)
-                            : widget.icon!,
+                        child:
+                            _confirmed ? const Icon(Icons.check) : widget.icon!,
                       ),
                       const SizedBox(width: 8),
                     ],

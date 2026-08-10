@@ -38,9 +38,9 @@ class MEColorPicker extends StatelessWidget {
           _Swatch(
             color: color,
             size: swatchSize,
-            selected: selected != null && color.toARGB32() == selected!.toARGB32(),
-            onPressed:
-                onChanged == null ? null : () => onChanged!(color),
+            selected:
+                selected != null && color.toARGB32() == selected!.toARGB32(),
+            onPressed: onChanged == null ? null : () => onChanged!(color),
           ),
       ],
     );
@@ -64,8 +64,7 @@ class _Swatch extends StatefulWidget {
   State<_Swatch> createState() => _SwatchState();
 }
 
-class _SwatchState extends State<_Swatch>
-    with SingleTickerProviderStateMixin {
+class _SwatchState extends State<_Swatch> with SingleTickerProviderStateMixin {
   late final AnimationController _anim = AnimationController.unbounded(
     vsync: this,
     value: widget.selected ? 1 : 0,
@@ -93,10 +92,10 @@ class _SwatchState extends State<_Swatch>
   Widget build(BuildContext context) {
     final scheme = Theme.of(context).colorScheme;
     // Contrast-aware check color.
-    final check = ThemeData.estimateBrightnessForColor(widget.color) ==
-            Brightness.dark
-        ? Colors.white
-        : Colors.black87;
+    final check =
+        ThemeData.estimateBrightnessForColor(widget.color) == Brightness.dark
+            ? Colors.white
+            : Colors.black87;
 
     return Semantics(
       button: true,
@@ -118,16 +117,16 @@ class _SwatchState extends State<_Swatch>
                 borderRadius:
                     BorderRadius.circular(radius.clamp(6, widget.size / 2)),
                 border: Border.all(
-                  color: widget.selected
-                      ? scheme.primary
-                      : scheme.outlineVariant,
+                  color:
+                      widget.selected ? scheme.primary : scheme.outlineVariant,
                   width: widget.selected ? 2 : 1,
                 ),
               ),
               child: Center(
                 child: Transform.scale(
                   scale: _anim.value.clamp(0.0, 1.15),
-                  child: Icon(Icons.check, size: widget.size * 0.5, color: check),
+                  child:
+                      Icon(Icons.check, size: widget.size * 0.5, color: check),
                 ),
               ),
             ),

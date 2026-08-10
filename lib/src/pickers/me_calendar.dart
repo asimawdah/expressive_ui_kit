@@ -40,11 +40,27 @@ class _MECalendarState extends State<MECalendar>
       AnimationController.unbounded(vsync: this, value: 0);
 
   static const List<String> _weekdays = [
-    'M', 'T', 'W', 'T', 'F', 'S', 'S',
+    'M',
+    'T',
+    'W',
+    'T',
+    'F',
+    'S',
+    'S',
   ];
   static const List<String> _months = [
-    'January', 'February', 'March', 'April', 'May', 'June', 'July',
-    'August', 'September', 'October', 'November', 'December',
+    'January',
+    'February',
+    'March',
+    'April',
+    'May',
+    'June',
+    'July',
+    'August',
+    'September',
+    'October',
+    'November',
+    'December',
   ];
 
   @override
@@ -62,7 +78,8 @@ class _MECalendarState extends State<MECalendar>
 
   void _changeMonth(int delta) {
     final next = DateTime(_visibleMonth.year, _visibleMonth.month + delta);
-    if (next.isBefore(DateTime(widget.firstDate.year, widget.firstDate.month)) ||
+    if (next.isBefore(
+            DateTime(widget.firstDate.year, widget.firstDate.month)) ||
         next.isAfter(DateTime(widget.lastDate.year, widget.lastDate.month))) {
       return;
     }
@@ -148,12 +165,11 @@ class _MECalendarState extends State<MECalendar>
               shrinkWrap: true,
               physics: const NeverScrollableScrollPhysics(),
               children: [
-                for (var i = 0; i < leadingBlanks; i++)
-                  const SizedBox.shrink(),
+                for (var i = 0; i < leadingBlanks; i++) const SizedBox.shrink(),
                 for (var day = 1; day <= daysInMonth; day++)
                   _DayCell(
-                    date: DateTime(
-                        _visibleMonth.year, _visibleMonth.month, day),
+                    date:
+                        DateTime(_visibleMonth.year, _visibleMonth.month, day),
                     selected: _sameDay(
                       DateTime(_visibleMonth.year, _visibleMonth.month, day),
                       widget.selectedDate,
@@ -163,10 +179,9 @@ class _MECalendarState extends State<MECalendar>
                       today,
                     ),
                     enabled: !DateTime(
-                            _visibleMonth.year, _visibleMonth.month, day)
-                        .isBefore(widget.firstDate) &&
-                        !DateTime(
                                 _visibleMonth.year, _visibleMonth.month, day)
+                            .isBefore(widget.firstDate) &&
+                        !DateTime(_visibleMonth.year, _visibleMonth.month, day)
                             .isAfter(widget.lastDate),
                     onPressed: widget.onDateSelected,
                   ),

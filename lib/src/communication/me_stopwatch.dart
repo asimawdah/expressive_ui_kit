@@ -86,9 +86,9 @@ class _MEStopwatchState extends State<MEStopwatch> {
     final seconds = elapsed.inSeconds % 60;
     final centis = (elapsed.inMilliseconds % 1000) ~/ 10;
 
-    final digitStyle = (widget.digitStyle ??
-            Theme.of(context).textTheme.displaySmall!)
-        .copyWith(fontFeatures: const [FontFeature.tabularFigures()]);
+    final digitStyle =
+        (widget.digitStyle ?? Theme.of(context).textTheme.displaySmall!)
+            .copyWith(fontFeatures: const [FontFeature.tabularFigures()]);
     final centiStyle = digitStyle.copyWith(
       fontSize: (digitStyle.fontSize ?? 36) * 0.55,
       color: scheme.onSurfaceVariant,

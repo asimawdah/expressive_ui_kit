@@ -62,7 +62,8 @@ class _MELinearProgressIndicatorState extends State<MELinearProgressIndicator>
           ? null
           : '${(widget.value! * 100).round()} percent',
       child: SizedBox(
-        height: math.max(widget.height, widget.amplitude * 2 + widget.strokeWidth),
+        height:
+            math.max(widget.height, widget.amplitude * 2 + widget.strokeWidth),
         child: AnimatedBuilder(
           animation: _controller,
           builder: (context, _) => CustomPaint(

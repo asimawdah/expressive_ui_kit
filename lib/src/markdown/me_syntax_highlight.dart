@@ -82,15 +82,29 @@ const Set<String> _keywords = {
 };
 
 const Set<String> _constants = {
-  'true', 'false', 'null', 'nil', 'none', 'undefined', 'self',
-  'True', 'False', 'None', 'NaN', 'Infinity',
+  'true',
+  'false',
+  'null',
+  'nil',
+  'none',
+  'undefined',
+  'self',
+  'True',
+  'False',
+  'None',
+  'NaN',
+  'Infinity',
 };
 
 final RegExp _tokenPattern = RegExp(
   // Comments: //... , #... , /* ... */ (multiline handled per-line), <!-- -->
   r'(?<comment>//[^\n]*|#[^\n]*|/\*.*?\*/|<!--.*?-->)'
   // Strings: single, double, triple, backtick, with escapes.
-  r"|(?<string>'''[\s\S]*?'''|" '"""[\\s\\S]*?"""' r"|'(?:\\.|[^'\\])*'|" '"(?:\\\\.|[^"\\\\])*"' r'|`(?:\\.|[^`\\])*`)'
+  r"|(?<string>'''[\s\S]*?'''|"
+  '"""[\\s\\S]*?"""'
+  r"|'(?:\\.|[^'\\])*'|"
+  '"(?:\\\\.|[^"\\\\])*"'
+  r'|`(?:\\.|[^`\\])*`)'
   // Numbers: hex, decimal, scientific, with optional suffix.
   r'|(?<number>\b0[xX][0-9a-fA-F_]+\b|\b\d[\d_]*(?:\.\d[\d_]*)?(?:[eE][+-]?\d+)?\b)'
   // Annotations / decorators: @something
@@ -125,8 +139,7 @@ List<InlineSpan> highlightSyntax(
       case MESyntaxToken.string:
         return TextStyle(color: theme.string);
       case MESyntaxToken.comment:
-        return TextStyle(
-            color: theme.comment, fontStyle: FontStyle.italic);
+        return TextStyle(color: theme.comment, fontStyle: FontStyle.italic);
       case MESyntaxToken.number:
         return TextStyle(color: theme.number);
       case MESyntaxToken.function:
@@ -224,8 +237,8 @@ class MECodeView extends StatelessWidget {
               children: [
                 if (language != null && language!.isNotEmpty)
                   Container(
-                    padding: const EdgeInsets.symmetric(
-                        horizontal: 10, vertical: 4),
+                    padding:
+                        const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
                     decoration: BoxDecoration(
                       color: scheme.secondaryContainer,
                       borderRadius: BorderRadius.circular(999),

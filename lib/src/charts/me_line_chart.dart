@@ -144,8 +144,7 @@ class _MELineChartState extends State<MELineChart>
             },
           ),
         ),
-        if (widget.showLegend &&
-            widget.series.any((s) => s.label != null)) ...[
+        if (widget.showLegend && widget.series.any((s) => s.label != null)) ...[
           const SizedBox(height: 12),
           Wrap(
             spacing: 16,
@@ -228,9 +227,7 @@ class _LineChartPainter extends CustomPainter {
     }
 
     Offset pointAt(List<double> values, int i) {
-      final x = values.length <= 1
-          ? 0.0
-          : size.width * i / (values.length - 1);
+      final x = values.length <= 1 ? 0.0 : size.width * i / (values.length - 1);
       final t = (values[i] - minV) / (maxV - minV);
       return Offset(x, size.height * (1 - t));
     }
@@ -300,8 +297,7 @@ class _LineChartPainter extends CustomPainter {
         )..layout();
         const pad = 8.0;
         final bubbleWidth = tp.width + pad * 2;
-        final bx =
-            (x - bubbleWidth / 2).clamp(0.0, size.width - bubbleWidth);
+        final bx = (x - bubbleWidth / 2).clamp(0.0, size.width - bubbleWidth);
         final rect = RRect.fromRectAndRadius(
           Rect.fromLTWH(bx, 0, bubbleWidth, tp.height + pad),
           Radius.circular((tp.height + pad) / 2),

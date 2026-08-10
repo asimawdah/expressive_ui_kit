@@ -47,8 +47,9 @@ class METoolbar extends StatelessWidget {
     final content = Padding(
       padding: const EdgeInsets.all(8),
       child: Row(
-        mainAxisSize:
-            style == METoolbarStyle.floating ? MainAxisSize.min : MainAxisSize.max,
+        mainAxisSize: style == METoolbarStyle.floating
+            ? MainAxisSize.min
+            : MainAxisSize.max,
         mainAxisAlignment: style == METoolbarStyle.floating
             ? MainAxisAlignment.center
             : MainAxisAlignment.spaceEvenly,

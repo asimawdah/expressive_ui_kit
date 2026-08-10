@@ -78,8 +78,7 @@ class _MEProgressButtonState extends State<MEProgressButton>
           shape: const StadiumBorder(),
           color: widget.onPressed == null
               ? colors.onSurface.withValues(alpha: 0.12)
-              : Color.lerp(
-                  colors.primary, colors.primaryContainer, t * 0.35)!,
+              : Color.lerp(colors.primary, colors.primaryContainer, t * 0.35)!,
           overlayColor: fg.withValues(alpha: 0.1),
           haptics: true,
           child: SizedBox(

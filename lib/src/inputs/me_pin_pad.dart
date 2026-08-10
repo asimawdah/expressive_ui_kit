@@ -53,8 +53,7 @@ class MEPinPad extends StatefulWidget {
   State<MEPinPad> createState() => _MEPinPadState();
 }
 
-class _MEPinPadState extends State<MEPinPad>
-    with TickerProviderStateMixin {
+class _MEPinPadState extends State<MEPinPad> with TickerProviderStateMixin {
   String _entry = '';
   late final AnimationController _pop = AnimationController.unbounded(
     vsync: this,
@@ -132,8 +131,9 @@ class _MEPinPadState extends State<MEPinPad>
           builder: (context, _) {
             // Damped sine shake: ~3 swings decaying to zero.
             final s = _shake.value;
-            final dx =
-                s == 0 || s == 1 ? 0.0 : 12 * (1 - s) * math.sin(s * 6 * math.pi);
+            final dx = s == 0 || s == 1
+                ? 0.0
+                : 12 * (1 - s) * math.sin(s * 6 * math.pi);
             return Transform.translate(
               offset: Offset(dx, 0),
               child: Row(

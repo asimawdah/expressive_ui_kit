@@ -106,8 +106,7 @@ class _METimelineRow extends StatelessWidget {
                   height: 8,
                   child: isFirst
                       ? null
-                      : _MEConnector(
-                          filled: lineAboveFilled, scheme: scheme),
+                      : _MEConnector(filled: lineAboveFilled, scheme: scheme),
                 ),
                 AnimatedContainer(
                   duration: const Duration(milliseconds: 350),
@@ -134,8 +133,7 @@ class _METimelineRow extends StatelessWidget {
                 Expanded(
                   child: isLast
                       ? const SizedBox.shrink()
-                      : _MEConnector(
-                          filled: lineBelowFilled, scheme: scheme),
+                      : _MEConnector(filled: lineBelowFilled, scheme: scheme),
                 ),
               ],
             ),

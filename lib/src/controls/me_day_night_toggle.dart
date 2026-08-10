@@ -103,8 +103,7 @@ class _MEDayNightToggleState extends State<MEDayNightToggle>
             final thumbSize = height - pad * 2;
             // Overshootable slide: t may go slightly below 0/above 1.
             final dx = pad +
-                (widget.width - thumbSize - pad * 2) *
-                    t.clamp(-0.08, 1.08);
+                (widget.width - thumbSize - pad * 2) * t.clamp(-0.08, 1.08);
 
             return Container(
               width: widget.width,
@@ -211,8 +210,8 @@ class _SunMoonPainter extends CustomPainter {
     // Craters appear on the moon.
     if (phase > 0.55) {
       final double a = ((phase - 0.55) / 0.45).clamp(0.0, 1.0);
-      final craterPaint =
-          Paint()..color = craterColor.withValues(alpha: a * 0.8);
+      final craterPaint = Paint()
+        ..color = craterColor.withValues(alpha: a * 0.8);
       canvas.drawCircle(
           center + Offset(-r * 0.35, -r * 0.15), r * 0.16, craterPaint);
       canvas.drawCircle(
@@ -252,6 +251,5 @@ class _StarsPainter extends CustomPainter {
   }
 
   @override
-  bool shouldRepaint(_StarsPainter oldDelegate) =>
-      oldDelegate.color != color;
+  bool shouldRepaint(_StarsPainter oldDelegate) => oldDelegate.color != color;
 }

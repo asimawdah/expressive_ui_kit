@@ -205,8 +205,7 @@ class _MESplashScreenState extends State<MESplashScreen>
                                   .textTheme
                                   .bodyMedium!
                                   .copyWith(
-                                    color:
-                                        onBackground.withValues(alpha: 0.7),
+                                    color: onBackground.withValues(alpha: 0.7),
                                   ),
                               child: widget.tagline!,
                             ),

@@ -93,8 +93,7 @@ class _MELiquidProgressState extends State<MELiquidProgress>
         builder: (context, child) {
           final level = _level.value.clamp(0.0, 1.0);
           // Slosh amplitude grows with level velocity, calming at rest.
-          final slosh =
-              (_level.velocity.abs() * 0.15).clamp(0.0, 1.0);
+          final slosh = (_level.velocity.abs() * 0.15).clamp(0.0, 1.0);
           return SizedBox(
             width: widget.size,
             height: widget.size,
@@ -169,8 +168,8 @@ class _LiquidPainter extends CustomPainter {
     const steps = 24;
     for (int i = 0; i <= steps; i++) {
       final x = size.width * i / steps;
-      final y = surfaceY +
-          amp * math.sin(phase + 2 * math.pi * i / steps * 1.5);
+      final y =
+          surfaceY + amp * math.sin(phase + 2 * math.pi * i / steps * 1.5);
       path.lineTo(x, y);
     }
     path

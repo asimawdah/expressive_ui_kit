@@ -38,8 +38,7 @@ class MEBattery extends StatefulWidget {
   State<MEBattery> createState() => _MEBatteryState();
 }
 
-class _MEBatteryState extends State<MEBattery>
-    with TickerProviderStateMixin {
+class _MEBatteryState extends State<MEBattery> with TickerProviderStateMixin {
   late final AnimationController _level = AnimationController.unbounded(
     vsync: this,
     value: widget.value,
@@ -131,9 +130,7 @@ class _MEBatteryState extends State<MEBattery>
                                       fill,
                                       scheme.primaryContainer,
                                       // Soft pulse: 0 -> 0.35 -> 0.
-                                      (0.5 -
-                                              (_pulse.value - 0.5).abs()) *
-                                          0.7,
+                                      (0.5 - (_pulse.value - 0.5).abs()) * 0.7,
                                     )
                                   : fill,
                             ),

@@ -70,8 +70,7 @@ class MEImage extends StatelessWidget {
           mainAxisSize: MainAxisSize.min,
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Icon(Icons.broken_image_outlined,
-                color: scheme.onSurfaceVariant),
+            Icon(Icons.broken_image_outlined, color: scheme.onSurfaceVariant),
             if (semanticLabel != null) ...[
               const SizedBox(height: 4),
               Text(

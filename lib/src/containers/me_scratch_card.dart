@@ -69,8 +69,7 @@ class _MEScratchCardState extends State<MEScratchCard>
     // Cheap coverage estimate: each brush stamp covers pi*r^2; count
     // unique-ish stamps against the total area, capped at 1.0.
     _estimatedScratched++;
-    final brushArea =
-        3.14159 * widget.brushRadius * widget.brushRadius * 0.55;
+    final brushArea = 3.14159 * widget.brushRadius * widget.brushRadius * 0.55;
     final coverage =
         (_estimatedScratched * brushArea) / (size.width * size.height);
     if (coverage >= widget.revealThreshold) _reveal();
@@ -114,8 +113,7 @@ class _MEScratchCardState extends State<MEScratchCard>
                   AnimatedBuilder(
                     animation: _fade,
                     builder: (context, child) {
-                      final opacity =
-                          (1 - _fade.value).clamp(0.0, 1.0);
+                      final opacity = (1 - _fade.value).clamp(0.0, 1.0);
                       if (opacity == 0) return const SizedBox.shrink();
                       return Opacity(
                         opacity: opacity,
@@ -203,7 +201,8 @@ class _ScratchClipper extends CustomClipper<Path> {
       if (previous != null) {
         // Stroke segment as a thick line between stamps.
         final delta = point - previous;
-        final steps = (delta.distance / (brushRadius * 0.5)).ceil().clamp(1, 24);
+        final steps =
+            (delta.distance / (brushRadius * 0.5)).ceil().clamp(1, 24);
         for (int s = 0; s <= steps; s++) {
           final p = previous + delta * (s / steps);
           scratched.addOval(
@@ -215,8 +214,7 @@ class _ScratchClipper extends CustomClipper<Path> {
       }
       previous = point;
     }
-    final full = Path()
-      ..addRect(Rect.fromLTWH(0, 0, size.width, size.height));
+    final full = Path()..addRect(Rect.fromLTWH(0, 0, size.width, size.height));
     return Path.combine(ui.PathOperation.difference, full, scratched);
   }
 

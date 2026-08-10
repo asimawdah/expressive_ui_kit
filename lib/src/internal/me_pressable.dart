@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
+import 'me_keyboard.dart';
 import '../theme/me_motion.dart';
 import '../theme/me_shapes.dart';
 import '../theme/me_theme.dart';
@@ -117,8 +118,7 @@ class _MEPressableState extends State<MEPressable>
     }
     final pressedShape = widget.pressedShape ?? _defaultPressedShape(size);
     final t = _press.value.clamp(0.0, 1.5);
-    var shape =
-        MEShapeMorph(from: base, to: pressedShape).evaluate(t, size);
+    var shape = MEShapeMorph(from: base, to: pressedShape).evaluate(t, size);
     if (widget.side != null && shape is RoundedRectangleBorder) {
       shape = shape.copyWith(side: widget.side);
     }
@@ -138,64 +138,71 @@ class _MEPressableState extends State<MEPressable>
 
   @override
   Widget build(BuildContext context) {
-    final interactive =
-        widget.enabled && (widget.onPressed != null || widget.onLongPress != null);
+    final interactive = widget.enabled &&
+        (widget.onPressed != null || widget.onLongPress != null);
 
     return Semantics(
       button: widget.onPressed != null,
       enabled: interactive,
       label: widget.semanticLabel,
-      child: LayoutBuilder(
-        builder: (context, constraints) {
-          final size = Size(
-            constraints.hasBoundedWidth ? constraints.maxWidth : 100,
-            constraints.hasBoundedHeight ? constraints.maxHeight : 40,
-          );
-          return AnimatedBuilder(
-            animation: Listenable.merge([_press, _select]),
-            builder: (context, child) {
-              final shape = _resolveShape(size);
-              final double elevation = widget.pressedElevation == null
-                  ? widget.elevation
-                  : (widget.elevation +
-                          (widget.pressedElevation! - widget.elevation) *
-                              _press.value.clamp(0.0, 1.0))
-                      .clamp(0.0, 24.0)
-                      .toDouble();
-              // M3 Expressive squash: scale dips toward [pressedScale]
-              // while pressed. Because the release spring is underdamped
-              // the unclamped press value swings below 0, which pushes the
-              // scale slightly past 1.0 for a natural overshoot bounce.
-              final double scale = widget.pressedScale >= 1.0
-                  ? 1.0
-                  : (1.0 -
-                          (1.0 - widget.pressedScale) *
-                              _press.value.clamp(-0.35, 1.2))
-                      .clamp(widget.pressedScale - 0.02, 1.03);
-              return Transform.scale(
-                scale: scale,
-                child: Material(
-                  color: widget.color,
-                  shadowColor: widget.shadowColor ?? Colors.black,
-                  elevation: elevation,
-                  shape: shape,
-                  clipBehavior: Clip.antiAlias,
-                  child: InkWell(
-                    customBorder: shape,
-                    overlayColor: widget.overlayColor == null
-                        ? null
-                        : WidgetStatePropertyAll(widget.overlayColor),
-                    onTap: interactive ? widget.onPressed : null,
-                    onLongPress: interactive ? widget.onLongPress : null,
-                    onHighlightChanged: interactive ? _setPressed : null,
-                    child: child,
+      child: Focus(
+        canRequestFocus: interactive,
+        onKeyEvent: (node, event) => MEKeyboard.handleActivation(
+          event: event,
+          onActivate: interactive ? widget.onPressed : null,
+        ),
+        child: LayoutBuilder(
+          builder: (context, constraints) {
+            final size = Size(
+              constraints.hasBoundedWidth ? constraints.maxWidth : 100,
+              constraints.hasBoundedHeight ? constraints.maxHeight : 40,
+            );
+            return AnimatedBuilder(
+              animation: Listenable.merge([_press, _select]),
+              builder: (context, child) {
+                final shape = _resolveShape(size);
+                final double elevation = widget.pressedElevation == null
+                    ? widget.elevation
+                    : (widget.elevation +
+                            (widget.pressedElevation! - widget.elevation) *
+                                _press.value.clamp(0.0, 1.0))
+                        .clamp(0.0, 24.0)
+                        .toDouble();
+                // M3 Expressive squash: scale dips toward [pressedScale]
+                // while pressed. Because the release spring is underdamped
+                // the unclamped press value swings below 0, which pushes the
+                // scale slightly past 1.0 for a natural overshoot bounce.
+                final double scale = widget.pressedScale >= 1.0
+                    ? 1.0
+                    : (1.0 -
+                            (1.0 - widget.pressedScale) *
+                                _press.value.clamp(-0.35, 1.2))
+                        .clamp(widget.pressedScale - 0.02, 1.03);
+                return Transform.scale(
+                  scale: scale,
+                  child: Material(
+                    color: widget.color,
+                    shadowColor: widget.shadowColor ?? Colors.black,
+                    elevation: elevation,
+                    shape: shape,
+                    clipBehavior: Clip.antiAlias,
+                    child: InkWell(
+                      customBorder: shape,
+                      overlayColor: widget.overlayColor == null
+                          ? null
+                          : WidgetStatePropertyAll(widget.overlayColor),
+                      onTap: interactive ? widget.onPressed : null,
+                      onLongPress: interactive ? widget.onLongPress : null,
+                      onHighlightChanged: interactive ? _setPressed : null,
+                      child: child,
+                    ),
                   ),
-                ),
-              );
-            },
-            child: widget.child,
-          );
-        },
+                );
+              },
+              child: widget.child,
+            );
+          },
+        ),
       ),
     );
   }

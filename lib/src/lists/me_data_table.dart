@@ -39,8 +39,7 @@ class MEDataTable extends StatelessWidget {
           onSelectAll: onSelectAll,
           sortColumnIndex: sortColumnIndex,
           sortAscending: sortAscending,
-          headingRowColor:
-              WidgetStatePropertyAll(colors.surfaceContainerHigh),
+          headingRowColor: WidgetStatePropertyAll(colors.surfaceContainerHigh),
           headingTextStyle: textTheme.titleSmall!.copyWith(
             color: colors.onSurface,
             fontWeight: FontWeight.w700,

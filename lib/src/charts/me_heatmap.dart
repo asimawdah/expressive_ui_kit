@@ -91,8 +91,8 @@ class _MEHeatmapState extends State<MEHeatmap>
                 children: [
                   for (int c = 0; c < widget.columns; c++) ...[
                     if (c > 0) SizedBox(width: widget.spacing),
-                    _cell(r * widget.columns + c, r, c, maxValue, scheme,
-                        motion),
+                    _cell(
+                        r * widget.columns + c, r, c, maxValue, scheme, motion),
                   ],
                 ],
               ),
@@ -120,8 +120,8 @@ class _MEHeatmapState extends State<MEHeatmap>
     );
   }
 
-  Widget _cell(int index, int row, int col, double maxValue,
-      ColorScheme scheme, MEMotionScheme motion) {
+  Widget _cell(int index, int row, int col, double maxValue, ColorScheme scheme,
+      MEMotionScheme motion) {
     if (index >= widget.cells.length) {
       return SizedBox(width: widget.cellSize, height: widget.cellSize);
     }
@@ -159,14 +159,13 @@ class _MEHeatmapState extends State<MEHeatmap>
           decoration: BoxDecoration(
             color: intensity == 0
                 ? scheme.surfaceContainerHigh
-                : Color.lerp(scheme.primaryContainer, scheme.primary,
-                    intensity * 0.85),
+                : Color.lerp(
+                    scheme.primaryContainer, scheme.primary, intensity * 0.85),
             // Selected cells morph rounder — the M3E selection signal.
             borderRadius: BorderRadius.circular(
                 selected ? widget.cellSize / 2 : widget.cellSize * 0.25),
-            border: selected
-                ? Border.all(color: scheme.onSurface, width: 2)
-                : null,
+            border:
+                selected ? Border.all(color: scheme.onSurface, width: 2) : null,
           ),
         ),
       ),

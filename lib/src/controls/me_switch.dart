@@ -98,7 +98,9 @@ class _MESwitchState extends State<MESwitch> with TickerProviderStateMixin {
               enabled
                   ? colors.surfaceContainerHighest
                   : colors.onSurface.withValues(alpha: 0.12),
-              enabled ? colors.primary : colors.onSurface.withValues(alpha: 0.12),
+              enabled
+                  ? colors.primary
+                  : colors.onSurface.withValues(alpha: 0.12),
               t.clamp(0.0, 1.0),
             )!;
             final borderColor = Color.lerp(
@@ -113,7 +115,9 @@ class _MESwitchState extends State<MESwitch> with TickerProviderStateMixin {
             final thumbW = baseSize + press * 8;
             final thumbH = baseSize - press * 2;
             final thumbColor = Color.lerp(
-              enabled ? colors.outline : colors.onSurface.withValues(alpha: 0.38),
+              enabled
+                  ? colors.outline
+                  : colors.onSurface.withValues(alpha: 0.38),
               enabled ? colors.onPrimary : colors.surface,
               t.clamp(0.0, 1.0),
             )!;
@@ -135,8 +139,7 @@ class _MESwitchState extends State<MESwitch> with TickerProviderStateMixin {
                       decoration: BoxDecoration(
                         color: trackColor,
                         border: Border.all(color: borderColor, width: 2),
-                        borderRadius:
-                            BorderRadius.circular(_trackHeight / 2),
+                        borderRadius: BorderRadius.circular(_trackHeight / 2),
                       ),
                     ),
                   ),

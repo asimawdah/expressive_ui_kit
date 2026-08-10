@@ -143,9 +143,7 @@ class _MEActivityRingsState extends State<MEActivityRings>
               thickness: widget.thickness,
               gap: widget.gap,
             ),
-            child: widget.center == null
-                ? null
-                : Center(child: widget.center),
+            child: widget.center == null ? null : Center(child: widget.center),
           );
         },
       ),

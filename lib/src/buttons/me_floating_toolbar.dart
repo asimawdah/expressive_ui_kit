@@ -144,9 +144,8 @@ class _MEFloatingToolbarState extends State<MEFloatingToolbar>
     final selected = widget.selectedIndex == i;
     // Fade the foreground toward the on-pill color as the pill arrives.
     final proximity = (1 - (t - i).abs()).clamp(0.0, 1.0);
-    final color = widget.selectedIndex == null
-        ? fg
-        : Color.lerp(fg, onPill, proximity)!;
+    final color =
+        widget.selectedIndex == null ? fg : Color.lerp(fg, onPill, proximity)!;
 
     Widget result = MEPressable(
       onPressed: () {
@@ -165,7 +164,8 @@ class _MEFloatingToolbarState extends State<MEFloatingToolbar>
         child: Center(
           child: IconTheme.merge(
             data: IconThemeData(size: 24, color: color),
-            child: selected ? (action.selectedIcon ?? action.icon) : action.icon,
+            child:
+                selected ? (action.selectedIcon ?? action.icon) : action.icon,
           ),
         ),
       ),

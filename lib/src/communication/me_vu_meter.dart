@@ -72,8 +72,7 @@ class _MEVuMeterState extends State<MEVuMeter>
   }
 
   void _tick(Duration elapsed) {
-    final dt =
-        ((elapsed - _last).inMicroseconds / 1e6).clamp(0.0, 1 / 30);
+    final dt = ((elapsed - _last).inMicroseconds / 1e6).clamp(0.0, 1 / 30);
     _last = elapsed;
 
     // Demo signal: layered sines resembling program audio.
@@ -215,8 +214,7 @@ class _VuPainter extends CustomPainter {
     canvas.drawLine(
       pivot,
       pivot +
-          Offset(math.cos(needleAngle), math.sin(needleAngle)) *
-              (radius - 6),
+          Offset(math.cos(needleAngle), math.sin(needleAngle)) * (radius - 6),
       needlePaint,
     );
 

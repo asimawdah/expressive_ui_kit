@@ -11,7 +11,7 @@ class MECandle {
     required this.high,
     required this.low,
     this.label,
-  })  : assert(high >= low, 'high must be >= low');
+  }) : assert(high >= low, 'high must be >= low');
 
   final double open;
   final double close;

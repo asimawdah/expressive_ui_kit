@@ -51,8 +51,7 @@ Future<void> showMECoachmark(
       message: message,
       dismissLabel: dismissLabel,
     ),
-    transitionBuilder: (context, animation, secondary, child) =>
-        FadeTransition(
+    transitionBuilder: (context, animation, secondary, child) => FadeTransition(
       opacity: CurvedAnimation(parent: animation, curve: Curves.easeOut),
       child: child,
     ),
@@ -134,7 +133,8 @@ class _MECoachmarkState extends State<_MECoachmark>
               builder: (context, child) {
                 final t = _enter.value;
                 return Transform.translate(
-                  offset: Offset(0, (1 - t.clamp(0.0, 1.5)) * (below ? 16 : -16)),
+                  offset:
+                      Offset(0, (1 - t.clamp(0.0, 1.5)) * (below ? 16 : -16)),
                   child: Transform.scale(
                     scale: 0.9 + 0.1 * t.clamp(0.0, 1.2),
                     child: Opacity(
@@ -145,16 +145,14 @@ class _MECoachmarkState extends State<_MECoachmark>
                 );
               },
               child: Align(
-                alignment:
-                    below ? Alignment.topCenter : Alignment.bottomCenter,
+                alignment: below ? Alignment.topCenter : Alignment.bottomCenter,
                 child: ConstrainedBox(
                   constraints: const BoxConstraints(maxWidth: 360),
                   child: Container(
                     padding: const EdgeInsets.fromLTRB(20, 20, 20, 12),
                     decoration: ShapeDecoration(
                       color: scheme.inverseSurface,
-                      shape:
-                          MEShapeScheme.fromCorner(MECorners.extraLarge),
+                      shape: MEShapeScheme.fromCorner(MECorners.extraLarge),
                     ),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
@@ -169,8 +167,8 @@ class _MECoachmarkState extends State<_MECoachmark>
                         Text(
                           widget.message,
                           style: text.bodyMedium!.copyWith(
-                            color: scheme.onInverseSurface
-                                .withValues(alpha: 0.8),
+                            color:
+                                scheme.onInverseSurface.withValues(alpha: 0.8),
                           ),
                         ),
                         const SizedBox(height: 8),

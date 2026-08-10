@@ -36,8 +36,7 @@ class MEOtpInput extends StatefulWidget {
   State<MEOtpInput> createState() => _MEOtpInputState();
 }
 
-class _MEOtpInputState extends State<MEOtpInput>
-    with TickerProviderStateMixin {
+class _MEOtpInputState extends State<MEOtpInput> with TickerProviderStateMixin {
   final TextEditingController _controller = TextEditingController();
   final FocusNode _focusNode = FocusNode();
   late final List<AnimationController> _pops = List.generate(
@@ -119,9 +118,7 @@ class _MEOtpInputState extends State<MEOtpInput>
             children: List.generate(widget.length, (i) {
               final filled = i < text.length;
               final isActive = _focusNode.hasFocus && i == activeIndex;
-              final char = filled
-                  ? (widget.obscure ? '\u2022' : text[i])
-                  : '';
+              final char = filled ? (widget.obscure ? '\u2022' : text[i]) : '';
 
               return Padding(
                 padding: EdgeInsets.only(right: i < widget.length - 1 ? 8 : 0),

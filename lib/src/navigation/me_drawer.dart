@@ -62,9 +62,7 @@ class MEDrawer extends StatelessWidget {
                         child: Row(
                           children: [
                             Icon(
-                              selected
-                                  ? (d.selectedIcon ?? d.icon)
-                                  : d.icon,
+                              selected ? (d.selectedIcon ?? d.icon) : d.icon,
                               size: 24,
                               color: selected
                                   ? scheme.onSecondaryContainer

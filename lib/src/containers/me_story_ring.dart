@@ -114,8 +114,7 @@ class _MEStoryRingState extends State<MEStoryRing>
             segments: widget.segments,
             sweep: _sweep.value.clamp(0.0, 1.0),
             color: Color.lerp(unseenColor, seenColor, seenT)!,
-            thickness: widget.thickness -
-                (widget.thickness - 1.5) * seenT,
+            thickness: widget.thickness - (widget.thickness - 1.5) * seenT,
             gapPixels: widget.gap,
           ),
           child: child,

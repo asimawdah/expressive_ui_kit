@@ -51,8 +51,7 @@ class MEPomodoro extends StatefulWidget {
   State<MEPomodoro> createState() => _MEPomodoroState();
 }
 
-class _MEPomodoroState extends State<MEPomodoro>
-    with TickerProviderStateMixin {
+class _MEPomodoroState extends State<MEPomodoro> with TickerProviderStateMixin {
   late final AnimationController _session = AnimationController(
     vsync: this,
     duration: widget.focusDuration,

@@ -155,8 +155,8 @@ class _Panel extends StatelessWidget {
                 overlayColor: fg.withValues(alpha: 0.08),
                 semanticLabel: open ? 'Collapse' : 'Expand',
                 child: Padding(
-                  padding: const EdgeInsets.symmetric(
-                      horizontal: 20, vertical: 16),
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
                   child: Row(
                     children: [
                       if (item.icon != null) ...[

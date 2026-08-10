@@ -51,8 +51,7 @@ class MEWaveform extends StatefulWidget {
   State<MEWaveform> createState() => _MEWaveformState();
 }
 
-class _MEWaveformState extends State<MEWaveform>
-    with TickerProviderStateMixin {
+class _MEWaveformState extends State<MEWaveform> with TickerProviderStateMixin {
   late final AnimationController _playhead = AnimationController.unbounded(
     vsync: this,
     value: widget.progress.clamp(0.0, 1.0),
@@ -199,8 +198,8 @@ class _WaveformPainter extends CustomPainter {
     for (var i = 0; i < barCount; i++) {
       final x = i * slot + barWidth / 2;
       // Resample the amplitude list onto the bar count.
-      final sample = samples[(i * samples.length ~/ barCount)
-          .clamp(0, samples.length - 1)];
+      final sample = samples[
+          (i * samples.length ~/ barCount).clamp(0, samples.length - 1)];
 
       // Stretch bars near the touch point while dragging.
       double stretch = 1.0;

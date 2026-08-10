@@ -122,7 +122,8 @@ class _MEMorphingShapeState extends State<MEMorphingShape>
 
   @override
   Widget build(BuildContext context) {
-    final color = widget.color ?? Theme.of(context).colorScheme.primaryContainer;
+    final color =
+        widget.color ?? Theme.of(context).colorScheme.primaryContainer;
 
     return RepaintBoundary(
       child: SizedBox(

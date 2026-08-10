@@ -235,9 +235,8 @@ class _FlipDigitState extends State<_FlipDigit>
                 alignment:
                     foldingTop ? Alignment.topCenter : Alignment.bottomCenter,
                 child: Transform(
-                  alignment: foldingTop
-                      ? Alignment.bottomCenter
-                      : Alignment.topCenter,
+                  alignment:
+                      foldingTop ? Alignment.bottomCenter : Alignment.topCenter,
                   transform: Matrix4.identity()
                     ..setEntry(3, 2, 0.002)
                     ..rotateX(foldingTop ? -angle : angle),

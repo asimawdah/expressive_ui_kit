@@ -143,29 +143,20 @@ class _GalleryHomeState extends State<GalleryHome> {
                   style: Theme.of(context).textTheme.labelLarge,
                 ),
               ),
-              RadioListTile<ThemeMode>(
+              ListTile(
+                selected: widget.themeMode == ThemeMode.system,
                 title: const Text('System theme'),
-                value: ThemeMode.system,
-                groupValue: widget.themeMode,
-                onChanged: (mode) {
-                  if (mode != null) widget.onThemeModeChanged(mode);
-                },
+                onTap: () => widget.onThemeModeChanged(ThemeMode.system),
               ),
-              RadioListTile<ThemeMode>(
+              ListTile(
+                selected: widget.themeMode == ThemeMode.light,
                 title: const Text('Light'),
-                value: ThemeMode.light,
-                groupValue: widget.themeMode,
-                onChanged: (mode) {
-                  if (mode != null) widget.onThemeModeChanged(mode);
-                },
+                onTap: () => widget.onThemeModeChanged(ThemeMode.light),
               ),
-              RadioListTile<ThemeMode>(
+              ListTile(
+                selected: widget.themeMode == ThemeMode.dark,
                 title: const Text('Dark'),
-                value: ThemeMode.dark,
-                groupValue: widget.themeMode,
-                onChanged: (mode) {
-                  if (mode != null) widget.onThemeModeChanged(mode);
-                },
+                onTap: () => widget.onThemeModeChanged(ThemeMode.dark),
               ),
               const Divider(height: 1),
               Padding(
@@ -175,21 +166,15 @@ class _GalleryHomeState extends State<GalleryHome> {
                   style: Theme.of(context).textTheme.labelLarge,
                 ),
               ),
-              RadioListTile<bool>(
+              ListTile(
+                selected: widget.meTheme.motion == MEMotionScheme.expressive,
                 title: const Text('Expressive (bouncy)'),
-                value: true,
-                groupValue: widget.meTheme.motion == MEMotionScheme.expressive,
-                onChanged: (_) {
-                  widget.onMeThemeChanged(METhemeData.expressive);
-                },
+                onTap: () => widget.onMeThemeChanged(METhemeData.expressive),
               ),
-              RadioListTile<bool>(
+              ListTile(
+                selected: widget.meTheme.motion == MEMotionScheme.standard,
                 title: const Text('Standard (subtle)'),
-                value: false,
-                groupValue: widget.meTheme.motion == MEMotionScheme.expressive,
-                onChanged: (_) {
-                  widget.onMeThemeChanged(METhemeData.standard);
-                },
+                onTap: () => widget.onMeThemeChanged(METhemeData.standard),
               ),
             ],
           ),

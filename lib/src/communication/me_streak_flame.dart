@@ -145,8 +145,9 @@ class _FlamePainter extends CustomPainter {
     final h = size.height;
     // Layered sines give a non-mechanical flicker.
     final sway = active ? (math.sin(3 * t) + 0.5 * math.sin(7 * t + 1.3)) : 0.0;
-    final flick =
-        active ? 1.0 + 0.05 * math.sin(5 * t + 0.7) + 0.03 * math.sin(11 * t) : 1.0;
+    final flick = active
+        ? 1.0 + 0.05 * math.sin(5 * t + 0.7) + 0.03 * math.sin(11 * t)
+        : 1.0;
 
     Path flame(double s, double swayBias) {
       final tipX = w / 2 + sway * w * 0.06 * swayBias;
@@ -158,7 +159,8 @@ class _FlamePainter extends CustomPainter {
         ..quadraticBezierTo(
             w / 2 + w * 0.44 * s, h - h * 0.6 * s, w / 2 + w * 0.34 * s, baseY)
         ..quadraticBezierTo(w / 2 + w * 0.42 * s, h, w / 2, h)
-        ..quadraticBezierTo(w / 2 - w * 0.42 * s, h, w / 2 - w * 0.34 * s, baseY)
+        ..quadraticBezierTo(
+            w / 2 - w * 0.42 * s, h, w / 2 - w * 0.34 * s, baseY)
         ..close();
     }
 

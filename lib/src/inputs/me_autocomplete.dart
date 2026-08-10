@@ -144,8 +144,8 @@ class _MEOptionsPanelState<T extends Object> extends State<_MEOptionsPanel<T>>
                   ),
                   child: Text(
                     widget.displayStringForOption(option),
-                    style: textTheme.bodyLarge!
-                        .copyWith(color: colors.onSurface),
+                    style:
+                        textTheme.bodyLarge!.copyWith(color: colors.onSurface),
                   ),
                 ),
               );

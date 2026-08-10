@@ -87,8 +87,8 @@ class MEMarkdown extends StatelessWidget {
         );
 
       case _MdBlockType.paragraph:
-        return _inlineText(context, block.text,
-            text.bodyMedium!.copyWith(height: 1.5));
+        return _inlineText(
+            context, block.text, text.bodyMedium!.copyWith(height: 1.5));
 
       case _MdBlockType.codeBlock:
         return MECodeView(
@@ -191,8 +191,7 @@ class MEMarkdown extends StatelessWidget {
   }
 
   /// Parses inline markdown (`**`, `*`, `~~`, `` ` ``, links) into spans.
-  TextSpan _parseInline(
-      BuildContext context, String source, TextStyle style) {
+  TextSpan _parseInline(BuildContext context, String source, TextStyle style) {
     final scheme = Theme.of(context).colorScheme;
     final spans = <InlineSpan>[];
     final pattern = RegExp(

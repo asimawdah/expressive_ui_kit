@@ -162,8 +162,8 @@ class _MEFabMenuState extends State<MEFabMenu>
           MECorners.extraLarge + (28 - MECorners.extraLarge) * t.clamp(0, 1),
         ),
       ),
-      color: Color.lerp(colors.primaryContainer, colors.primary,
-          t.clamp(0.0, 1.0))!,
+      color: Color.lerp(
+          colors.primaryContainer, colors.primary, t.clamp(0.0, 1.0))!,
       elevation: 3,
       overlayColor: colors.onPrimary.withValues(alpha: 0.1),
       semanticLabel: _open ? 'Close menu' : 'Open menu',

@@ -104,8 +104,8 @@ class _MESpinWheelState extends State<MESpinWheel>
     // The pointer sits at the top (-pi/2). Segment 0 starts at angle 0
     // (3 o'clock) and segments proceed clockwise.
     final pointerAngle = -math.pi / 2 - _rotation.value;
-    final normalized = ((pointerAngle % (2 * math.pi)) + 2 * math.pi) %
-        (2 * math.pi);
+    final normalized =
+        ((pointerAngle % (2 * math.pi)) + 2 * math.pi) % (2 * math.pi);
     return (normalized / _segmentAngle).floor() % widget.segments.length;
   }
 
@@ -146,8 +146,7 @@ class _MESpinWheelState extends State<MESpinWheel>
     final position = details.localPosition - center;
     final radius = position.distance.clamp(1.0, widget.size / 2);
     // Tangential velocity -> angular velocity.
-    final tangent =
-        Offset(-position.dy / radius, position.dx / radius);
+    final tangent = Offset(-position.dy / radius, position.dx / radius);
     final angularVelocity = (details.velocity.pixelsPerSecond.dx * tangent.dx +
             details.velocity.pixelsPerSecond.dy * tangent.dy) /
         radius;
@@ -265,8 +264,7 @@ class _WheelPainter extends CustomPainter {
         ..strokeWidth = 1;
       canvas.drawLine(
         center,
-        center +
-            Offset(math.cos(start), math.sin(start)) * radius,
+        center + Offset(math.cos(start), math.sin(start)) * radius,
         borderPaint,
       );
 

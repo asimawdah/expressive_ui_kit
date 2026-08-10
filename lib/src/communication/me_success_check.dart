@@ -71,9 +71,7 @@ class _MESuccessCheckState extends State<MESuccessCheck>
     final bg = widget.color ??
         (widget.isError ? scheme.errorContainer : scheme.primaryContainer);
     final fg = widget.iconColor ??
-        (widget.isError
-            ? scheme.onErrorContainer
-            : scheme.onPrimaryContainer);
+        (widget.isError ? scheme.onErrorContainer : scheme.onPrimaryContainer);
 
     return AnimatedBuilder(
       animation: _enter,

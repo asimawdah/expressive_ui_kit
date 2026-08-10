@@ -20,7 +20,7 @@ class MESpringSpec {
   });
 
   /// A zero-duration spec used when the platform requests reduced motion.
-  static const instant = MESpringSpec(
+  static const zero = MESpringSpec(
     dampingRatio: 1.0,
     stiffness: 1.0,
     instant: true,
@@ -57,8 +57,7 @@ class MESpringSpec {
 
   /// A [Curve] that follows this spring's motion, for use with standard
   /// curve-driven animations (implicit animations, transitions, etc).
-  Curve get curve =>
-      instant ? const Threshold(0.0) : MESpringCurve(this);
+  Curve get curve => instant ? const Threshold(0.0) : MESpringCurve(this);
 }
 
 /// A [Curve] backed by a [SpringSimulation], allowing spring physics to be
@@ -131,12 +130,12 @@ class MEMotionScheme {
   /// Instant motion for reduced-motion accessibility settings. All springs
   /// snap to their targets with no bounce or overshoot.
   static const MEMotionScheme reduced = MEMotionScheme(
-    fastSpatial: MESpringSpec.instant,
-    defaultSpatial: MESpringSpec.instant,
-    slowSpatial: MESpringSpec.instant,
-    fastEffects: MESpringSpec.instant,
-    defaultEffects: MESpringSpec.instant,
-    slowEffects: MESpringSpec.instant,
+    fastSpatial: MESpringSpec.zero,
+    defaultSpatial: MESpringSpec.zero,
+    slowSpatial: MESpringSpec.zero,
+    fastEffects: MESpringSpec.zero,
+    defaultEffects: MESpringSpec.zero,
+    slowEffects: MESpringSpec.zero,
   );
 }
 

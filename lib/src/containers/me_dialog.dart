@@ -38,8 +38,9 @@ class MEDialog extends StatelessWidget {
           padding: const EdgeInsets.all(24),
           child: Column(
             mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment:
-                icon != null ? CrossAxisAlignment.center : CrossAxisAlignment.start,
+            crossAxisAlignment: icon != null
+                ? CrossAxisAlignment.center
+                : CrossAxisAlignment.start,
             children: [
               if (icon != null) ...[
                 IconTheme.merge(

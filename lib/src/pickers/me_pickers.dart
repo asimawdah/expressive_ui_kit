@@ -54,8 +54,7 @@ class _MEPickerTheme extends StatelessWidget {
       data: base.copyWith(
         datePickerTheme: DatePickerThemeData(
           shape: RoundedRectangleBorder(
-            borderRadius:
-                BorderRadius.circular(MECorners.extraLargeIncreased),
+            borderRadius: BorderRadius.circular(MECorners.extraLargeIncreased),
           ),
           backgroundColor: scheme.surfaceContainerHigh,
           dayShape: const WidgetStatePropertyAll(StadiumBorder()),
@@ -66,8 +65,7 @@ class _MEPickerTheme extends StatelessWidget {
         ),
         timePickerTheme: TimePickerThemeData(
           shape: RoundedRectangleBorder(
-            borderRadius:
-                BorderRadius.circular(MECorners.extraLargeIncreased),
+            borderRadius: BorderRadius.circular(MECorners.extraLargeIncreased),
           ),
           backgroundColor: scheme.surfaceContainerHigh,
           hourMinuteShape: RoundedRectangleBorder(

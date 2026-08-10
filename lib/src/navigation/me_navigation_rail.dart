@@ -112,16 +112,14 @@ class _MENavigationRailState extends State<MENavigationRail>
                     builder: (context, _) {
                       final pos = _indicator.value;
                       final remaining = (pos - widget.selectedIndex).abs();
-                      final stretch =
-                          1.0 + remaining.clamp(0.0, 1.0) * 0.45;
+                      final stretch = 1.0 + remaining.clamp(0.0, 1.0) * 0.45;
                       final squash = 1.0 - (stretch - 1.0) * 0.2;
                       final pillH = _pillHeight * squash * stretch;
 
                       // Collapsed: sit behind the icon slot.
                       // Expanded: sit vertically centered in the row.
                       final pillTop = widget.expanded
-                          ? itemHeight * pos +
-                              (itemHeight - pillH) / 2
+                          ? itemHeight * pos + (itemHeight - pillH) / 2
                           : itemHeight * pos +
                               _collapsedIconTop +
                               (_pillHeight - pillH) / 2;
@@ -167,10 +165,8 @@ class _MENavigationRailState extends State<MENavigationRail>
                                         destination: widget.destinations[i],
                                         selected: i == widget.selectedIndex,
                                         expanded: widget.expanded,
-                                        bounceScale: i ==
-                                                widget.selectedIndex
-                                            ? _iconBounce.value
-                                                .clamp(0.7, 1.15)
+                                        bounceScale: i == widget.selectedIndex
+                                            ? _iconBounce.value.clamp(0.7, 1.15)
                                             : 1,
                                         onTap: () =>
                                             widget.onDestinationSelected(i),
@@ -253,8 +249,7 @@ class _RailItem extends StatelessWidget {
                       color: selected
                           ? colors.onSecondaryContainer
                           : colors.onSurfaceVariant,
-                      fontWeight:
-                          selected ? FontWeight.w700 : FontWeight.w500,
+                      fontWeight: selected ? FontWeight.w700 : FontWeight.w500,
                     ),
                     child: Text(
                       destination.label,
@@ -291,8 +286,7 @@ class _RailItem extends StatelessWidget {
               AnimatedDefaultTextStyle(
                 duration: const Duration(milliseconds: 180),
                 style: textTheme.labelMedium!.copyWith(
-                  color:
-                      selected ? colors.onSurface : colors.onSurfaceVariant,
+                  color: selected ? colors.onSurface : colors.onSurfaceVariant,
                   fontWeight: selected ? FontWeight.w700 : FontWeight.w500,
                 ),
                 child: Text(destination.label),

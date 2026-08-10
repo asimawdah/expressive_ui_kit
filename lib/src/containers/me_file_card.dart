@@ -90,8 +90,8 @@ class MEFileCard extends StatelessWidget {
     return MEPressable(
       onPressed: onPressed,
       color: scheme.surfaceContainerLow,
-      shape: MEShapeScheme.fromCorner(
-          dense ? MECorners.medium : MECorners.large),
+      shape:
+          MEShapeScheme.fromCorner(dense ? MECorners.medium : MECorners.large),
       pressedShape: MEShapeScheme.fromCorner(MECorners.small),
       side: BorderSide(color: scheme.outlineVariant),
       overlayColor: scheme.primary.withValues(alpha: 0.08),
@@ -108,8 +108,8 @@ class MEFileCard extends StatelessWidget {
                 color: scheme.primaryContainer,
                 borderRadius: BorderRadius.circular(MECorners.medium),
               ),
-              child: Icon(icon, size: dense ? 20 : 24,
-                  color: scheme.onPrimaryContainer),
+              child: Icon(icon,
+                  size: dense ? 20 : 24, color: scheme.onPrimaryContainer),
             ),
             const SizedBox(width: 12),
             Flexible(

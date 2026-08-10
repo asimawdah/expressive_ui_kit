@@ -108,7 +108,10 @@ class _MEChatBubbleState extends State<MEChatBubble>
         ? BorderRadius.only(
             topLeft: full, bottomLeft: full, topRight: top, bottomRight: bottom)
         : BorderRadius.only(
-            topRight: full, bottomRight: full, topLeft: top, bottomLeft: bottom);
+            topRight: full,
+            bottomRight: full,
+            topLeft: top,
+            bottomLeft: bottom);
   }
 
   @override
@@ -143,9 +146,8 @@ class _MEChatBubbleState extends State<MEChatBubble>
             widget.position == MEChatGroupPosition.last);
 
     final column = Column(
-      crossAxisAlignment: widget.outgoing
-          ? CrossAxisAlignment.end
-          : CrossAxisAlignment.start,
+      crossAxisAlignment:
+          widget.outgoing ? CrossAxisAlignment.end : CrossAxisAlignment.start,
       mainAxisSize: MainAxisSize.min,
       children: [
         bubble,
@@ -187,9 +189,8 @@ class _MEChatBubbleState extends State<MEChatBubble>
           opacity: t.clamp(0.0, 1.0),
           child: Transform.scale(
             scale: (0.85 + 0.15 * t).clamp(0.0, 1.15),
-            alignment: widget.outgoing
-                ? Alignment.bottomRight
-                : Alignment.bottomLeft,
+            alignment:
+                widget.outgoing ? Alignment.bottomRight : Alignment.bottomLeft,
             child: child,
           ),
         );

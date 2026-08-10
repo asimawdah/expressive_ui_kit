@@ -108,8 +108,8 @@ class _METagInputState extends State<METagInput>
         final t = _focusAnim.value.clamp(0.0, 1.0);
         // Focus morph: extra-large resting corners square off slightly,
         // mirroring METextField's shape-as-state behavior.
-        final radius = MECorners.extraLarge -
-            (MECorners.extraLarge - MECorners.large) * t;
+        final radius =
+            MECorners.extraLarge - (MECorners.extraLarge - MECorners.large) * t;
         return Container(
           decoration: BoxDecoration(
             color: colors.surfaceContainerHighest.withValues(alpha: 0.6),
@@ -148,8 +148,7 @@ class _METagInputState extends State<METagInput>
                   child: MEChip(
                     label: Text(widget.tags[i]),
                     onPressed: widget.enabled ? () {} : null,
-                    onDeleted:
-                        widget.enabled ? () => _removeAt(i) : null,
+                    onDeleted: widget.enabled ? () => _removeAt(i) : null,
                   ),
                 ),
               if (!_atCapacity)

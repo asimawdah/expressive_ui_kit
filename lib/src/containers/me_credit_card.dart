@@ -163,8 +163,7 @@ class _MECreditCardState extends State<MECreditCard>
                     style: textTheme.titleMedium!.copyWith(
                       color: scheme.onPrimaryContainer,
                       fontStyle: FontStyle.italic,
-                      fontSize:
-                          (textTheme.titleMedium?.fontSize ?? 16) * scale,
+                      fontSize: (textTheme.titleMedium?.fontSize ?? 16) * scale,
                     ),
                     overflow: TextOverflow.ellipsis,
                     maxLines: 1,
@@ -200,8 +199,7 @@ class _MECreditCardState extends State<MECreditCard>
                   style: textTheme.labelMedium?.copyWith(
                     color: scheme.onPrimaryContainer,
                     letterSpacing: 1.5 * scale,
-                    fontSize:
-                        (textTheme.labelMedium?.fontSize ?? 12) * scale,
+                    fontSize: (textTheme.labelMedium?.fontSize ?? 12) * scale,
                   ),
                 ),
               ),
@@ -253,8 +251,7 @@ class _MECreditCardState extends State<MECreditCard>
                     height: 32 * scale,
                     decoration: BoxDecoration(
                       color: scheme.surface,
-                      borderRadius:
-                          BorderRadius.circular(MECorners.extraSmall),
+                      borderRadius: BorderRadius.circular(MECorners.extraSmall),
                     ),
                   ),
                 ),
@@ -274,8 +271,7 @@ class _MECreditCardState extends State<MECreditCard>
                     style: textTheme.labelLarge?.copyWith(
                       color: scheme.onSurface,
                       fontFeatures: const [FontFeature.tabularFigures()],
-                      fontSize:
-                          (textTheme.labelLarge?.fontSize ?? 14) * scale,
+                      fontSize: (textTheme.labelLarge?.fontSize ?? 14) * scale,
                     ),
                   ),
                 ),

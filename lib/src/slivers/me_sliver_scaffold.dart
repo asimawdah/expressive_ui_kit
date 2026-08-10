@@ -128,8 +128,7 @@ class _MESliverScaffoldState extends State<MESliverScaffold> {
           ? const AlwaysScrollableScrollPhysics()
           : null,
       slivers: [
-        if (!(widget.hideAppBar || widget.withoutAppBar))
-          _buildAppBar(context),
+        if (!(widget.hideAppBar || widget.withoutAppBar)) _buildAppBar(context),
         if (widget.spacer > 0)
           SliverToBoxAdapter(child: SizedBox(height: widget.spacer)),
         ..._buildSlivers(widget.slivers),

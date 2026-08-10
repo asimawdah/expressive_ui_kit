@@ -177,7 +177,8 @@ class _DockCell extends StatelessWidget {
           child: Icon(
             item.icon,
             size: (baseSize * scale - 6) * 0.55,
-            color: hovered ? scheme.onPrimaryContainer : scheme.onSurfaceVariant,
+            color:
+                hovered ? scheme.onPrimaryContainer : scheme.onSurfaceVariant,
           ),
         ),
       ),

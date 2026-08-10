@@ -127,8 +127,8 @@ class _MECompareSliderState extends State<MECompareSlider>
                             shape: RoundedRectangleBorder(
                               // Press-morph: rounder at rest, squarer
                               // while dragging.
-                              borderRadius: BorderRadius.circular(
-                                  _dragging ? 12 : 20),
+                              borderRadius:
+                                  BorderRadius.circular(_dragging ? 12 : 20),
                             ),
                             shadows: const [
                               BoxShadow(

@@ -12,6 +12,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - `MEMotionScheme.reduced` and automatic reduced-motion support via
   `MediaQuery.disableAnimations` in `METheme.of`.
 - `MESpringSpec.instant` for zero-duration spring targets.
+- `MEKeyboard` helper for arrow-key navigation and Enter/Space activation.
+- Keyboard navigation for `MENavigationBar` and `METabBar` (arrows, Home, End).
+- Keyboard activation (Enter/Space) for pressable widgets via `MEPressable`.
+- Golden test scaffold and keyboard/widget tests.
+- `CONTRIBUTING.md` with development and golden-test instructions.
 - MIT `LICENSE` and `CHANGELOG.md`.
 - Expanded widget tests for buttons, switches, and reduced motion.
 

@@ -60,9 +60,8 @@ class MEBreadcrumbs extends StatelessWidget {
               MEPressable(
                 shape: MEShapeScheme.fromCorner(MECorners.full),
                 pressedShape: MEShapeScheme.fromCorner(MECorners.small),
-                onPressed: onCrumbPressed == null
-                    ? null
-                    : () => onCrumbPressed!(i),
+                onPressed:
+                    onCrumbPressed == null ? null : () => onCrumbPressed!(i),
                 overlayColor: scheme.primary.withValues(alpha: 0.08),
                 semanticLabel: crumbs[i].label,
                 child: Padding(

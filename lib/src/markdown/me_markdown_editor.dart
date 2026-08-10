@@ -105,8 +105,8 @@ class _MEMarkdownEditorState extends State<MEMarkdownEditor>
   void _setPreview(bool preview) {
     if (_preview == preview) return;
     setState(() => _preview = preview);
-    springTo(_toggle, preview ? 1 : 0,
-        METheme.of(context).motion.defaultSpatial);
+    springTo(
+        _toggle, preview ? 1 : 0, METheme.of(context).motion.defaultSpatial);
   }
 
   /// Wraps the current selection with [prefix]/[suffix], or inserts
@@ -127,7 +127,8 @@ class _MEMarkdownEditorState extends State<MEMarkdownEditor>
       );
     } else if (selection.isCollapsed) {
       final insert = '$prefix$placeholder$suffix';
-      final newText = text.replaceRange(selection.start, selection.start, insert);
+      final newText =
+          text.replaceRange(selection.start, selection.start, insert);
       _controller.value = TextEditingValue(
         text: newText,
         selection: TextSelection(
@@ -137,8 +138,8 @@ class _MEMarkdownEditorState extends State<MEMarkdownEditor>
       );
     } else {
       final selected = selection.textInside(text);
-      final newText =
-          text.replaceRange(selection.start, selection.end, '$prefix$selected$suffix');
+      final newText = text.replaceRange(
+          selection.start, selection.end, '$prefix$selected$suffix');
       _controller.value = TextEditingValue(
         text: newText,
         selection: TextSelection.collapsed(
@@ -153,8 +154,7 @@ class _MEMarkdownEditorState extends State<MEMarkdownEditor>
   void _insertBlock(String snippet) {
     final value = _controller.value;
     final text = value.text;
-    final offset =
-        value.selection.isValid ? value.selection.end : text.length;
+    final offset = value.selection.isValid ? value.selection.end : text.length;
     final needsLeadingBreak = offset > 0 && text[offset - 1] != '\n';
     final insert = '${needsLeadingBreak ? '\n' : ''}$snippet\n';
     final newText = text.replaceRange(offset, offset, insert);
@@ -183,7 +183,8 @@ class _MEMarkdownEditorState extends State<MEMarkdownEditor>
     final text = value.text;
     final offset =
         value.selection.isValid ? value.selection.baseOffset : text.length;
-    final lineStart = text.lastIndexOf('\n', (offset - 1).clamp(0, text.length)) + 1;
+    final lineStart =
+        text.lastIndexOf('\n', (offset - 1).clamp(0, text.length)) + 1;
     final newText = text.replaceRange(lineStart, lineStart, linePrefix);
     _controller.value = TextEditingValue(
       text: newText,
@@ -438,7 +439,8 @@ class _WritePreviewToggle extends StatelessWidget {
           child: Icon(
             icon,
             size: 18,
-            color: active ? scheme.onSecondaryContainer : scheme.onSurfaceVariant,
+            color:
+                active ? scheme.onSecondaryContainer : scheme.onSurfaceVariant,
           ),
         ),
       ),

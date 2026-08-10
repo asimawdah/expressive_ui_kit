@@ -71,8 +71,7 @@ class _MECarouselState extends State<MECarousel> {
             child: ClipRRect(
               borderRadius: BorderRadius.circular(MECorners.extraLarge),
               child: GestureDetector(
-                onTap:
-                    widget.onTap == null ? null : () => widget.onTap!(index),
+                onTap: widget.onTap == null ? null : () => widget.onTap!(index),
                 child: SizedBox.expand(child: widget.children[index]),
               ),
             ),

@@ -41,8 +41,7 @@ class MEJoystick extends StatefulWidget {
   State<MEJoystick> createState() => _MEJoystickState();
 }
 
-class _MEJoystickState extends State<MEJoystick>
-    with TickerProviderStateMixin {
+class _MEJoystickState extends State<MEJoystick> with TickerProviderStateMixin {
   /// Current thumb offset in logical pixels from center.
   Offset _offset = Offset.zero;
 
@@ -143,9 +142,8 @@ class _MEJoystickState extends State<MEJoystick>
     final thumbRadius =
         thumbSize / 2 - (thumbSize / 2 - thumbSize * 0.3) * grabT;
 
-    final direction = _offset.distance < 4
-        ? null
-        : math.atan2(_offset.dy, _offset.dx);
+    final direction =
+        _offset.distance < 4 ? null : math.atan2(_offset.dy, _offset.dx);
 
     return Semantics(
       label: 'Joystick',

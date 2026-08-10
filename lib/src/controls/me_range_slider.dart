@@ -199,8 +199,7 @@ class _MERangeSliderPainter extends CustomPainter {
     final endX = xFor(rtl ? startFraction : endFraction);
 
     double handleWidth(int handle) => activeHandle == handle
-        ? _handleWidthRest +
-            (_handleWidthPressed - _handleWidthRest) * press
+        ? _handleWidthRest + (_handleWidthPressed - _handleWidthRest) * press
         : _handleWidthRest;
 
     final wStart = handleWidth(rtl ? 1 : 0);

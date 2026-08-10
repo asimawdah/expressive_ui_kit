@@ -118,8 +118,7 @@ class _METiltCardState extends State<METiltCard>
                   elevation: 2 + _current.distance * 6,
                   shadowColor: Colors.black45,
                   shape: RoundedRectangleBorder(
-                    borderRadius:
-                        BorderRadius.circular(MECorners.extraLarge),
+                    borderRadius: BorderRadius.circular(MECorners.extraLarge),
                     side: BorderSide(color: scheme.outlineVariant),
                   ),
                   clipBehavior: Clip.antiAlias,
@@ -130,8 +129,7 @@ class _METiltCardState extends State<METiltCard>
                       // Sheen: a soft highlight opposite the tilt direction.
                       IgnorePointer(
                         child: Opacity(
-                          opacity:
-                              (_current.distance * 0.10).clamp(0.0, 0.10),
+                          opacity: (_current.distance * 0.10).clamp(0.0, 0.10),
                           child: Align(
                             alignment: Alignment(
                               -_current.dx.clamp(-1.0, 1.0),

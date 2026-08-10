@@ -102,7 +102,8 @@ class _MESlotMachineState extends State<MESlotMachine>
   void _startSpin({List<int>? forced}) {
     if (_spinning) return;
     final n = widget.icons.length;
-    final results = forced ?? [for (int i = 0; i < _reels; i++) _random.nextInt(n)];
+    final results =
+        forced ?? [for (int i = 0; i < _reels; i++) _random.nextInt(n)];
     setState(() {
       _spinning = true;
       _landed = 0;
@@ -116,8 +117,7 @@ class _MESlotMachineState extends State<MESlotMachine>
       final current = _reelControllers[i].value;
       final currentRow = current.round();
       final loops = (3 + i * 2) * n;
-      final offset =
-          (results[i] - (currentRow % n) + n) % n;
+      final offset = (results[i] - (currentRow % n) + n) % n;
       _target[i] = (currentRow + loops + offset).toDouble();
 
       Future<void>.delayed(Duration(milliseconds: i * 260), () {

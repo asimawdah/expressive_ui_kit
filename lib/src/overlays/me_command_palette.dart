@@ -125,7 +125,8 @@ class _MECommandPaletteState extends State<_MECommandPalette> {
     final text = Theme.of(context).textTheme;
     final motion = METheme.of(context).motion;
     final filtered = _filtered;
-    final highlighted = _highlighted.clamp(0, filtered.isEmpty ? 0 : filtered.length - 1);
+    final highlighted =
+        _highlighted.clamp(0, filtered.isEmpty ? 0 : filtered.length - 1);
 
     return Align(
       alignment: const Alignment(0, -0.6),
@@ -182,8 +183,7 @@ class _MECommandPaletteState extends State<_MECommandPalette> {
                               selected: selected,
                               motion: motion,
                               onPressed: () => _execute(command),
-                              onHover: () =>
-                                  setState(() => _highlighted = i),
+                              onHover: () => setState(() => _highlighted = i),
                             );
                           },
                         ),
@@ -255,15 +255,14 @@ class _CommandRow extends StatelessWidget {
                       color: selected
                           ? scheme.onSecondaryContainer
                           : scheme.onSurface,
-                      fontWeight:
-                          selected ? FontWeight.w600 : FontWeight.w400,
+                      fontWeight: selected ? FontWeight.w600 : FontWeight.w400,
                     ),
                   ),
                 ),
                 if (command.shortcut != null)
                   Container(
-                    padding: const EdgeInsets.symmetric(
-                        horizontal: 8, vertical: 2),
+                    padding:
+                        const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
                     decoration: ShapeDecoration(
                       color: scheme.surfaceContainerHighest,
                       shape: RoundedRectangleBorder(

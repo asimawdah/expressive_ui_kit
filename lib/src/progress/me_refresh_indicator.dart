@@ -143,9 +143,9 @@ class MERefreshIndicator extends StatefulWidget {
     this.strokeWidth = RefreshProgressIndicator.defaultStrokeWidth,
     this.triggerMode = MERefreshIndicatorTriggerMode.onEdge,
     this.elevation = 2.0,
-  }) : _indicatorType = _IndicatorType.material,
-       onStatusChange = null,
-       assert(elevation >= 0.0);
+  })  : _indicatorType = _IndicatorType.material,
+        onStatusChange = null,
+        assert(elevation >= 0.0);
 
   /// Creates an adaptive [MERefreshIndicator] based on whether the target
   /// platform is iOS or macOS, following Material design's
@@ -177,9 +177,9 @@ class MERefreshIndicator extends StatefulWidget {
     this.strokeWidth = RefreshProgressIndicator.defaultStrokeWidth,
     this.triggerMode = MERefreshIndicatorTriggerMode.onEdge,
     this.elevation = 2.0,
-  }) : _indicatorType = _IndicatorType.adaptive,
-       onStatusChange = null,
-       assert(elevation >= 0.0);
+  })  : _indicatorType = _IndicatorType.adaptive,
+        onStatusChange = null,
+        assert(elevation >= 0.0);
 
   /// Creates a [MERefreshIndicator] with no spinner and calls `onRefresh` when
   /// successfully armed by a drag event.
@@ -195,16 +195,16 @@ class MERefreshIndicator extends StatefulWidget {
     this.semanticsValue,
     this.triggerMode = MERefreshIndicatorTriggerMode.onEdge,
     this.elevation = 2.0,
-  }) : _indicatorType = _IndicatorType.noSpinner,
-       // The following parameters aren't used because [_IndicatorType.noSpinner] is being used,
-       // which involves showing no spinner, hence the following parameters are useless since
-       // their only use is to change the spinner's appearance.
-       displacement = 0.0,
-       edgeOffset = 0.0,
-       color = null,
-       backgroundColor = null,
-       strokeWidth = 0.0,
-       assert(elevation >= 0.0);
+  })  : _indicatorType = _IndicatorType.noSpinner,
+        // The following parameters aren't used because [_IndicatorType.noSpinner] is being used,
+        // which involves showing no spinner, hence the following parameters are useless since
+        // their only use is to change the spinner's appearance.
+        displacement = 0.0,
+        edgeOffset = 0.0,
+        color = null,
+        backgroundColor = null,
+        strokeWidth = 0.0,
+        assert(elevation >= 0.0);
 
   /// The widget below this widget in the tree.
   ///
@@ -398,7 +398,8 @@ class MERefreshIndicatorState extends State<MERefreshIndicator>
                 notification.dragDetails != null) ||
             (notification is ScrollUpdateNotification &&
                 notification.dragDetails != null &&
-                widget.triggerMode == MERefreshIndicatorTriggerMode.anywhere)) &&
+                widget.triggerMode ==
+                    MERefreshIndicatorTriggerMode.anywhere)) &&
         ((notification.metrics.axisDirection == AxisDirection.up &&
                 notification.metrics.extentAfter == 0.0) ||
             (notification.metrics.axisDirection == AxisDirection.down &&
@@ -420,9 +421,9 @@ class MERefreshIndicatorState extends State<MERefreshIndicator>
     }
     final bool? indicatorAtTopNow =
         switch (notification.metrics.axisDirection) {
-          AxisDirection.down || AxisDirection.up => true,
-          AxisDirection.left || AxisDirection.right => null,
-        };
+      AxisDirection.down || AxisDirection.up => true,
+      AxisDirection.left || AxisDirection.right => null,
+    };
     if (indicatorAtTopNow != _isIndicatorAtTop) {
       if (_status == MERefreshIndicatorStatus.drag ||
           _status == MERefreshIndicatorStatus.armed) {
@@ -582,25 +583,25 @@ class MERefreshIndicatorState extends State<MERefreshIndicator>
     widget.onStatusChange?.call(_status);
     _positionController
         .animateTo(
-          1.0 / _kDragSizeFactorLimit,
-          duration: _kIndicatorSnapDuration,
-        )
+      1.0 / _kDragSizeFactorLimit,
+      duration: _kIndicatorSnapDuration,
+    )
         .then<void>((void value) {
-          if (mounted && _status == MERefreshIndicatorStatus.snap) {
-            setState(() {
-              // Show the indeterminate progress indicator.
-              _status = MERefreshIndicatorStatus.refresh;
-            });
+      if (mounted && _status == MERefreshIndicatorStatus.snap) {
+        setState(() {
+          // Show the indeterminate progress indicator.
+          _status = MERefreshIndicatorStatus.refresh;
+        });
 
-            final Future<void> refreshResult = widget.onRefresh();
-            refreshResult.whenComplete(() {
-              if (mounted && _status == MERefreshIndicatorStatus.refresh) {
-                completer.complete();
-                _dismiss(MERefreshIndicatorStatus.done);
-              }
-            });
+        final Future<void> refreshResult = widget.onRefresh();
+        refreshResult.whenComplete(() {
+          if (mounted && _status == MERefreshIndicatorStatus.refresh) {
+            completer.complete();
+            _dismiss(MERefreshIndicatorStatus.done);
           }
         });
+      }
+    });
   }
 
   /// Show the refresh indicator and run the refresh callback as if it had

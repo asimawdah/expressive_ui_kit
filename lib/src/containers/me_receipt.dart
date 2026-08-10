@@ -141,8 +141,7 @@ class _MEReceiptState extends State<MEReceipt>
                           child: Text(
                             line.label,
                             style: line.emphasized
-                                ? mono.copyWith(
-                                    fontWeight: FontWeight.bold)
+                                ? mono.copyWith(fontWeight: FontWeight.bold)
                                 : mono,
                             overflow: TextOverflow.ellipsis,
                           ),

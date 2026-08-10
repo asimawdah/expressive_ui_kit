@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import '../internal/me_keyboard.dart';
 import '../theme/me_motion.dart';
 import '../theme/me_theme.dart';
 
@@ -49,6 +50,7 @@ class MENavigationDestination {
 /// * icons bounce-scale on selection
 /// * badge support anchored to icons
 /// * label emphasis (bold) follows selection
+/// * keyboard navigation with arrow keys, Home, and End
 class MENavigationBar extends StatefulWidget {
   const MENavigationBar({
     super.key,
@@ -58,6 +60,8 @@ class MENavigationBar extends StatefulWidget {
     this.labelBehavior = MENavigationLabelBehavior.alwaysShow,
     this.backgroundColor,
     this.height,
+    this.focusNode,
+    this.autofocus = false,
   }) : assert(destinations.length >= 2);
 
   /// Matches Material [NavigationBar] default height.
@@ -72,6 +76,12 @@ class MENavigationBar extends StatefulWidget {
   /// Bar content height (excluding safe-area inset).
   /// Defaults to [defaultHeight] with labels, 56 without.
   final double? height;
+
+  /// Optional focus node for keyboard navigation.
+  final FocusNode? focusNode;
+
+  /// Whether this bar should request focus when first built.
+  final bool autofocus;
 
   @override
   State<MENavigationBar> createState() => _MENavigationBarState();
@@ -95,8 +105,8 @@ class _MENavigationBarState extends State<MENavigationBar>
     super.didUpdateWidget(oldWidget);
     if (widget.selectedIndex != oldWidget.selectedIndex) {
       final motion = METheme.of(context).motion;
-      springTo(_indicator, widget.selectedIndex.toDouble(),
-          motion.defaultSpatial);
+      springTo(
+          _indicator, widget.selectedIndex.toDouble(), motion.defaultSpatial);
       // Kick the icon slightly small, then spring back to 1 with overshoot.
       _iconBounce.value = 0.8;
       springTo(_iconBounce, 1, motion.fastSpatial);
@@ -125,79 +135,88 @@ class _MENavigationBarState extends State<MENavigationBar>
         navigationBarTheme.height ??
         (_showLabels ? MENavigationBar.defaultHeight : 56);
 
-    return Material(
-      color: backgroundColor,
-      elevation: navigationBarTheme.elevation ?? 3,
-      shadowColor: navigationBarTheme.shadowColor ?? Colors.transparent,
-      surfaceTintColor:
-          navigationBarTheme.surfaceTintColor ?? Colors.transparent,
-      child: SafeArea(
-        top: false,
-        child: SizedBox(
-          height: barHeight,
-          child: LayoutBuilder(
-            builder: (context, constraints) {
-              final itemWidth = constraints.maxWidth / count;
-              final isRtl =
-                  Directionality.of(context) == TextDirection.rtl;
+    return Focus(
+      focusNode: widget.focusNode,
+      autofocus: widget.autofocus,
+      onKeyEvent: (node, event) => MEKeyboard.handleHorizontalSelection(
+        event: event,
+        current: widget.selectedIndex,
+        count: count,
+        direction: Directionality.of(context),
+        onSelected: widget.onDestinationSelected,
+      ),
+      child: Material(
+        color: backgroundColor,
+        elevation: navigationBarTheme.elevation ?? 3,
+        shadowColor: navigationBarTheme.shadowColor ?? Colors.transparent,
+        surfaceTintColor:
+            navigationBarTheme.surfaceTintColor ?? Colors.transparent,
+        child: SafeArea(
+          top: false,
+          child: SizedBox(
+            height: barHeight,
+            child: LayoutBuilder(
+              builder: (context, constraints) {
+                final itemWidth = constraints.maxWidth / count;
+                final isRtl = Directionality.of(context) == TextDirection.rtl;
 
-              return Stack(
-                clipBehavior: Clip.none,
-                children: [
-                  AnimatedBuilder(
-                    animation: Listenable.merge([_indicator, _iconBounce]),
-                    builder: (context, _) {
-                      final pos = _indicator.value;
-                      // Stretch the pill while it travels; the amount of
-                      // stretch tracks how far it still has to go.
-                      final remaining = (pos - widget.selectedIndex).abs();
-                      final stretch = 1.0 + remaining.clamp(0.0, 1.0) * 0.55;
-                      // Row mirrors children in RTL, so map logical index →
-                      // visual x using the mirrored position.
-                      final visualPos = isRtl ? (count - 1) - pos : pos;
-                      final cx = itemWidth * visualPos + itemWidth / 2;
+                return Stack(
+                  clipBehavior: Clip.none,
+                  children: [
+                    AnimatedBuilder(
+                      animation: Listenable.merge([_indicator, _iconBounce]),
+                      builder: (context, _) {
+                        final pos = _indicator.value;
+                        // Stretch the pill while it travels; the amount of
+                        // stretch tracks how far it still has to go.
+                        final remaining = (pos - widget.selectedIndex).abs();
+                        final stretch = 1.0 + remaining.clamp(0.0, 1.0) * 0.55;
+                        // Row mirrors children in RTL, so map logical index →
+                        // visual x using the mirrored position.
+                        final visualPos = isRtl ? (count - 1) - pos : pos;
+                        final cx = itemWidth * visualPos + itemWidth / 2;
 
-                      const indicatorHeight = 32.0;
-                      final indicatorWidth =
-                          (itemWidth - 24).clamp(40.0, 64.0);
-                      // The pill squashes vertically as it stretches, like a
-                      // liquid blob.
-                      final squash = 1.0 - (stretch - 1.0) * 0.25;
-                      // Keep the pill aligned with the icon row as bar height
-                      // changes (Material NavigationBar default is 80).
-                      const iconSlot = 32.0;
-                      const labelBlock = 16.0; // gap + label
-                      final iconAreaTop = _showLabels
-                          ? (barHeight - iconSlot - labelBlock) / 2
-                          : (barHeight - iconSlot) / 2;
+                        const indicatorHeight = 32.0;
+                        final indicatorWidth =
+                            (itemWidth - 24).clamp(40.0, 64.0);
+                        // The pill squashes vertically as it stretches, like a
+                        // liquid blob.
+                        final squash = 1.0 - (stretch - 1.0) * 0.25;
+                        // Keep the pill aligned with the icon row as bar height
+                        // changes (Material NavigationBar default is 80).
+                        const iconSlot = 32.0;
+                        const labelBlock = 16.0; // gap + label
+                        final iconAreaTop = _showLabels
+                            ? (barHeight - iconSlot - labelBlock) / 2
+                            : (barHeight - iconSlot) / 2;
 
-                      return Positioned(
-                        left: cx - indicatorWidth * stretch / 2,
-                        top: iconAreaTop +
-                            indicatorHeight * (1 - squash) / 2,
-                        child: IgnorePointer(
-                          child: Container(
-                            width: indicatorWidth * stretch,
-                            height: indicatorHeight * squash,
-                            decoration: BoxDecoration(
-                              color: colors.secondaryContainer,
-                              borderRadius: BorderRadius.circular(
-                                  indicatorHeight * squash / 2),
+                        return Positioned(
+                          left: cx - indicatorWidth * stretch / 2,
+                          top: iconAreaTop + indicatorHeight * (1 - squash) / 2,
+                          child: IgnorePointer(
+                            child: Container(
+                              width: indicatorWidth * stretch,
+                              height: indicatorHeight * squash,
+                              decoration: BoxDecoration(
+                                color: colors.secondaryContainer,
+                                borderRadius: BorderRadius.circular(
+                                    indicatorHeight * squash / 2),
+                              ),
                             ),
                           ),
-                        ),
-                      );
-                    },
-                  ),
-                  Row(
-                    children: [
-                      for (var i = 0; i < count; i++)
-                        Expanded(child: _buildItem(context, i)),
-                    ],
-                  ),
-                ],
-              );
-            },
+                        );
+                      },
+                    ),
+                    Row(
+                      children: [
+                        for (var i = 0; i < count; i++)
+                          Expanded(child: _buildItem(context, i)),
+                      ],
+                    ),
+                  ],
+                );
+              },
+            ),
           ),
         ),
       ),

@@ -120,8 +120,7 @@ class _MEColorWheelState extends State<MEColorWheel>
     final thumbCenter = center +
         Offset(math.cos(angleRad) * radius, math.sin(angleRad) * radius);
     final double grabT = _grab.value.clamp(-0.2, 1.3);
-    final double thumbR =
-        ringWidth * 0.62 * (1.0 + 0.25 * grabT);
+    final double thumbR = ringWidth * 0.62 * (1.0 + 0.25 * grabT);
     final double popT = _pop.value.clamp(0.0, 1.0);
 
     return Semantics(
@@ -215,8 +214,8 @@ class _HueRingPainter extends CustomPainter {
 
     final colors = List<Color>.generate(
       13,
-      (i) => HSLColor.fromAHSL(1, (i * 30) % 360, saturation, lightness)
-          .toColor(),
+      (i) =>
+          HSLColor.fromAHSL(1, (i * 30) % 360, saturation, lightness).toColor(),
     );
     final shader = SweepGradient(
       colors: colors,

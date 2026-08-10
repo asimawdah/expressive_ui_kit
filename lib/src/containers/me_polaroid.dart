@@ -47,8 +47,7 @@ class MEPolaroid extends StatefulWidget {
   State<MEPolaroid> createState() => _MEPolaroidState();
 }
 
-class _MEPolaroidState extends State<MEPolaroid>
-    with TickerProviderStateMixin {
+class _MEPolaroidState extends State<MEPolaroid> with TickerProviderStateMixin {
   late final AnimationController _develop =
       AnimationController.unbounded(vsync: this, value: 0);
   late final AnimationController _press =

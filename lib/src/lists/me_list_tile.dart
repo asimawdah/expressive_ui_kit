@@ -69,9 +69,7 @@ class MEListTile extends StatelessWidget {
       onPressed: enabled ? onPressed : null,
       onLongPress: enabled ? onLongPress : null,
       enabled: enabled,
-      color: selected
-          ? scheme.secondaryContainer
-          : scheme.surfaceContainerLow,
+      color: selected ? scheme.secondaryContainer : scheme.surfaceContainerLow,
       child: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
         child: Row(

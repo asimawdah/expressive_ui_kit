@@ -56,7 +56,10 @@ class MEFab extends StatelessWidget {
     final (container, iconSize, radius) = _dims[size]!;
 
     final (Color bg, Color fg) = switch (variant) {
-      MEFabVariant.primary => (colors.primaryContainer, colors.onPrimaryContainer),
+      MEFabVariant.primary => (
+          colors.primaryContainer,
+          colors.onPrimaryContainer
+        ),
       MEFabVariant.secondary => (
           colors.secondaryContainer,
           colors.onSecondaryContainer

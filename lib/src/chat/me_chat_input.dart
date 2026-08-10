@@ -136,8 +136,7 @@ class _MEChatInputState extends State<MEChatInput>
                       hintText: widget.hintText,
                       border: InputBorder.none,
                       isCollapsed: true,
-                      contentPadding:
-                          const EdgeInsets.symmetric(vertical: 16),
+                      contentPadding: const EdgeInsets.symmetric(vertical: 16),
                     ),
                   ),
                 ),

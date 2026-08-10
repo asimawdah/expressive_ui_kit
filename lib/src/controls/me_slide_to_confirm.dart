@@ -115,8 +115,8 @@ class _MESlideToConfirmState extends State<MESlideToConfirm>
                 final t = _drag.value.clamp(0.0, 1.0);
                 // Thumb morphs squarer as it travels; squarest when
                 // dragging, fully squared + checked when confirmed.
-                final thumbRadius = thumbSize / 2 -
-                    (thumbSize / 2 - thumbSize * 0.22) * t;
+                final thumbRadius =
+                    thumbSize / 2 - (thumbSize / 2 - thumbSize * 0.22) * t;
                 return Container(
                   height: widget.height,
                   decoration: BoxDecoration(
@@ -129,7 +129,8 @@ class _MESlideToConfirmState extends State<MESlideToConfirm>
                     children: [
                       // Instruction label fades out as the thumb travels.
                       Opacity(
-                        opacity: _confirmed ? 1.0 : (1.0 - t * 1.6).clamp(0.0, 1.0),
+                        opacity:
+                            _confirmed ? 1.0 : (1.0 - t * 1.6).clamp(0.0, 1.0),
                         child: Padding(
                           padding: EdgeInsets.only(left: thumbSize / 2),
                           child: Text(
@@ -151,15 +152,15 @@ class _MESlideToConfirmState extends State<MESlideToConfirm>
                         left: 4,
                         top: 4,
                         bottom: 4,
-                        width: (thumbSize + travel * t).clamp(
-                            thumbSize, width - 8),
+                        width: (thumbSize + travel * t)
+                            .clamp(thumbSize, width - 8),
                         child: IgnorePointer(
                           child: DecoratedBox(
                             decoration: BoxDecoration(
                               color: thumbColor.withValues(
                                   alpha: _confirmed ? 0.16 : 0.10 * t),
-                              borderRadius: BorderRadius.circular(
-                                  widget.height / 2 - 4),
+                              borderRadius:
+                                  BorderRadius.circular(widget.height / 2 - 4),
                             ),
                           ),
                         ),
@@ -178,8 +179,7 @@ class _MESlideToConfirmState extends State<MESlideToConfirm>
                               color: widget.enabled
                                   ? thumbColor
                                   : scheme.onSurface.withValues(alpha: 0.12),
-                              borderRadius:
-                                  BorderRadius.circular(thumbRadius),
+                              borderRadius: BorderRadius.circular(thumbRadius),
                             ),
                             child: Icon(
                               _confirmed ? widget.confirmedIcon : widget.icon,
