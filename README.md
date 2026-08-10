@@ -1,5 +1,8 @@
 # material3_expressive
 
+[![CI](https://github.com/asimawdah/material_expressive/actions/workflows/ci.yml/badge.svg)](https://github.com/asimawdah/material_expressive/actions/workflows/ci.yml)
+[![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)](https://github.com/asimawdah/material_expressive/blob/main/LICENSE)
+
 Material 3 Expressive widgets for Flutter — drop-in expressive replacements
 for standard Material widgets, built around spring physics, shape morphing,
 and the M3 Expressive motion scheme.
@@ -55,6 +58,8 @@ and the M3 Expressive motion scheme.
 | `RefreshIndicator`              | `MERefreshIndicator`            |
 | `Stepper`                       | `MEStepper`                     |
 | `DataTable`                     | `MEDataTable`                   |
+| `PaginatedDataTable`            | `MEPaginatedDataTable`          |
+| `ReorderableListView`           | `MEReorderableList`             |
 | `CircleAvatar`                  | `MEAvatar` + `MEAvatarGroup`    |
 | `Dismissible`                   | `MEDismissible`                 |
 | `Autocomplete`                  | `MEAutocomplete`                |

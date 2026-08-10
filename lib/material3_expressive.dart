@@ -50,6 +50,8 @@
 /// | RefreshIndicator               | [MERefreshIndicator]         |
 /// | Stepper                        | [MEStepper]                  |
 /// | DataTable                      | [MEDataTable]                |
+/// | PaginatedDataTable             | [MEPaginatedDataTable]       |
+/// | ReorderableListView            | [MEReorderableList]          |
 /// | SegmentedButton                | [MESegmentedButton]          |
 /// | CircleAvatar                   | [MEAvatar] / [MEAvatarGroup] |
 /// | Dismissible                    | [MEDismissible]              |
@@ -267,6 +269,8 @@ export 'src/lists/action_item.dart';
 export 'src/lists/item_position.dart';
 export 'src/lists/me_accordion.dart';
 export 'src/lists/me_data_table.dart';
+export 'src/lists/me_paginated_data_table.dart';
+export 'src/lists/me_reorderable_list.dart';
 export 'src/markdown/me_markdown.dart';
 export 'src/markdown/me_markdown_editor.dart';
 export 'src/markdown/me_syntax_highlight.dart';

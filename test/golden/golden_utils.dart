@@ -3,10 +3,12 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:material3_expressive/material3_expressive.dart';
 
 /// Pumps [child] inside a fixed-size golden surface with a stable theme.
-Future<void> pumpGolden(WidgetTester tester, Widget child) async {
-  const surface = Size(320, 200);
-
-  await tester.binding.setSurfaceSize(surface);
+Future<void> pumpGolden(
+  WidgetTester tester,
+  Widget child, {
+  Size surfaceSize = const Size(320, 200),
+}) async {
+  await tester.binding.setSurfaceSize(surfaceSize);
   addTearDown(() => tester.binding.setSurfaceSize(null));
 
   await tester.pumpWidget(

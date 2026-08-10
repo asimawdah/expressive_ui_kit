@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:material3_expressive/material3_expressive.dart';
 
+import 'pages/widget_catalog_page.dart';
 import 'pages/buttons_page.dart';
 import 'pages/containers_page.dart';
 import 'pages/content_page.dart';
@@ -135,6 +136,18 @@ class _GalleryHomeState extends State<GalleryHome> {
                     Navigator.of(context).pop();
                   },
                 ),
+              ListTile(
+                leading: const Icon(Icons.widgets_outlined),
+                title: const Text('Widget catalog'),
+                onTap: () {
+                  Navigator.of(context).pop();
+                  Navigator.of(context).push(
+                    MaterialPageRoute<void>(
+                      builder: (context) => const WidgetCatalogPage(),
+                    ),
+                  );
+                },
+              ),
               const Divider(height: 1),
               Padding(
                 padding: const EdgeInsets.fromLTRB(16, 16, 16, 8),

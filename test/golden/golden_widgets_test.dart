@@ -54,6 +54,60 @@ void main() {
         matchesGoldenFile('goldens/me_switch_states.png'),
       );
     });
+
+    testWidgets('METabBar selected state', (tester) async {
+      await pumpGolden(
+        tester,
+        SizedBox(
+          width: 320,
+          child: METabBar(
+            selectedIndex: 1,
+            onSelected: (_) {},
+            tabs: const [
+              METab(label: 'Day'),
+              METab(label: 'Week'),
+              METab(label: 'Month'),
+            ],
+          ),
+        ),
+        surfaceSize: const Size(360, 120),
+      );
+
+      await expectLater(
+        find.byType(METabBar),
+        matchesGoldenFile('goldens/me_tab_bar.png'),
+      );
+    });
+
+    testWidgets('MENavigationBar selected state', (tester) async {
+      await pumpGolden(
+        tester,
+        MENavigationBar(
+          selectedIndex: 1,
+          onDestinationSelected: (_) {},
+          destinations: const [
+            MENavigationDestination(
+              icon: Icon(Icons.home_outlined),
+              label: 'Home',
+            ),
+            MENavigationDestination(
+              icon: Icon(Icons.search_outlined),
+              label: 'Search',
+            ),
+            MENavigationDestination(
+              icon: Icon(Icons.settings_outlined),
+              label: 'Settings',
+            ),
+          ],
+        ),
+        surfaceSize: const Size(400, 120),
+      );
+
+      await expectLater(
+        find.byType(MENavigationBar),
+        matchesGoldenFile('goldens/me_navigation_bar.png'),
+      );
+    });
   });
 }
 

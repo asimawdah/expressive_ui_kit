@@ -3,10 +3,18 @@ description: >-
   Material 3 Expressive widgets for Flutter. Spring-physics motion, shape
   morphing, wavy progress indicators, FAB menus, button groups, expressive
   sliders and more — drop-in replacements for standard Material widgets.
-version: 0.1.0
+version: 0.2.0
 homepage: https://m3.material.io
 repository: https://github.com/asimawdah/material_expressive
 issue_tracker: https://github.com/asimawdah/material_expressive/issues
+documentation: https://github.com/asimawdah/material_expressive#readme
+
+topics:
+  - material
+  - material-design
+  - widgets
+  - ui
+  - animation
 
 environment:
   sdk: ">=3.4.0 <4.0.0"

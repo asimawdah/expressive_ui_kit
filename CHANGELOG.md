@@ -7,24 +7,27 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.2.0] - 2026-08-10
+
 ### Added
 - GitHub Actions CI workflow (`analyze`, `format`, `test`).
-- `MEMotionScheme.reduced` and automatic reduced-motion support via
+- `MEMotionScheme.reduced` and automatic reduced-motion via
   `MediaQuery.disableAnimations` in `METheme.of`.
-- `MESpringSpec.instant` for zero-duration spring targets.
-- `MEKeyboard` helper for arrow-key navigation and Enter/Space activation.
-- Keyboard navigation for `MENavigationBar` and `METabBar` (arrows, Home, End).
-- Keyboard activation (Enter/Space) for pressable widgets via `MEPressable`.
-- Golden test scaffold and keyboard/widget tests.
-- `CONTRIBUTING.md` with development and golden-test instructions.
-- MIT `LICENSE` and `CHANGELOG.md`.
-- Expanded widget tests for buttons, switches, and reduced motion.
+- `MEKeyboard` helper and keyboard navigation for `MENavigationBar`,
+  `METabBar`, and pressable widgets (`Enter`/`Space`).
+- `MEPaginatedDataTable` — expressive replacement for `PaginatedDataTable`.
+- `MEReorderableList` — expressive replacement for `ReorderableListView`.
+- Searchable **Widget catalog** page in the example gallery.
+- Golden tests for buttons, switches, tab bar, and navigation bar.
+- `CONTRIBUTING.md`, MIT `LICENSE`, and expanded widget tests (26+).
+- `pubspec.yaml` topics and documentation link for pub.dev.
 
 ### Fixed
 - Example gallery: added `darkTheme` and theme/motion toggles in the drawer.
 
 ### Changed
-- `pubspec.yaml`: added `repository` and `issue_tracker` metadata.
+- Bumped package version to `0.2.0`.
+- Applied `dart format` across the codebase for CI compliance.
 
 ## [0.1.0] - 2026-08-06
 
