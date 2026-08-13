@@ -3,6 +3,53 @@ import 'package:flutter/services.dart';
 
 /// Keyboard helpers shared by expressive navigation widgets.
 abstract final class MEKeyboard {
+  /// Returns the delta to apply to a selected index for a vertical arrow key.
+  static int? verticalDelta(LogicalKeyboardKey key) {
+    if (key == LogicalKeyboardKey.arrowUp) return -1;
+    if (key == LogicalKeyboardKey.arrowDown) return 1;
+    return null;
+  }
+
+  /// Computes the next selected index for vertical navigation keys.
+  static int? resolveVerticalSelection({
+    required KeyEvent event,
+    required int current,
+    required int count,
+    bool wrap = true,
+  }) {
+    if (event is! KeyDownEvent || count <= 0) return null;
+
+    if (event.logicalKey == LogicalKeyboardKey.home) return 0;
+    if (event.logicalKey == LogicalKeyboardKey.end) return count - 1;
+
+    final delta = verticalDelta(event.logicalKey);
+    if (delta == null) return null;
+
+    final next = current + delta;
+    if (next >= 0 && next < count) return next;
+    if (!wrap) return null;
+    return next < 0 ? count - 1 : 0;
+  }
+
+  /// Handles vertical navigation keys for a mutually-exclusive group.
+  static KeyEventResult handleVerticalSelection({
+    required KeyEvent event,
+    required int current,
+    required int count,
+    required ValueChanged<int> onSelected,
+    bool wrap = true,
+  }) {
+    final next = resolveVerticalSelection(
+      event: event,
+      current: current,
+      count: count,
+      wrap: wrap,
+    );
+    if (next == null || next == current) return KeyEventResult.ignored;
+    onSelected(next);
+    return KeyEventResult.handled;
+  }
+
   /// Returns the delta to apply to a selected index for a horizontal arrow
   /// key, honoring [TextDirection].
   static int? horizontalDelta(LogicalKeyboardKey key, TextDirection direction) {

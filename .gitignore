@@ -5,8 +5,8 @@
 .idea/
 .packages
 build/
-# If you're building an application, you may want to check-in your pubspec.lock
-pubspec.lock
+# Lock the root package for reproducible CI; the example app keeps its own lock.
+# pubspec.lock
 
 # Directory created by dartdoc
 # If you don't generate documentation locally you can remove this line.

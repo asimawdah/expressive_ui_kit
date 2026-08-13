@@ -158,6 +158,10 @@ and the M3 Expressive motion scheme.
 | —                               | `MEPomodoro` (new)              |
 | —                               | `MEBoardingPass` (new)          |
 | —                               | `MEColorWheel` (new)            |
+| —                               | `MESplashScreen` (new)          |
+| —                               | `MEPinPad` (new)                |
+| —                               | `MEReceipt` (new)               |
+| —                               | `MEVinyl` (new)                 |
 
 ## Install
 
