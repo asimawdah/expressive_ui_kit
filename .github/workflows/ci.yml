@@ -30,5 +30,11 @@ jobs:
       - name: Format check
         run: dart format --output=none --set-exit-if-changed .
 
+      - name: Install fonts for golden tests
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y fonts-dejavu-core fonts-liberation fontconfig
+          fc-cache -f
+
       - name: Test
         run: flutter test
