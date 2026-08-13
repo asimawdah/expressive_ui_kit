@@ -16,6 +16,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Changed
 - Example gallery widget catalog now indexes all 150+ exported widgets.
 - Analyzer excludes generated `build/` and platform directories.
+- `ExpressiveButton` is deprecated in favor of `MEButton`.
+- Keyboard navigation added to `MENavigationRail` and `MESegmentedButton`.
+- Root `pubspec.lock` is tracked for reproducible CI.
+
+### Added
+- Vertical keyboard helpers on `MEKeyboard`.
+- Widget tests for `METextField`, `MEDialog`, and `showMEDialog`.
+- Golden tests for text field, dialog, and dark-theme button variants.
 
 ## [0.2.0] - 2026-08-10
 

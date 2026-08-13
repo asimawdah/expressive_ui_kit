@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+import '../internal/me_keyboard.dart';
+
 /// A segment within an [MESegmentedButton].
 @immutable
 class MESegment<T> {
@@ -35,6 +37,8 @@ class MESegmentedButton<T> extends StatefulWidget {
     this.height = 40,
     this.animationDuration = const Duration(milliseconds: 350),
     this.animationCurve = Curves.easeInOutCubicEmphasized,
+    this.focusNode,
+    this.autofocus = false,
   }) : assert(segments.length >= 2, 'Provide at least two segments.');
 
   final List<MESegment<T>> segments;
@@ -52,6 +56,12 @@ class MESegmentedButton<T> extends StatefulWidget {
   final double height;
   final Duration animationDuration;
   final Curve animationCurve;
+
+  /// Optional focus node for keyboard navigation (single-selection mode).
+  final FocusNode? focusNode;
+
+  /// Whether this control should request focus when first built.
+  final bool autofocus;
 
   @override
   State<MESegmentedButton<T>> createState() => _MESegmentedButtonState<T>();
@@ -89,22 +99,42 @@ class _MESegmentedButtonState<T> extends State<MESegmentedButton<T>> {
 
   bool get _useSlidingThumb => !widget.multiSelectionEnabled;
 
+  void _selectIndex(int index) {
+    if (index < 0 || index >= widget.segments.length) return;
+    final segment = widget.segments[index];
+    if (!segment.enabled) return;
+    widget.onSelectionChanged({segment.value});
+  }
+
   @override
   Widget build(BuildContext context) {
     final colors = Theme.of(context).colorScheme;
     final textTheme = Theme.of(context).textTheme;
 
-    return Container(
-      height: widget.height,
-      width: widget.expanded ? double.infinity : null,
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(widget.height / 2),
-        border: Border.all(color: colors.outlineVariant),
+    return Focus(
+      focusNode: widget.focusNode,
+      autofocus: widget.autofocus,
+      onKeyEvent: _useSlidingThumb
+          ? (node, event) => MEKeyboard.handleHorizontalSelection(
+                event: event,
+                current: _selectedIndex,
+                count: widget.segments.length,
+                direction: Directionality.of(context),
+                onSelected: _selectIndex,
+              )
+          : null,
+      child: Container(
+        height: widget.height,
+        width: widget.expanded ? double.infinity : null,
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(widget.height / 2),
+          border: Border.all(color: colors.outlineVariant),
+        ),
+        clipBehavior: Clip.antiAlias,
+        child: _useSlidingThumb
+            ? _buildSlidingBody(colors, textTheme)
+            : _buildMultiBody(colors, textTheme),
       ),
-      clipBehavior: Clip.antiAlias,
-      child: _useSlidingThumb
-          ? _buildSlidingBody(colors, textTheme)
-          : _buildMultiBody(colors, textTheme),
     );
   }
 

@@ -11,6 +11,12 @@ import 'package:flutter/material.dart';
 /// - 4 color styles: filled, tonal, outlined, text
 /// - Rich, vibrant color usage with primary/secondary/tertiary roles
 /// - 20dp icon size, 8dp icon-to-label gap
+/// Legacy expressive button API.
+///
+/// Prefer [MEButton] for new code. This widget remains for backward
+/// compatibility and uses a slightly different size scale.
+@Deprecated(
+    'Use MEButton instead. ExpressiveButton will be removed in a future release.')
 class ExpressiveButton extends StatefulWidget {
   const ExpressiveButton({
     super.key,
@@ -33,9 +39,11 @@ class ExpressiveButton extends StatefulWidget {
   State<ExpressiveButton> createState() => _ExpressiveButtonState();
 }
 
+@Deprecated('Use MEButtonVariant instead.')
 enum ExpressiveButtonStyle { filled, tonal, outlined, text }
 
 /// M3 Expressive sizes: XS(32), S(40), M(48), L(56), XL(64)
+@Deprecated('Use MEButtonSize instead.')
 enum ExpressiveButtonSize { extraSmall, small, medium, large, extraLarge }
 
 class _ExpressiveButtonState extends State<ExpressiveButton>

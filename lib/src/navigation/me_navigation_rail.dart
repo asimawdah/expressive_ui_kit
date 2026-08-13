@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import '../internal/me_keyboard.dart';
 import '../theme/me_motion.dart';
 import '../theme/me_theme.dart';
 import 'me_navigation_bar.dart';
@@ -10,6 +11,8 @@ import 'me_navigation_bar.dart';
 /// expanded (icon + label beside) modes with a spring-animated width and a
 /// liquid pill indicator that travels between destinations — matching
 /// [MENavigationBar] motion.
+///
+/// Keyboard navigation: arrow up/down, Home, and End move the selection.
 class MENavigationRail extends StatefulWidget {
   const MENavigationRail({
     super.key,
@@ -19,6 +22,8 @@ class MENavigationRail extends StatefulWidget {
     this.expanded = false,
     this.leading,
     this.backgroundColor,
+    this.focusNode,
+    this.autofocus = false,
   });
 
   final List<MENavigationDestination> destinations;
@@ -29,6 +34,12 @@ class MENavigationRail extends StatefulWidget {
   final bool expanded;
   final Widget? leading;
   final Color? backgroundColor;
+
+  /// Optional focus node for keyboard navigation.
+  final FocusNode? focusNode;
+
+  /// Whether this rail should request focus when first built.
+  final bool autofocus;
 
   @override
   State<MENavigationRail> createState() => _MENavigationRailState();
@@ -69,7 +80,7 @@ class _MENavigationRailState extends State<MENavigationRail>
   }
 
   // Collapsed: icon slot at top (pad 12 + 32), label below — same as nav bar.
-  static const double _collapsedItemHeight = 72;
+  static const double _collapsedItemHeight = 80;
   static const double _collapsedIconTop = 12;
   static const double _expandedItemHeight = 56;
   static const double _pillHeight = 32;
@@ -84,108 +95,119 @@ class _MENavigationRailState extends State<MENavigationRail>
     final itemHeight =
         widget.expanded ? _expandedItemHeight : _collapsedItemHeight;
 
-    return AnimatedContainer(
-      duration: motion.defaultSpatial.approximateDuration,
-      curve: motion.defaultSpatial.curve,
-      width: widget.expanded ? 220 : 96,
-      color: widget.backgroundColor ?? colors.surface,
-      child: SafeArea(
-        right: false,
-        left: false,
-        bottom: false,
-        child: Column(
-          crossAxisAlignment: widget.expanded
-              ? CrossAxisAlignment.start
-              : CrossAxisAlignment.center,
-          children: [
-            if (widget.leading != null)
-              Padding(
-                padding: const EdgeInsets.fromLTRB(12, 16, 12, 8),
-                child: widget.leading!,
-              ),
-            const SizedBox(height: 8),
-            Expanded(
-              child: LayoutBuilder(
-                builder: (context, constraints) {
-                  return AnimatedBuilder(
-                    animation: Listenable.merge([_indicator, _iconBounce]),
-                    builder: (context, _) {
-                      final pos = _indicator.value;
-                      final remaining = (pos - widget.selectedIndex).abs();
-                      final stretch = 1.0 + remaining.clamp(0.0, 1.0) * 0.45;
-                      final squash = 1.0 - (stretch - 1.0) * 0.2;
-                      final pillH = _pillHeight * squash * stretch;
+    return Focus(
+      focusNode: widget.focusNode,
+      autofocus: widget.autofocus,
+      onKeyEvent: (node, event) => MEKeyboard.handleVerticalSelection(
+        event: event,
+        current: widget.selectedIndex,
+        count: count,
+        onSelected: widget.onDestinationSelected,
+      ),
+      child: AnimatedContainer(
+        duration: motion.defaultSpatial.approximateDuration,
+        curve: motion.defaultSpatial.curve,
+        width: widget.expanded ? 220 : 96,
+        color: widget.backgroundColor ?? colors.surface,
+        child: SafeArea(
+          right: false,
+          left: false,
+          bottom: false,
+          child: Column(
+            crossAxisAlignment: widget.expanded
+                ? CrossAxisAlignment.start
+                : CrossAxisAlignment.center,
+            children: [
+              if (widget.leading != null)
+                Padding(
+                  padding: const EdgeInsets.fromLTRB(12, 16, 12, 8),
+                  child: widget.leading!,
+                ),
+              const SizedBox(height: 8),
+              Expanded(
+                child: LayoutBuilder(
+                  builder: (context, constraints) {
+                    return AnimatedBuilder(
+                      animation: Listenable.merge([_indicator, _iconBounce]),
+                      builder: (context, _) {
+                        final pos = _indicator.value;
+                        final remaining = (pos - widget.selectedIndex).abs();
+                        final stretch = 1.0 + remaining.clamp(0.0, 1.0) * 0.45;
+                        final squash = 1.0 - (stretch - 1.0) * 0.2;
+                        final pillH = _pillHeight * squash * stretch;
 
-                      // Collapsed: sit behind the icon slot.
-                      // Expanded: sit vertically centered in the row.
-                      final pillTop = widget.expanded
-                          ? itemHeight * pos + (itemHeight - pillH) / 2
-                          : itemHeight * pos +
-                              _collapsedIconTop +
-                              (_pillHeight - pillH) / 2;
+                        // Collapsed: sit behind the icon slot.
+                        // Expanded: sit vertically centered in the row.
+                        final pillTop = widget.expanded
+                            ? itemHeight * pos + (itemHeight - pillH) / 2
+                            : itemHeight * pos +
+                                _collapsedIconTop +
+                                (_pillHeight - pillH) / 2;
 
-                      final pillLeft = widget.expanded
-                          ? 12.0
-                          : (constraints.maxWidth - _pillWidth) / 2;
-                      final pillW = widget.expanded
-                          ? constraints.maxWidth - 24
-                          : _pillWidth;
+                        final pillLeft = widget.expanded
+                            ? 12.0
+                            : (constraints.maxWidth - _pillWidth) / 2;
+                        final pillW = widget.expanded
+                            ? constraints.maxWidth - 24
+                            : _pillWidth;
 
-                      // Scroll when destinations exceed available height
-                      // (e.g. landscape / split-screen). Pill stays in the
-                      // same scrollable so it tracks the selected item.
-                      return SingleChildScrollView(
-                        child: SizedBox(
-                          height: itemHeight * count,
-                          width: constraints.maxWidth,
-                          child: Stack(
-                            clipBehavior: Clip.none,
-                            children: [
-                              Positioned(
-                                top: pillTop,
-                                left: pillLeft,
-                                child: Container(
-                                  width: pillW,
-                                  height: pillH,
-                                  decoration: BoxDecoration(
-                                    color: colors.secondaryContainer,
-                                    borderRadius:
-                                        BorderRadius.circular(pillH / 2),
+                        // Scroll when destinations exceed available height
+                        // (e.g. landscape / split-screen). Pill stays in the
+                        // same scrollable so it tracks the selected item.
+                        return SingleChildScrollView(
+                          child: SizedBox(
+                            height: itemHeight * count,
+                            width: constraints.maxWidth,
+                            child: Stack(
+                              clipBehavior: Clip.none,
+                              children: [
+                                Positioned(
+                                  top: pillTop,
+                                  left: pillLeft,
+                                  child: Container(
+                                    width: pillW,
+                                    height: pillH,
+                                    decoration: BoxDecoration(
+                                      color: colors.secondaryContainer,
+                                      borderRadius:
+                                          BorderRadius.circular(pillH / 2),
+                                    ),
                                   ),
                                 ),
-                              ),
-                              Column(
-                                mainAxisSize: MainAxisSize.min,
-                                children: [
-                                  for (var i = 0; i < count; i++)
-                                    SizedBox(
-                                      height: itemHeight,
-                                      width: double.infinity,
-                                      child: _RailItem(
-                                        destination: widget.destinations[i],
-                                        selected: i == widget.selectedIndex,
-                                        expanded: widget.expanded,
-                                        bounceScale: i == widget.selectedIndex
-                                            ? _iconBounce.value.clamp(0.7, 1.15)
-                                            : 1,
-                                        onTap: () =>
-                                            widget.onDestinationSelected(i),
-                                        colors: colors,
-                                        textTheme: textTheme,
+                                Column(
+                                  mainAxisSize: MainAxisSize.min,
+                                  children: [
+                                    for (var i = 0; i < count; i++)
+                                      SizedBox(
+                                        height: itemHeight,
+                                        width: double.infinity,
+                                        child: _RailItem(
+                                          destination: widget.destinations[i],
+                                          selected: i == widget.selectedIndex,
+                                          expanded: widget.expanded,
+                                          bounceScale: i == widget.selectedIndex
+                                              ? _iconBounce.value
+                                                  .clamp(0.7, 1.15)
+                                              : 1,
+                                          onTap: () =>
+                                              widget.onDestinationSelected(i),
+                                          colors: colors,
+                                          textTheme: textTheme,
+                                        ),
                                       ),
-                                    ),
-                                ],
-                              ),
-                            ],
+                                  ],
+                                ),
+                              ],
+                            ),
                           ),
-                        ),
-                      );
-                    },
-                  );
-                },
+                        );
+                      },
+                    );
+                  },
+                ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );

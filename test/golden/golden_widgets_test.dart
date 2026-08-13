@@ -108,6 +108,58 @@ void main() {
         matchesGoldenFile('goldens/me_navigation_bar.png'),
       );
     });
+
+    testWidgets('METextField resting state', (tester) async {
+      await pumpGolden(
+        tester,
+        const METextField(
+          label: 'Email',
+          hintText: 'you@example.com',
+        ),
+        surfaceSize: const Size(320, 120),
+      );
+
+      await expectLater(
+        find.byType(METextField),
+        matchesGoldenFile('goldens/me_text_field.png'),
+      );
+    });
+
+    testWidgets('MEDialog layout', (tester) async {
+      await pumpGolden(
+        tester,
+        MEDialog(
+          title: const Text('Delete item?'),
+          content: const Text('This action cannot be undone.'),
+          actions: [
+            MEButton.text(onPressed: () {}, child: const Text('Cancel')),
+            MEButton.filled(onPressed: () {}, child: const Text('Delete')),
+          ],
+        ),
+        surfaceSize: const Size(400, 360),
+      );
+
+      await expectLater(
+        find.byType(MEDialog),
+        matchesGoldenFile('goldens/me_dialog.png'),
+      );
+    });
+
+    testWidgets('MEButton filled in dark theme', (tester) async {
+      await pumpGoldenDark(
+        tester,
+        MEButton.filled(
+          onPressed: () {},
+          child: const Text('Continue'),
+        ),
+        surfaceSize: const Size(240, 120),
+      );
+
+      await expectLater(
+        find.byType(MEButton),
+        matchesGoldenFile('goldens/me_button_dark.png'),
+      );
+    });
   });
 }
 
