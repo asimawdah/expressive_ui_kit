@@ -7,6 +7,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+- `MESplashScreen` — branded launch screen with staged reveal animation.
+- `MEPinPad` — numeric PIN entry with spring feedback and shake-on-reject.
+- `MEReceipt` — receipt-style container with print-out animation.
+- `MEVinyl` — spinning vinyl record with tonearm and tap-to-toggle playback.
+
+### Changed
+- Example gallery widget catalog now indexes all 150+ exported widgets.
+- Analyzer excludes generated `build/` and platform directories.
+
 ## [0.2.0] - 2026-08-10
 
 ### Added
