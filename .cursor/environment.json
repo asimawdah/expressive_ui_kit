@@ -5,7 +5,7 @@
   "terminals": [
     {
       "name": "gallery",
-      "command": "cd example && exec flutter run -d web-server --web-hostname 0.0.0.0 --web-port 8080"
+      "command": "cd example && { [ -d web ] || flutter create --platforms=web --project-name material3_expressive_example . ; } && exec flutter run -d web-server --web-hostname 0.0.0.0 --web-port 8080"
     }
   ],
   "ports": [8080]
