@@ -25,6 +25,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Searchable example gallery with a live playground for every public widget.
 - Overlay-based `MEMenu` popup (Y-axis spring expand) matching Material 3
   Expressive menus — no slow `PopupRoute` transition.
+- Cursor skill (`.cursor/skills/material3-expressive/SKILL.md`) so agents
+  can pick the right `ME*` widget for a job.
 - Widget tests covering the M3E gap components, menu overlay, and every
   example-gallery playground.
 - Android host for the example gallery (fat release APK: armeabi-v7a,

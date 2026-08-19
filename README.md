@@ -7,6 +7,13 @@ Material 3 Expressive widgets for Flutter — drop-in expressive replacements
 for standard Material widgets, built around spring physics, shape morphing,
 and the M3 Expressive motion scheme.
 
+## For AI assistants
+
+A Cursor skill at [`.cursor/skills/material3-expressive/SKILL.md`](.cursor/skills/material3-expressive/SKILL.md)
+maps product intent → the correct `ME*` widget (prefix is `ME`, not `M3E`).
+`AGENTS.md` points agents at that skill. Copy the skill into a consuming
+app's `.cursor/skills/` so other projects get the same picker.
+
 ## Widget mapping
 
 | Standard Material               | Material 3 Expressive           |
