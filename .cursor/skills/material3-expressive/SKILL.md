@@ -1,25 +1,40 @@
 ---
 name: material3-expressive
-description: Choose and author Flutter UI with the material3_expressive (ME*) widget library. Use whenever this package is a dependency, the user asks for Material 3 Expressive, spring/shape-morphing widgets, or a replacement for FilledButton, IconButton, FAB, AppBar, NavigationBar, Slider, Switch, Dialog, SearchBar, ListTile, PopupMenu, or other Material widgets. Also use when deciding which ME widget fits a screen, chart, chat, picker, or playful control.
+description: >-
+  Choose the correct Flutter widget from the material3_expressive library
+  (prefix ME, never M3E). Use whenever this package is a dependency; the user
+  asks for Material 3 Expressive / M3E / expressive UI; they want a button,
+  FAB, app bar, nav bar, slider, switch, dialog, search, list, menu, chip,
+  card, chart, chat, picker, or playful control; or you must decide which
+  widget from this library to use instead of stock Material. Also use for
+  Arabic prompts about واجهة، زر، شريط، قائمة، حوار، بحث.
 ---
 
-# material3_expressive
+# Choose a widget from material3_expressive
 
-Drop-in **Material 3 Expressive** widgets. Prefix is **`ME`**, never `M3E`.
+This package is **`material3_expressive`**. Public types start with **`ME`**.
+Do **not** use `M3E*` names and do **not** copy APIs from pub.dev
+`material_3_expressive`.
 
-Import:
+## Procedure (always)
 
-```dart
-import 'package:material3_expressive/material3_expressive.dart';
-```
-
-Before inventing constructors, **read the widget file** under `lib/src/` (or the matching demo in `example/lib/gallery/demos.dart`). Do not copy APIs from `material_3_expressive` on pub.dev — that package uses `M3E*` names and a different theme.
+1. Confirm the app is wrapped in `METheme` (setup below).
+2. Map the user's intent to **Pick by job**. If two rows match, take the
+   **more specific** one.
+3. If the intent is not in that table, open [`catalog.md`](catalog.md).
+4. Before writing a constructor, copy it from [`constructors.md`](constructors.md)
+   or read the matching file under `lib/src/`. Do not invent named parameters.
+5. Prefer `ME*` over the stock Material widget whenever this package is already
+   a dependency.
 
 ## Setup (always)
 
-Wrap the app so motion/shape tokens resolve. Colors still come from `ThemeData.colorScheme`.
+Colors still come from `ThemeData.colorScheme`. Motion/shape tokens come from
+`METheme`.
 
 ```dart
+import 'package:material3_expressive/material3_expressive.dart';
+
 MaterialApp(
   theme: ThemeData(
     colorScheme: ColorScheme.fromSeed(seedColor: const Color(0xFF3D6B35)),
@@ -33,79 +48,84 @@ MaterialApp(
 );
 ```
 
-Prefer `ME*` over the stock Material widget whenever this package is already a dependency.
-
 ## Hard rules
 
-- Public types start with `ME`. Deprecated: `ExpressiveButton` → use `MEButton`.
-- `MEAppBar` is a **sliver**. Put it first in a `CustomScrollView` (or `MESliverScaffold`). Do not pass it to `Scaffold.appBar`.
-- Menus: `MEMenu` / `MEMenuAnchor`, not `PopupMenuButton`. Overlay spring, not a slow `PopupRoute`.
-- Search-as-you-type: `MESearchAnchor` / `MESearchAppBar`, not a bare `MESearchBar` plus a custom overlay.
-- Motion: `METheme.of(context).motion` + `springTo`. Do not hard-code `Duration`/`Curves` on ME surfaces.
-- Honor `MediaQuery.disableAnimations` (already handled in `METheme.of`).
-- For live examples of every widget, open `example/lib/gallery/catalog.dart` and the matching demo.
+| Do | Do not |
+|---|---|
+| Prefix `ME` (`MEButton`, `showMEDialog`) | Prefix `M3E` |
+| `MEAppBar` first in a `CustomScrollView` / `MESliverScaffold` | `Scaffold(appBar: MEAppBar(...))` — it is a **sliver** |
+| `MEMenu` / `MEMenuAnchor` | `PopupMenuButton` |
+| `MESearchAnchor` / `MESearchAppBar` for live search | Bare `MESearchBar` plus a homemade overlay |
+| `METheme.of(context).motion` + springs | Hard-coded `Duration`/`Curves` on ME surfaces |
+| `MEDrawerDestination.icon` as `IconData` | Passing a `Widget` as the drawer icon |
+| `MEButton` | Deprecated `ExpressiveButton` |
+| Honor `MediaQuery.disableAnimations` | Extra animation wrappers that ignore it |
+
+Live playgrounds for every public widget: `example/lib/gallery/catalog.dart`.
 
 ## Pick by job
 
-Use this table to **choose** a widget. If two fit, take the more specific one.
-
 ### Replace Material
 
-| User / screen intent | Use | Not |
+| Intent | Use | Not |
 |---|---|---|
-| Primary / secondary / tonal / outline / text button | `MEButton.filled` `.tonal` `.elevated` `.outlined` `.text` | `FilledButton`, `ElevatedButton`, `ExpressiveButton` |
-| Icon-only toggle or action | `MEIconButton` | `IconButton` |
-| Checked / unchecked action with label (favorite, bold) | `METoggleButton` | `MEIconButton` unless icon-only |
+| Primary / secondary / tonal / outline / text button | `MEButton.filled` `.tonal` `.elevated` `.outlined` `.text` | `FilledButton`, `ExpressiveButton` |
+| Icon-only action or icon toggle | `MEIconButton` (`selected:` for toggle) | `IconButton` |
+| Checked action **with a label** (favorite, bold) | `METoggleButton` | `MEIconButton` unless icon-only |
 | Exclusive or multi select in a pill | `MESegmentedButton` | `SegmentedButton` |
-| Neighbor-squish tool cluster | `MEButtonGroup` | several separate `MEButton`s |
-| Primary + overflow menu on one control | `MESplitButton` | `MEButton` + separate `MEMenu` |
+| Neighbor-squish tool cluster | `MEButtonGroup` | Several loose `MEButton`s |
+| Primary action + overflow on one control | `MESplitButton` | `MEButton` + separate menu |
 | FAB / extended FAB | `MEFab` / `MEFab.extended` | `FloatingActionButton` |
-| Speed dial | `MEFabMenu` | homemade `Overlay` |
+| Speed dial | `MEFabMenu` | Homemade overlay |
+| Contextual floating action cluster | `METoolbar` | `BottomAppBar` |
+| Docked bar + trailing FAB | `MEBottomAppBar` | `METoolbar` (that one floats) |
+| Selection / format toolbar that floats near content | `MEFloatingToolbar` | `METoolbar` unless it is a bottom cluster |
 | Loading inside a button | `MEProgressButton` | `MEButton` + spinner |
-| Confirm by holding | `MEHoldButton` | long-press `MEButton` |
-| Linear / circular / short wait | `MELinearProgressIndicator` / `MECircularProgressIndicator` / `MELoadingIndicator` | `*ProgressIndicator` |
+| Confirm by holding | `MEHoldButton` | Long-press `MEButton` |
+| Linear / circular / short wait | `MELinearProgressIndicator` / `MECircularProgressIndicator` / `MELoadingIndicator` | Material `*ProgressIndicator` |
 | Pull to refresh | `MERefreshIndicator` | `RefreshIndicator` |
-| Placeholder loading | `MESkeleton` / `MESkeletonizer` | custom shimmer |
-| Value slider / range / wavy / vertical | `MESlider` / `.wavy` / `.centered` / `.vertical` / `MERangeSlider` | `Slider` |
+| Placeholder loading | `MESkeleton` / wrap with `MESkeletonizer` | Custom shimmer |
+| Value / range / wavy / vertical slider | `MESlider` / `.wavy` / `.centered` / `.vertical` / `MERangeSlider` | `Slider` |
+| Dial / analog value | `MEKnob` | `Slider` unless a linear track is wanted |
 | Switch / checkbox / radio | `MESwitch` / `MECheckbox` / `MERadio` | Material counterparts |
 | Filter / assist / input / suggestion chip | `MEChip` (`type:` / `selected:` / `onDeleted:`) | `FilterChip` |
 | Card / carousel | `MECard` / `MECarousel` | `Card` / `CarouselView` |
 | Avatar / stacked avatars | `MEAvatar` / `MEAvatarGroup` | `CircleAvatar` |
+| Cookie-shaped icon well | `ExpressiveIconContainer` | `CircleAvatar` for a decorative icon |
 | Dialog | `MEDialog` + `showMEDialog` | `AlertDialog` |
 | Full-screen editor dialog | `showMEFullScreenDialog` | `Dialog.fullscreen` |
-| Pick one/many from a list in a dialog | `showMESelectionDialog` | homemade `ListView` in a dialog |
+| Pick one/many from a list in a dialog | `showMESelectionDialog` | Homemade `ListView` in a dialog |
 | Sheet | `showMEBottomSheet` / `showMESideSheet` | `showModalBottomSheet` |
-| Snackbar / toast | `showMESnackBar` / `showMEToast` | `ScaffoldMessenger` snackbar |
+| Snackbar / toast | `showMESnackBar` (has action) / `showMEToast` (transient) | `ScaffoldMessenger` snackbar |
 | Text / password / OTP / tags | `METextField` / `MEPasswordField` / `MEOtpInput` / `METagInput` | `TextField` |
-| Search bar only | `MESearchBar` | `SearchBar` |
-| Search bar that opens suggestions | `MESearchAnchor` or `MESearchAppBar` | `SearchAnchor` |
+| Search field only | `MESearchBar` | `SearchBar` |
+| Search that opens suggestions | `MESearchAnchor.bar` or `MESearchAppBar` | `SearchAnchor` |
 | Autocomplete | `MEAutocomplete` | `Autocomplete` |
 | List row / grouped rows / stacked cards | `MEListTile` / `MEListGroup` / `MECardList` | `ListTile` |
 | Expand one tile / accordion / expandable cards | `MEExpansionTile` / `MEAccordion` / `MEExpandableList` | `ExpansionTile` |
-| Popup / overflow menu | `MEMenu` (`anchorBuilder`) or `MEMenuAnchor` | `PopupMenuButton` |
+| Popup / overflow menu | `MEMenu` (`anchorBuilder`) | `PopupMenuButton` |
 | Dropdown field | `MEDropdown` | `DropdownButton` |
-| Multi-select list with contextual bar | `MESelection` | custom `AppBar` swap |
-| Swipe to dismiss one / column / deck | `MEDismissible` / `MEDismissibleColumn` / `MEDismissibleList` | `Dismissible` only |
+| Multi-select list with contextual bar | `MESelection` | Custom `AppBar` swap |
+| Swipe to dismiss one / column / deck | `MEDismissible` / `MEDismissibleColumn` / `MEDismissibleList` | Stock `Dismissible` only |
 | Reorder | `MEReorderableList` | `ReorderableListView` |
 | Table | `MEDataTable` / `MEPaginatedDataTable` | `DataTable` |
 | Stepper / timeline / tree | `MEStepper` / `METimeline` / `METreeView` | `Stepper` |
 | App bar (sliver) | `MEAppBar` | `AppBar` / `SliverAppBar` |
 | Search in the top bar | `MESearchAppBar` | `AppBar` + `SearchBar` |
-| Bottom app bar + FAB | `MEBottomAppBar` | `BottomAppBar` |
-| Destinations | `MENavigationBar` / `MENavigationRail` / `MEDrawer` | `NavigationBar` / `Rail` / `Drawer` |
+| Destinations | `MENavigationBar` / `MENavigationRail` / `MEDrawer` | Material nav widgets |
 | Tabs | `METabBar` | `TabBar` |
-| Breadcrumbs / dock / command palette | `MEBreadcrumbs` / `MEDock` / `showMECommandPalette` | custom |
+| Breadcrumbs / dock / command palette | `MEBreadcrumbs` / `MEDock` / `showMECommandPalette` | Custom |
 | Date / range / time | `showMEDatePicker` / `showMEDateRangePicker` / `showMETimePicker` | `showDatePicker` |
-| Analog clock time | `MEDialTimePicker` | `showTimePicker` only |
+| Analog clock time | `MEDialTimePicker` | Digital `showMETimePicker` only |
 | On-page calendar | `MECalendar` | `CalendarDatePicker` |
 | Wheel / color | `MEWheelPicker` / `MEColorPicker` / `MEColorWheel` | `CupertinoPicker` |
 | Badge / tooltip / divider | `MEBadge` / `METooltip` / `MEDivider` (`.vertical`) | Material counterparts |
 | Banner | `MEBanner` | `MaterialBanner` |
 | Network image | `MEImage` | `Image.network` |
-| Empty screen | `MEEmptyState` | centered `Column` |
-| Slivers | `MESliverList` / `MESliverGrid` / `MESliverPinnedHeader` / `MESliverSectionHeader` / `MESliverScaffold` | raw slivers |
+| Empty screen | `MEEmptyState` | Centered `Column` |
+| Slivers | `MESliverList` / `MESliverGrid` / `MESliverPinnedHeader` / `MESliverSectionHeader` / `MESliverScaffold` | Raw slivers |
 
-### Product UI that Material does not have
+### Product UI Material does not have
 
 | Intent | Use |
 |---|---|
@@ -116,18 +136,16 @@ Use this table to **choose** a widget. If two fit, take the more specific one.
 | Stats KPI | `MEStatCard` |
 | File row | `MEFileCard` |
 | Compare before/after | `MECompareSlider` |
-| Skeleton of existing layout | wrap with `MESkeletonizer` |
 | Number that ticks | `MENumberTicker` |
 | Page dots | `MEPageIndicator` |
 | Onboarding coach | `showMECoachmark` |
 | Success / error check | `MESuccessCheck` / `MESuccessCheck.error` |
 | Launch screen | `MESplashScreen` |
 | PIN pad | `MEPinPad` |
-| Password with strength | `MEPasswordField` |
 | Floating selection toolbar | `MEFloatingToolbar` |
 | Radial action menu | `MEOrbitMenu` |
 
-### Charts (pick by data shape)
+### Charts — pick by data shape
 
 | Data | Use |
 |---|---|
@@ -139,76 +157,46 @@ Use this table to **choose** a widget. If two fit, take the more specific one.
 | Radar / bubbles / candles / heatmap | `MERadarChart` / `MEBubbleChart` / `MECandlestickChart` / `MEHeatmap` |
 | Activity rings | `MEActivityRings` |
 
-### Decorative / playful (only if the product asks)
+### Decorative / playful — only if the product asks
 
-`MEDice`, `MECoinFlip`, `MESlotMachine`, `MESpinWheel`, `MEScratchCard`, `MEFireworks`, `MELavaLamp`, `MEVinyl`, `MEJoystick`, `MEPomodoro`, `MEMetronome`, `MEFlipClock`, `MEHourglass`, `MEBreathingRing`, `MEEqualizer`, `MEWaveform`, `MEVuMeter`, `MESonar`, `MECompass`, `METrafficLight`, `MELockDial`, `MEBattery`, `MESignalStrength`, `MEStreakFlame`, `MEDayNightToggle`, `MEMoodPicker`, `MEStickyNote`, `MEPolaroid`, `MECreditCard`, `MEBoardingPass`, `MEReceipt`, `MEStampCard`, `MEStoryRing`, `METiltCard`, `MEFlipCard`, `MESwipeDeck`, `MEMorphingShape`, `MEMarquee`, `METypewriter`, `MECountdown`, `MEStopwatch`, `MELiquidProgress`.
+`MEDice`, `MECoinFlip`, `MESlotMachine`, `MESpinWheel`, `MEScratchCard`,
+`MEFireworks`, `MELavaLamp`, `MEVinyl`, `MEJoystick`, `MEPomodoro`,
+`MEMetronome`, `MEFlipClock`, `MEHourglass`, `MEBreathingRing`, `MEEqualizer`,
+`MEWaveform`, `MEVuMeter`, `MESonar`, `MECompass`, `METrafficLight`,
+`MELockDial`, `MEBattery`, `MESignalStrength`, `MEStreakFlame`,
+`MEDayNightToggle`, `MEMoodPicker`, `MEStickyNote`, `MEPolaroid`,
+`MECreditCard`, `MEBoardingPass`, `MEReceipt`, `MEStampCard`, `MEStoryRing`,
+`METiltCard`, `MEFlipCard`, `MESwipeDeck`, `MEMorphingShape`, `MEMarquee`,
+`METypewriter`, `MECountdown`, `MEStopwatch`, `MELiquidProgress`.
 
-Do **not** drop these into banking, settings, or dense data screens unless the user asked for a playful / branded moment.
+Do **not** drop these into banking, settings, or dense data screens unless
+the user asked for a playful or branded moment.
 
-## Default choices (when the prompt is vague)
+Full inventory with source files: [`catalog.md`](catalog.md).
+
+## Default choices (vague prompts)
 
 | Situation | Default |
 |---|---|
-| “Add a button” | `MEButton.filled` |
+| “Add a button” / «أضف زر» | `MEButton.filled` |
 | “Add a FAB” | `MEFab` |
-| “Top bar” | `MEAppBar` inside `CustomScrollView` |
+| “Top bar” / «شريط علوي» | `MEAppBar` inside `CustomScrollView` |
 | “Bottom nav” | `MENavigationBar` |
 | “Form field” | `METextField` |
-| “Search” | `MESearchAnchor.bar` |
-| “Menu on a button” | `MEMenu` with `anchorBuilder` |
-| “Show a dialog” | `showMEDialog` + `MEDialog` |
-| “Toast” | `showMEToast` for transient, `showMESnackBar` if there is an action |
-| “Loading” | `MELoadingIndicator` for short waits; linear/circular for determinate |
+| “Search” / «بحث» | `MESearchAnchor.bar` |
+| “Menu on a button” / «قائمة» | `MEMenu` with `anchorBuilder` |
+| “Show a dialog” / «حوار» | `showMEDialog` + `MEDialog` |
+| “Toast” | `showMEToast` if transient; `showMESnackBar` if there is an action |
+| “Loading” | `MELoadingIndicator` for short waits; linear/circular if determinate |
 | “List of settings” | `MEListGroup` of `MEListTile`s |
 | “Empty state” | `MEEmptyState` |
-
-## Snippets
-
-```dart
-MEButton.filled(
-  icon: const Icon(Icons.send),
-  onPressed: () {},
-  child: const Text('Send'),
-);
-
-METoggleButton.filled(
-  checked: favorite,
-  icon: const Icon(Icons.favorite_border),
-  checkedIcon: const Icon(Icons.favorite),
-  label: const Text('Favorite'),
-  onCheckedChange: (v) => setState(() => favorite = v),
-);
-
-CustomScrollView(
-  slivers: [
-    const MEAppBar(title: Text('Inbox'), size: MEAppBarSize.medium),
-    MESliverList(
-      itemCount: items.length,
-      itemBuilder: (context, i) => MEListTile(title: Text(items[i])),
-    ),
-  ],
-);
-
-MEMenu(
-  anchorBuilder: (context, open) => MEButton.outlined(
-    icon: const Icon(Icons.arrow_drop_down),
-    onPressed: open,
-    child: const Text('Open menu'),
-  ),
-  children: const [
-    MEMenuEntry(label: 'Edit', value: 'edit'),
-    MEMenuEntry(label: 'Delete', value: 'delete', isDestructive: true),
-  ],
-  onSelected: (value) {},
-);
-```
 
 ## Where to look
 
 | Need | File |
 |---|---|
+| How to construct it | [`constructors.md`](constructors.md) then `lib/src/` |
+| Every widget + source path | [`catalog.md`](catalog.md) |
 | Public exports | `lib/material3_expressive.dart` |
-| Widget source | `lib/src/<area>/me_*.dart` |
 | Theme / springs | `lib/src/theme/me_theme.dart`, `me_motion.dart` |
-| Every playground | `example/lib/gallery/catalog.dart`, `demos.dart` |
-| Human docs | `README.md` |
+| Playgrounds | `example/lib/gallery/catalog.dart`, `demos.dart` |

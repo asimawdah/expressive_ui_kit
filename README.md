@@ -10,9 +10,16 @@ and the M3 Expressive motion scheme.
 ## For AI assistants
 
 A Cursor skill at [`.cursor/skills/material3-expressive/SKILL.md`](.cursor/skills/material3-expressive/SKILL.md)
-maps product intent → the correct `ME*` widget (prefix is `ME`, not `M3E`).
-`AGENTS.md` points agents at that skill. Copy the skill into a consuming
-app's `.cursor/skills/` so other projects get the same picker.
+is the **picker**: it maps product intent → the correct `ME*` widget
+(prefix is `ME`, not `M3E`), with a full inventory in
+[`catalog.md`](.cursor/skills/material3-expressive/catalog.md) and copy-paste
+constructors in [`constructors.md`](.cursor/skills/material3-expressive/constructors.md).
+`AGENTS.md` and [`.cursor/rules/material3-expressive.mdc`](.cursor/rules/material3-expressive.mdc)
+point agents at that skill.
+
+To reuse the picker in another app, copy the whole
+`.cursor/skills/material3-expressive/` folder (and optionally the rule file)
+into that project's `.cursor/` directory.
 
 ## Widget mapping
 
