@@ -32,7 +32,7 @@
 /// | SearchBar                      | [MESearchBar] / [MESearchAnchor] |
 /// | ListTile                       | [MEListTile] / [MEListGroup] / [MECardList] |
 /// | ExpansionTile                  | [MEExpansionTile]            |
-/// | PopupMenuButton / MenuAnchor   | [MEMenuAnchor]               |
+/// | PopupMenuButton / MenuAnchor   | [MEMenu] / [MEMenuAnchor]    |
 /// | DropdownButton / DropdownMenu  | [MEDropdown]                 |
 /// | Badge                          | [MEBadge]                    |
 /// | Tooltip                        | [METooltip]                  |

@@ -45,7 +45,7 @@ and the M3 Expressive motion scheme.
 | `SearchAnchor`                  | `MESearchAnchor` + `MESearchAppBar` |
 | `ListTile`                      | `MEListTile` + `MEListGroup` + `MECardList` |
 | `ExpansionTile`                 | `MEExpansionTile`               |
-| `PopupMenuButton`/`MenuAnchor`  | `MEMenuAnchor`                  |
+| `PopupMenuButton`/`MenuAnchor`  | `MEMenu` / `MEMenuAnchor`       |
 | `DropdownButton`/`DropdownMenu` | `MEDropdown`                    |
 | `Badge`                         | `MEBadge`                       |
 | `Tooltip`                       | `METooltip`                     |
@@ -916,10 +916,31 @@ MEListGroup(
 );
 
 // Menus, sheets, snackbars and pickers.
-MEMenuAnchor<String>(
-  items: const [MEMenuItem(value: 'a', label: 'Option A')],
+MEMenu(
+  anchorBuilder: (context, open) => MEButton.outlined(
+    icon: const Icon(Icons.arrow_drop_down),
+    onPressed: open,
+    child: const Text('Open menu'),
+  ),
+  children: [
+    MEMenuGroup.entries(
+      entries: [
+        MEMenuEntry(
+          label: 'Edit',
+          leading: const Icon(Icons.edit_outlined),
+          value: 'edit',
+        ),
+        const MEMenuEntry(label: 'Disabled', enabled: false),
+      ],
+    ),
+    MEMenuGroup.entries(
+      label: 'More',
+      entries: [
+        MEMenuEntry(label: 'Copy', trailingText: '⌘C', value: 'copy'),
+      ],
+    ),
+  ],
   onSelected: (v) {},
-  child: const Icon(Icons.more_vert),
 );
 showMEBottomSheet(context: context, builder: (context) => const SheetBody());
 showMESnackBar(context, message: 'Saved', actionLabel: 'Undo');

@@ -2074,23 +2074,41 @@ class DemoMEMenuAnchor extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MEMenuAnchor<String>(
-      items: const [
-        MEMenuItem(value: 'edit', label: 'Edit', icon: Icons.edit_outlined),
-        MEMenuItem(value: 'share', label: 'Share', icon: Icons.share_outlined),
-      ],
-      onSelected: (v) => showMEToast(context, message: v),
-      child: const Padding(
-        padding: EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-        child: Row(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Text('Open menu'),
-            SizedBox(width: 8),
-            Icon(Icons.arrow_drop_down),
+    return MEMenu(
+      anchorBuilder: (context, open) => MEButton.outlined(
+        icon: const Icon(Icons.arrow_drop_down),
+        onPressed: open,
+        child: const Text('Open menu'),
+      ),
+      children: const [
+        MEMenuGroup.entries(
+          entries: [
+            MEMenuEntry(
+              label: 'Edit',
+              leading: Icon(Icons.edit_outlined),
+              value: 'edit',
+            ),
+            MEMenuEntry(label: 'Disabled', enabled: false),
           ],
         ),
-      ),
+        MEMenuGroup.entries(
+          label: 'More',
+          entries: [
+            MEMenuEntry(
+              label: 'Copy',
+              trailingText: '⌘C',
+              value: 'copy',
+            ),
+            MEMenuEntry(
+              label: 'Share',
+              leading: Icon(Icons.share_outlined),
+              supportingText: 'Send a link',
+              value: 'share',
+            ),
+          ],
+        ),
+      ],
+      onSelected: (v) => showMEToast(context, message: '$v'),
     );
   }
 }

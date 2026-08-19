@@ -833,6 +833,11 @@ final List<CatalogEntry> kCatalog = [
       category: 'Lists',
       demo: (_) => const DemoMEDropdown()),
   CatalogEntry(
+      name: 'MEMenu',
+      replaces: 'PopupMenuButton / MenuAnchor',
+      category: 'Lists',
+      demo: (_) => const DemoMEMenuAnchor()),
+  CatalogEntry(
       name: 'MEMenuAnchor',
       replaces: 'PopupMenuButton',
       category: 'Lists',

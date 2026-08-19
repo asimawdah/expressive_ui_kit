@@ -23,6 +23,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - `MESlider.wavy` / `.centered` / `.vertical` and `MERangeSlider.wavy`.
 - `MEDivider.vertical`, chip types, badge alignment, radio/checkbox labels.
 - Searchable example gallery with a live playground for every public widget.
+- Overlay-based `MEMenu` popup (Y-axis spring expand) matching Material 3
+  Expressive menus — no slow `PopupRoute` transition.
 
 ### Changed
 - Example gallery widget catalog now indexes all 150+ exported widgets.
