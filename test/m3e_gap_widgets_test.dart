@@ -58,6 +58,29 @@ void main() {
     });
   });
 
+  group('MESearchAppBar', () {
+    testWidgets('renders the search hint in an app bar', (tester) async {
+      await tester.pumpWidget(
+        MaterialApp(
+          theme: ThemeData(useMaterial3: true),
+          builder: (context, child) => METheme(
+            data: METhemeData.expressive,
+            child: child!,
+          ),
+          home: Scaffold(
+            appBar: MESearchAppBar(
+              hintText: 'Search widgets',
+              suggestionsBuilder: (context, controller) => const [],
+            ),
+          ),
+        ),
+      );
+
+      expect(find.text('Search widgets'), findsOneWidget);
+      expect(find.byType(MESearchBar), findsOneWidget);
+    });
+  });
+
   group('MECardList', () {
     testWidgets('lays out segmented cards', (tester) async {
       var tapped = -1;
@@ -186,6 +209,38 @@ void main() {
       await tester.pump();
       expect(wavy, isNot(0.4));
     });
+
+    testWidgets('vertical slider builds', (tester) async {
+      await tester.pumpWidget(
+        _host(
+          SizedBox(
+            height: 160,
+            child: MESlider.vertical(
+              value: 0.5,
+              onChanged: (_) {},
+            ),
+          ),
+        ),
+      );
+      expect(find.byType(MESlider), findsOneWidget);
+    });
+  });
+
+  group('MERangeSlider', () {
+    testWidgets('wavy range slider builds', (tester) async {
+      await tester.pumpWidget(
+        _host(
+          SizedBox(
+            width: 300,
+            child: MERangeSlider.wavy(
+              values: const RangeValues(0.2, 0.7),
+              onChanged: (_) {},
+            ),
+          ),
+        ),
+      );
+      expect(find.byType(MERangeSlider), findsOneWidget);
+    });
   });
 
   group('MERadio label', () {
@@ -212,6 +267,29 @@ void main() {
     });
   });
 
+  group('MECheckbox label', () {
+    testWidgets('label is part of the tap target', (tester) async {
+      var checked = false;
+      await tester.pumpWidget(
+        _host(
+          StatefulBuilder(
+            builder: (context, setState) {
+              return MECheckbox(
+                value: checked,
+                label: const Text('Accept'),
+                onChanged: (v) => setState(() => checked = v),
+              );
+            },
+          ),
+        ),
+      );
+
+      await tester.tap(find.text('Accept'));
+      await tester.pump();
+      expect(checked, isTrue);
+    });
+  });
+
   group('MEDivider', () {
     testWidgets('builds vertical variant', (tester) async {
       await tester.pumpWidget(
@@ -226,6 +304,85 @@ void main() {
         ),
       );
       expect(find.byType(MEDivider), findsOneWidget);
+    });
+  });
+
+  group('MEChip', () {
+    testWidgets('filter chip toggles selected', (tester) async {
+      var selected = false;
+      await tester.pumpWidget(
+        _host(
+          StatefulBuilder(
+            builder: (context, setState) {
+              return MEChip(
+                type: MEChipType.filter,
+                selected: selected,
+                label: const Text('Jazz'),
+                onPressed: () => setState(() => selected = !selected),
+              );
+            },
+          ),
+        ),
+      );
+
+      await tester.tap(find.text('Jazz'));
+      await tester.pump();
+      expect(selected, isTrue);
+    });
+  });
+
+  group('MEBadge', () {
+    testWidgets('shows a count and a dot', (tester) async {
+      await tester.pumpWidget(
+        _host(
+          const Row(
+            children: [
+              MEBadge(
+                count: 8,
+                alignment: MEBadgeAlignment.topLeft,
+                child: Icon(Icons.mail),
+              ),
+              MEBadge(
+                showDot: true,
+                alignment: MEBadgeAlignment.topRight,
+                child: Icon(Icons.notifications),
+              ),
+            ],
+          ),
+        ),
+      );
+      expect(find.text('8'), findsOneWidget);
+      expect(find.byType(MEBadge), findsNWidgets(2));
+    });
+  });
+
+  group('MEDismissibleColumn', () {
+    testWidgets('renders swipeable cards', (tester) async {
+      await tester.pumpWidget(
+        _host(
+          MEDismissibleColumn(
+            itemCount: 2,
+            itemBuilder: (context, i) => Text('Mail $i'),
+          ),
+        ),
+      );
+      expect(find.text('Mail 0'), findsOneWidget);
+      expect(find.text('Mail 1'), findsOneWidget);
+    });
+  });
+
+  group('MEFab.extended', () {
+    testWidgets('renders the label', (tester) async {
+      await tester.pumpWidget(
+        _host(
+          MEFab.extended(
+            onPressed: () {},
+            icon: const Icon(Icons.add),
+            label: const Text('Compose'),
+          ),
+        ),
+      );
+      expect(find.text('Compose'), findsOneWidget);
     });
   });
 
@@ -264,6 +421,80 @@ void main() {
       await tester.tap(find.text('Confirm'));
       await tester.pumpAndSettle();
       expect(picked, ['Pro']);
+    });
+  });
+
+  group('showMEFullScreenDialog', () {
+    testWidgets('presents a full-screen surface and closes', (tester) async {
+      await tester.pumpWidget(
+        MaterialApp(
+          theme: ThemeData(useMaterial3: true),
+          home: METheme(
+            data: METhemeData.expressive,
+            child: Builder(
+              builder: (context) {
+                return Scaffold(
+                  body: MEButton.filled(
+                    onPressed: () {
+                      showMEFullScreenDialog<void>(
+                        context: context,
+                        title: const Text('New note'),
+                        body: const Center(child: Text('Compose')),
+                      );
+                    },
+                    child: const Text('Open'),
+                  ),
+                );
+              },
+            ),
+          ),
+        ),
+      );
+
+      await tester.tap(find.text('Open'));
+      await tester.pumpAndSettle();
+      expect(find.text('New note'), findsOneWidget);
+      expect(find.text('Compose'), findsOneWidget);
+      await tester.tap(find.byIcon(Icons.close));
+      await tester.pumpAndSettle();
+      expect(find.text('Compose'), findsNothing);
+    });
+  });
+
+  group('showMEDateRangePicker', () {
+    testWidgets('opens the range picker dialog', (tester) async {
+      await tester.pumpWidget(
+        MaterialApp(
+          theme: ThemeData(useMaterial3: true),
+          home: METheme(
+            data: METhemeData.expressive,
+            child: Builder(
+              builder: (context) {
+                return Scaffold(
+                  body: MEButton.filled(
+                    onPressed: () {
+                      showMEDateRangePicker(
+                        context: context,
+                        firstDate: DateTime(2020),
+                        lastDate: DateTime(2030),
+                        initialDateRange: DateTimeRange(
+                          start: DateTime(2026, 8, 1),
+                          end: DateTime(2026, 8, 7),
+                        ),
+                      );
+                    },
+                    child: const Text('Range'),
+                  ),
+                );
+              },
+            ),
+          ),
+        ),
+      );
+
+      await tester.tap(find.text('Range'));
+      await tester.pumpAndSettle();
+      expect(find.byType(DateRangePickerDialog), findsOneWidget);
     });
   });
 

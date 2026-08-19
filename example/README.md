@@ -11,11 +11,18 @@ flutter pub get
 flutter run
 ```
 
-Or from the package root:
+## Android release APK
+
+From this directory:
 
 ```bash
-cd example && flutter run
+flutter build apk --release
 ```
+
+The fat APK includes `armeabi-v7a`, `arm64-v8a`, and `x86_64`:
+
+`build/app/outputs/flutter-apk/app-release.apk`
+
 
 ## How to try every widget
 

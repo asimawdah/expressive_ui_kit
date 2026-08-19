@@ -1,0 +1,5 @@
+package com.asimawdah.material3_expressive_example
+
+import io.flutter.embedding.android.FlutterActivity
+
+class MainActivity : FlutterActivity()
