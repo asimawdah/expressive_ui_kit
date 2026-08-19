@@ -12,6 +12,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - `MEPinPad` — numeric PIN entry with spring feedback and shake-on-reject.
 - `MEReceipt` — receipt-style container with print-out animation.
 - `MEVinyl` — spinning vinyl record with tonearm and tap-to-toggle playback.
+- `METoggleButton` — checked/unchecked action with round-to-square morphing.
+- `MESearchAnchor` / `MESearchAppBar` — search view anchored to a bar or app bar.
+- `MECardList` — stacked, tappable card rows.
+- `MESelection` — multi-select host with contextual app bar and tiles.
+- `MEDismissibleColumn` / `MEDismissibleList` — swipe-to-dismiss card lists.
+- `MEExpandableList` — expandable cards with expressive open/close motion.
+- `MEDialTimePicker` — analog hour/minute dial.
+- `showMEFullScreenDialog`, `showMESelectionDialog`, `showMEDateRangePicker`.
+- `MESlider.wavy` / `.centered` / `.vertical` and `MERangeSlider.wavy`.
+- `MEDivider.vertical`, chip types, badge alignment, radio/checkbox labels.
+- Searchable example gallery with a live playground for every public widget.
 
 ### Changed
 - Example gallery widget catalog now indexes all 150+ exported widgets.
@@ -19,6 +30,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - `ExpressiveButton` is deprecated in favor of `MEButton`.
 - Keyboard navigation added to `MENavigationRail` and `MESegmentedButton`.
 - Root `pubspec.lock` is tracked for reproducible CI.
+- Collapsed `MEExpandableList` bodies are offstaged so they are not hittable.
 
 ### Added
 - Vertical keyboard helpers on `MEKeyboard`.

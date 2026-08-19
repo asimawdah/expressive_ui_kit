@@ -48,7 +48,7 @@ void main() {
         ),
       );
 
-      await tester.tap(find.text('Search mail'));
+      await tester.tap(find.byType(MESearchBar));
       await tester.pumpAndSettle();
 
       expect(find.text('Inbox'), findsOneWidget);

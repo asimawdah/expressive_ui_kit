@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:material3_expressive/material3_expressive.dart';
 
+// Gallery demos include the deprecated [ExpressiveButton] so it can be tried.
+// ignore_for_file: deprecated_member_use
+
 class DemoMEButton extends StatelessWidget {
   const DemoMEButton({super.key});
 
@@ -20,6 +23,31 @@ class DemoMEButton extends StatelessWidget {
           icon: const Icon(Icons.send),
           onPressed: () {},
           child: const Text('Send'),
+        ),
+      ],
+    );
+  }
+}
+
+class DemoExpressiveButton extends StatelessWidget {
+  const DemoExpressiveButton({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return Wrap(
+      spacing: 12,
+      runSpacing: 12,
+      children: [
+        ExpressiveButton(label: 'Filled', onPressed: () {}),
+        ExpressiveButton(
+          label: 'Tonal',
+          style: ExpressiveButtonStyle.tonal,
+          onPressed: () {},
+        ),
+        ExpressiveButton(
+          label: 'Outlined',
+          style: ExpressiveButtonStyle.outlined,
+          onPressed: () {},
         ),
       ],
     );
@@ -2536,6 +2564,79 @@ class DemoMESlivers extends StatelessWidget {
           ),
         ],
       ),
+    );
+  }
+}
+
+class DemoExpressiveIconContainer extends StatelessWidget {
+  const DemoExpressiveIconContainer({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return Wrap(
+      spacing: 20,
+      runSpacing: 20,
+      children: [
+        for (final shape in ExpressiveShape.values)
+          Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              ExpressiveIconContainer(
+                size: 64,
+                shape: shape,
+                child: Icon(
+                  Icons.auto_awesome,
+                  color: Theme.of(context).colorScheme.onPrimaryContainer,
+                ),
+              ),
+              const SizedBox(height: 8),
+              Text(
+                shape.name,
+                style: Theme.of(context).textTheme.labelSmall,
+              ),
+            ],
+          ),
+      ],
+    );
+  }
+}
+
+class DemoMETheme extends StatelessWidget {
+  const DemoMETheme({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = METheme.of(context);
+    final bounce = theme.motion.defaultSpatial.stiffness ==
+        MEMotionScheme.expressive.defaultSpatial.stiffness;
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          bounce
+              ? 'Expressive springs (bounce on)'
+              : 'Standard / reduced motion',
+          style: Theme.of(context).textTheme.titleMedium,
+        ),
+        const SizedBox(height: 8),
+        Text(
+          'Switch expressive vs standard motion from the gallery drawer, '
+          'then press the button to feel the spring.',
+          style: Theme.of(context).textTheme.bodyMedium,
+        ),
+        const SizedBox(height: 16),
+        MEButton.filled(
+          onPressed: () {},
+          child: const Text('Press me'),
+        ),
+        const SizedBox(height: 24),
+        Text(
+          'Emphasized type',
+          style: METypography.emphasize(
+            Theme.of(context).textTheme.headlineSmall!,
+          ),
+        ),
+      ],
     );
   }
 }

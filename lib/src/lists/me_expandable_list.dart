@@ -199,15 +199,18 @@ class _MEExpandableCardState extends State<_MEExpandableCard>
                 child: Align(
                   alignment: Alignment.topCenter,
                   heightFactor: clamped,
-                  child: Opacity(
-                    opacity: clamped,
-                    child: Padding(
-                      padding: const EdgeInsets.fromLTRB(16, 0, 16, 16),
-                      child: DefaultTextStyle.merge(
-                        style: textTheme.bodyMedium!.copyWith(
-                          color: scheme.onSurfaceVariant,
+                  child: Offstage(
+                    offstage: clamped == 0,
+                    child: Opacity(
+                      opacity: clamped,
+                      child: Padding(
+                        padding: const EdgeInsets.fromLTRB(16, 0, 16, 16),
+                        child: DefaultTextStyle.merge(
+                          style: textTheme.bodyMedium!.copyWith(
+                            color: scheme.onSurfaceVariant,
+                          ),
+                          child: widget.data.body,
                         ),
-                        child: widget.data.body,
                       ),
                     ),
                   ),

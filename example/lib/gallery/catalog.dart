@@ -25,6 +25,11 @@ final List<CatalogEntry> kCatalog = [
       category: 'Buttons',
       demo: (_) => const DemoMEButton()),
   CatalogEntry(
+      name: 'ExpressiveButton',
+      replaces: 'legacy MEButton',
+      category: 'Buttons',
+      demo: (_) => const DemoExpressiveButton()),
+  CatalogEntry(
       name: 'METoggleButton',
       replaces: 'Toggleable filled/tonal buttons',
       category: 'Buttons',
@@ -52,6 +57,11 @@ final List<CatalogEntry> kCatalog = [
   CatalogEntry(
       name: 'MEFab',
       replaces: 'FloatingActionButton',
+      category: 'Buttons',
+      demo: (_) => const DemoMEFab()),
+  CatalogEntry(
+      name: 'MEFab.extended',
+      replaces: 'FloatingActionButton.extended',
       category: 'Buttons',
       demo: (_) => const DemoMEFab()),
   CatalogEntry(
@@ -332,6 +342,11 @@ final List<CatalogEntry> kCatalog = [
       replaces: 'CircleAvatar',
       category: 'Containers',
       demo: (_) => const DemoMEAvatar()),
+  CatalogEntry(
+      name: 'ExpressiveIconContainer',
+      replaces: 'cookie-shaped icon well',
+      category: 'Containers',
+      demo: (_) => const DemoExpressiveIconContainer()),
   CatalogEntry(
       name: 'MEAvatarGroup',
       replaces: 'CircleAvatar group',
@@ -1047,4 +1062,10 @@ final List<CatalogEntry> kCatalog = [
       replaces: 'Scaffold + CustomScrollView',
       category: 'Slivers',
       demo: (_) => const DemoMESlivers()),
+  // Theme
+  CatalogEntry(
+      name: 'METheme',
+      replaces: 'Theme / motion tokens',
+      category: 'Theme',
+      demo: (_) => const DemoMETheme()),
 ];
