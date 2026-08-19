@@ -17,18 +17,13 @@ Or from the package root:
 cd example && flutter run
 ```
 
-## Gallery sections
+## How to try every widget
 
-| Page | What it demonstrates |
-| ---- | ---------------------- |
-| **Buttons** | `MEButton`, FABs, segmented controls, split buttons, orbit menus |
-| **Progress** | Linear/circular indicators, skeletons, loading states |
-| **Controls** | Switches, sliders, ratings, pickers, novelty widgets |
-| **Navigation** | App bar, navigation bar/rail, tabs, drawer, dock |
-| **Inputs** | Text fields, search, OTP, autocomplete, tag input |
-| **Containers** | Cards, dialogs, chips, carousels, splash screen, receipt |
-| **Content** | Markdown, chat bubbles, charts, games, and playful widgets |
-| **Slivers** | `MESliverList`, `MESliverGrid`, pinned headers, sliver scaffold |
-| **Widget catalog** | Searchable index of all expressive widgets and their Material equivalents |
+The home screen is a **searchable gallery of every public widget**. Tap a row
+to open that component's live playground.
 
-Use the drawer to toggle **light/dark theme** and switch between **expressive** and **reduced** motion.
+Use the drawer for:
+
+- **Tours** — the original grouped pages (buttons, progress, controls, …)
+- **Appearance** — system / light / dark
+- **Motion** — expressive (bouncy) vs standard (subtle)

@@ -20,6 +20,7 @@ class MESearchBar extends StatefulWidget {
     this.onSubmitted,
     this.onTap,
     this.enabled = true,
+    this.readOnly = false,
   });
 
   final TextEditingController? controller;
@@ -30,6 +31,9 @@ class MESearchBar extends StatefulWidget {
   final ValueChanged<String>? onSubmitted;
   final VoidCallback? onTap;
   final bool enabled;
+
+  /// When true the field is a tap target only (used by [MESearchAnchor.bar]).
+  final bool readOnly;
 
   @override
   State<MESearchBar> createState() => _MESearchBarState();
@@ -101,6 +105,7 @@ class _MESearchBarState extends State<MESearchBar>
                 controller: widget.controller,
                 focusNode: _focusNode,
                 enabled: widget.enabled,
+                readOnly: widget.readOnly,
                 onChanged: widget.onChanged,
                 onSubmitted: widget.onSubmitted,
                 onTap: widget.onTap,

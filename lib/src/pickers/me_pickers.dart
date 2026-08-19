@@ -24,6 +24,24 @@ Future<DateTime?> showMEDatePicker({
   );
 }
 
+/// Shows a Material 3 Expressive date range picker.
+Future<DateTimeRange?> showMEDateRangePicker({
+  required BuildContext context,
+  DateTimeRange? initialDateRange,
+  required DateTime firstDate,
+  required DateTime lastDate,
+  String? helpText,
+}) {
+  return showDateRangePicker(
+    context: context,
+    initialDateRange: initialDateRange,
+    firstDate: firstDate,
+    lastDate: lastDate,
+    helpText: helpText,
+    builder: (context, child) => _MEPickerTheme(child: child!),
+  );
+}
+
 /// Shows a Material 3 Expressive time picker.
 ///
 /// Replaces [showTimePicker] with expressive theming.

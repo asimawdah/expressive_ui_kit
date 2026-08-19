@@ -1,13 +1,21 @@
+import 'dart:math' as math;
+
 import 'package:flutter/material.dart';
 
 import '../theme/me_motion.dart';
 import '../theme/me_theme.dart';
+
+/// Visual style for [MESlider].
+enum MESliderStyle { standard, wavy, centered }
 
 /// A Material 3 Expressive slider.
 ///
 /// Replaces [Slider]. Renders the M3E design: a thick track, a narrow
 /// vertical bar handle inset in a gap, and a stop indicator dot at the
 /// end of the track. The handle compresses while dragged.
+///
+/// Use [MESlider.wavy], [MESlider.centered] or [MESlider.vertical] for
+/// the additional M3 Expressive variants.
 class MESlider extends StatefulWidget {
   const MESlider({
     super.key,
@@ -21,7 +29,57 @@ class MESlider extends StatefulWidget {
     this.color,
     this.trackColor,
     this.semanticsLabel,
+    this.style = MESliderStyle.standard,
+    this.orientation = Axis.horizontal,
   }) : assert(max > min);
+
+  const MESlider.wavy({
+    super.key,
+    required this.value,
+    required this.onChanged,
+    this.onChangeEnd,
+    this.min = 0.0,
+    this.max = 1.0,
+    this.divisions,
+    this.trackHeight = 16,
+    this.color,
+    this.trackColor,
+    this.semanticsLabel,
+    this.orientation = Axis.horizontal,
+  })  : style = MESliderStyle.wavy,
+        assert(max > min);
+
+  const MESlider.centered({
+    super.key,
+    required this.value,
+    required this.onChanged,
+    this.onChangeEnd,
+    this.min = 0.0,
+    this.max = 1.0,
+    this.divisions,
+    this.trackHeight = 16,
+    this.color,
+    this.trackColor,
+    this.semanticsLabel,
+    this.orientation = Axis.horizontal,
+  })  : style = MESliderStyle.centered,
+        assert(max > min);
+
+  const MESlider.vertical({
+    super.key,
+    required this.value,
+    required this.onChanged,
+    this.onChangeEnd,
+    this.min = 0.0,
+    this.max = 1.0,
+    this.divisions,
+    this.trackHeight = 16,
+    this.color,
+    this.trackColor,
+    this.semanticsLabel,
+    this.style = MESliderStyle.standard,
+  })  : orientation = Axis.vertical,
+        assert(max > min);
 
   final double value;
   final ValueChanged<double>? onChanged;
@@ -33,6 +91,8 @@ class MESlider extends StatefulWidget {
   final Color? color;
   final Color? trackColor;
   final String? semanticsLabel;
+  final MESliderStyle style;
+  final Axis orientation;
 
   @override
   State<MESlider> createState() => _MESliderState();
@@ -64,10 +124,13 @@ class _MESliderState extends State<MESlider>
     );
   }
 
-  void _handleDrag(Offset localPosition, double width) {
+  void _handleDrag(Offset localPosition, Size size) {
     if (widget.onChanged == null) return;
-    var fraction = (localPosition.dx / width).clamp(0.0, 1.0);
-    if (Directionality.of(context) == TextDirection.rtl) {
+    final vertical = widget.orientation == Axis.vertical;
+    var fraction = vertical
+        ? (1 - localPosition.dy / size.height).clamp(0.0, 1.0)
+        : (localPosition.dx / size.width).clamp(0.0, 1.0);
+    if (!vertical && Directionality.of(context) == TextDirection.rtl) {
       fraction = 1 - fraction;
     }
     if (widget.divisions != null) {
@@ -86,6 +149,7 @@ class _MESliderState extends State<MESlider>
     final inactiveColor = enabled
         ? (widget.trackColor ?? colors.secondaryContainer)
         : colors.onSurface.withValues(alpha: 0.12);
+    final vertical = widget.orientation == Axis.vertical;
 
     return Semantics(
       slider: true,
@@ -93,31 +157,51 @@ class _MESliderState extends State<MESlider>
       value: '${(_fraction * 100).round()} percent',
       child: LayoutBuilder(
         builder: (context, constraints) {
-          final width = constraints.maxWidth;
+          final size = vertical
+              ? Size(48,
+                  constraints.maxHeight.isFinite ? constraints.maxHeight : 160)
+              : Size(constraints.maxWidth, 48);
           return GestureDetector(
             behavior: HitTestBehavior.opaque,
-            onHorizontalDragStart: enabled
+            onHorizontalDragStart: !vertical && enabled
                 ? (d) {
                     _setPressed(true);
-                    _handleDrag(d.localPosition, width);
+                    _handleDrag(d.localPosition, size);
                   }
                 : null,
-            onHorizontalDragUpdate:
-                enabled ? (d) => _handleDrag(d.localPosition, width) : null,
-            onHorizontalDragEnd: enabled
+            onHorizontalDragUpdate: !vertical && enabled
+                ? (d) => _handleDrag(d.localPosition, size)
+                : null,
+            onHorizontalDragEnd: !vertical && enabled
+                ? (_) {
+                    _setPressed(false);
+                    widget.onChangeEnd?.call(widget.value);
+                  }
+                : null,
+            onVerticalDragStart: vertical && enabled
+                ? (d) {
+                    _setPressed(true);
+                    _handleDrag(d.localPosition, size);
+                  }
+                : null,
+            onVerticalDragUpdate: vertical && enabled
+                ? (d) => _handleDrag(d.localPosition, size)
+                : null,
+            onVerticalDragEnd: vertical && enabled
                 ? (_) {
                     _setPressed(false);
                     widget.onChangeEnd?.call(widget.value);
                   }
                 : null,
             onTapDown:
-                enabled ? (d) => _handleDrag(d.localPosition, width) : null,
+                enabled ? (d) => _handleDrag(d.localPosition, size) : null,
             child: SizedBox(
-              height: 48,
+              width: size.width,
+              height: size.height,
               child: AnimatedBuilder(
                 animation: _press,
                 builder: (context, _) => CustomPaint(
-                  size: Size(width, 48),
+                  size: size,
                   painter: _MESliderPainter(
                     fraction: _fraction,
                     press: _press.value.clamp(0.0, 1.0),
@@ -128,6 +212,8 @@ class _MESliderState extends State<MESlider>
                     onActiveColor: colors.onPrimary,
                     divisions: widget.divisions,
                     textDirection: Directionality.of(context),
+                    style: widget.style,
+                    vertical: vertical,
                   ),
                 ),
               ),
@@ -149,6 +235,8 @@ class _MESliderPainter extends CustomPainter {
     required this.handleColor,
     required this.onActiveColor,
     required this.textDirection,
+    required this.style,
+    required this.vertical,
     this.divisions,
   });
 
@@ -161,16 +249,30 @@ class _MESliderPainter extends CustomPainter {
   final Color onActiveColor;
   final int? divisions;
   final TextDirection textDirection;
+  final MESliderStyle style;
+  final bool vertical;
 
   static const double _handleGap = 6;
   static const double _handleWidthRest = 4;
   static const double _handleWidthPressed = 2;
-  static const double _handleHeight = 44;
+  static const double _handleLength = 44;
 
   @override
   void paint(Canvas canvas, Size size) {
+    if (vertical) {
+      canvas.save();
+      canvas.translate(size.width, 0);
+      canvas.rotate(math.pi / 2);
+      _paintTrack(canvas, Size(size.height, size.width));
+      canvas.restore();
+    } else {
+      _paintTrack(canvas, size);
+    }
+  }
+
+  void _paintTrack(Canvas canvas, Size size) {
     final cy = size.height / 2;
-    final rtl = textDirection == TextDirection.rtl;
+    final rtl = !vertical && textDirection == TextDirection.rtl;
     final f = rtl ? 1 - fraction : fraction;
     final handleX = f * size.width;
     final handleWidth =
@@ -179,11 +281,12 @@ class _MESliderPainter extends CustomPainter {
     final innerRadius = Radius.circular(trackHeight * 0.2);
     final outerRadius = Radius.circular(trackHeight / 2);
 
-    // Active track.
-    final activeEnd = handleX - _handleGap - handleWidth / 2;
-    if (activeEnd > trackHeight) {
-      canvas.drawRRect(
-        RRect.fromLTRBAndCorners(
+    if (style == MESliderStyle.centered) {
+      _paintCentered(canvas, size, cy, handleX, handleWidth, outerRadius);
+    } else {
+      final activeEnd = handleX - _handleGap - handleWidth / 2;
+      if (activeEnd > trackHeight) {
+        final rect = RRect.fromLTRBAndCorners(
           0,
           cy - trackHeight / 2,
           activeEnd,
@@ -192,30 +295,33 @@ class _MESliderPainter extends CustomPainter {
           bottomLeft: rtl ? innerRadius : outerRadius,
           topRight: rtl ? outerRadius : innerRadius,
           bottomRight: rtl ? outerRadius : innerRadius,
-        ),
-        Paint()..color = rtl ? inactiveColor : activeColor,
-      );
+        );
+        if (style == MESliderStyle.wavy) {
+          _paintWavy(canvas, rect.outerRect, activeColor);
+        } else {
+          canvas.drawRRect(
+              rect, Paint()..color = rtl ? inactiveColor : activeColor);
+        }
+      }
+
+      final inactiveStart = handleX + _handleGap + handleWidth / 2;
+      if (inactiveStart < size.width - trackHeight) {
+        canvas.drawRRect(
+          RRect.fromLTRBAndCorners(
+            inactiveStart,
+            cy - trackHeight / 2,
+            size.width,
+            cy + trackHeight / 2,
+            topLeft: innerRadius,
+            bottomLeft: innerRadius,
+            topRight: outerRadius,
+            bottomRight: outerRadius,
+          ),
+          Paint()..color = rtl ? activeColor : inactiveColor,
+        );
+      }
     }
 
-    // Inactive track.
-    final inactiveStart = handleX + _handleGap + handleWidth / 2;
-    if (inactiveStart < size.width - trackHeight) {
-      canvas.drawRRect(
-        RRect.fromLTRBAndCorners(
-          inactiveStart,
-          cy - trackHeight / 2,
-          size.width,
-          cy + trackHeight / 2,
-          topLeft: innerRadius,
-          bottomLeft: innerRadius,
-          topRight: outerRadius,
-          bottomRight: outerRadius,
-        ),
-        Paint()..color = rtl ? activeColor : inactiveColor,
-      );
-    }
-
-    // Stop indicator dot near the inactive end.
     final dotX = rtl ? trackHeight / 2 + 2 : size.width - trackHeight / 2 - 2;
     canvas.drawCircle(
       Offset(dotX, cy),
@@ -223,7 +329,6 @@ class _MESliderPainter extends CustomPainter {
       Paint()..color = rtl ? inactiveColor : activeColor,
     );
 
-    // Division ticks.
     if (divisions != null && divisions! > 1) {
       for (var i = 1; i < divisions!; i++) {
         final x = i / divisions! * size.width;
@@ -240,13 +345,12 @@ class _MESliderPainter extends CustomPainter {
       }
     }
 
-    // Handle: narrow vertical rounded bar.
     canvas.drawRRect(
       RRect.fromRectAndRadius(
         Rect.fromCenter(
           center: Offset(handleX, cy),
           width: handleWidth,
-          height: _handleHeight,
+          height: _handleLength,
         ),
         Radius.circular(handleWidth / 2),
       ),
@@ -254,9 +358,68 @@ class _MESliderPainter extends CustomPainter {
     );
   }
 
+  void _paintCentered(
+    Canvas canvas,
+    Size size,
+    double cy,
+    double handleX,
+    double handleWidth,
+    Radius outerRadius,
+  ) {
+    final mid = size.width / 2;
+    canvas.drawRRect(
+      RRect.fromLTRBR(
+        0,
+        cy - trackHeight / 2,
+        size.width,
+        cy + trackHeight / 2,
+        outerRadius,
+      ),
+      Paint()..color = inactiveColor,
+    );
+    final left = math.min(handleX, mid);
+    final right = math.max(handleX, mid);
+    if ((right - left) > _handleGap) {
+      final rect = Rect.fromLTRB(
+        left + (handleX < mid ? handleWidth / 2 + _handleGap : 0),
+        cy - trackHeight / 2,
+        right - (handleX > mid ? handleWidth / 2 + _handleGap : 0),
+        cy + trackHeight / 2,
+      );
+      canvas.drawRRect(
+        RRect.fromRectAndRadius(rect, outerRadius),
+        Paint()..color = activeColor,
+      );
+    }
+  }
+
+  void _paintWavy(Canvas canvas, Rect rect, Color color) {
+    final path = Path();
+    final midY = rect.center.dy;
+    const wavelength = 18.0;
+    final amplitude = trackHeight * 0.28;
+    path.moveTo(rect.left, midY);
+    for (double x = rect.left; x <= rect.right; x += 1) {
+      final y = midY +
+          math.sin((x - rect.left) / wavelength * 2 * math.pi) * amplitude;
+      path.lineTo(x, y);
+    }
+    canvas.drawPath(
+      path,
+      Paint()
+        ..color = color
+        ..style = PaintingStyle.stroke
+        ..strokeWidth = trackHeight * 0.7
+        ..strokeCap = StrokeCap.round
+        ..strokeJoin = StrokeJoin.round,
+    );
+  }
+
   @override
   bool shouldRepaint(_MESliderPainter oldDelegate) =>
       oldDelegate.fraction != fraction ||
       oldDelegate.press != press ||
-      oldDelegate.activeColor != activeColor;
+      oldDelegate.activeColor != activeColor ||
+      oldDelegate.style != style ||
+      oldDelegate.vertical != vertical;
 }

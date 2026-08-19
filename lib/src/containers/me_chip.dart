@@ -3,6 +3,9 @@ import 'package:flutter/material.dart';
 import '../internal/me_pressable.dart';
 import '../theme/me_shapes.dart';
 
+/// Chip roles matching the M3 Expressive chip set.
+enum MEChipType { assist, filter, input, suggestion }
+
 /// A Material 3 Expressive chip.
 ///
 /// Replaces [Chip], [FilterChip], [InputChip] and [ActionChip]. Filter
@@ -17,6 +20,7 @@ class MEChip extends StatelessWidget {
     this.onDeleted,
     this.selected,
     this.height = 32,
+    this.type,
   });
 
   final Widget label;
@@ -30,10 +34,20 @@ class MEChip extends StatelessWidget {
   final bool? selected;
   final double height;
 
+  /// Explicit type. Inferred from [selected]/[onDeleted] when null.
+  final MEChipType? type;
+
   @override
   Widget build(BuildContext context) {
     final colors = Theme.of(context).colorScheme;
     final textTheme = Theme.of(context).textTheme;
+    final resolvedType = type ??
+        (onDeleted != null
+            ? MEChipType.input
+            : selected != null
+                ? MEChipType.filter
+                : MEChipType.assist);
+    final isFilter = resolvedType == MEChipType.filter || selected != null;
     final isSelected = selected ?? false;
     final enabled = onPressed != null;
 
@@ -44,15 +58,19 @@ class MEChip extends StatelessWidget {
             ? colors.onSecondaryContainer
             : colors.onSurfaceVariant;
 
+    final restShape = resolvedType == MEChipType.suggestion
+        ? const StadiumBorder()
+        : RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(MECorners.small),
+            side: isSelected
+                ? BorderSide.none
+                : BorderSide(color: colors.outlineVariant),
+          );
+
     return MEPressable(
       onPressed: onPressed,
       enabled: enabled,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(MECorners.small),
-        side: isSelected
-            ? BorderSide.none
-            : BorderSide(color: colors.outlineVariant),
-      ),
+      shape: restShape,
       selectedShape: const StadiumBorder(),
       selected: isSelected,
       color: bg,
@@ -63,7 +81,7 @@ class MEChip extends StatelessWidget {
         child: Row(
           mainAxisSize: MainAxisSize.min,
           children: [
-            if (selected != null)
+            if (isFilter)
               AnimatedSize(
                 duration: const Duration(milliseconds: 300),
                 curve: Curves.easeOutBack,

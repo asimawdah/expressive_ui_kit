@@ -15,6 +15,7 @@ and the M3 Expressive motion scheme.
 | `IconButton`                    | `MEIconButton`                  |
 | `SegmentedButton`               | `MESegmentedButton`             |
 | toggle button rows              | `MEButtonGroup` (connected)     |
+| —                               | `METoggleButton` (new)          |
 | `FloatingActionButton`          | `MEFab`                         |
 | speed dial patterns             | `MEFabMenu` (new)               |
 | —                               | `MESplitButton` (new)           |
@@ -40,8 +41,9 @@ and the M3 Expressive motion scheme.
 | `showModalBottomSheet`          | `showMEBottomSheet`             |
 | `SnackBar`                      | `showMESnackBar`                |
 | `TextField`/`TextFormField`     | `METextField`                   |
-| `SearchBar`                     | `MESearchBar`                   |
-| `ListTile`                      | `MEListTile` + `MEListGroup`    |
+| `SearchBar`                     | `MESearchBar` + `MESearchAnchor` |
+| `SearchAnchor`                  | `MESearchAnchor` + `MESearchAppBar` |
+| `ListTile`                      | `MEListTile` + `MEListGroup` + `MECardList` |
 | `ExpansionTile`                 | `MEExpansionTile`               |
 | `PopupMenuButton`/`MenuAnchor`  | `MEMenuAnchor`                  |
 | `DropdownButton`/`DropdownMenu` | `MEDropdown`                    |
@@ -49,7 +51,9 @@ and the M3 Expressive motion scheme.
 | `Tooltip`                       | `METooltip`                     |
 | `Divider`                       | `MEDivider`                     |
 | `showDatePicker`                | `showMEDatePicker`              |
+| `showDateRangePicker`           | `showMEDateRangePicker`         |
 | `showTimePicker`                | `showMETimePicker`              |
+| —                               | `MEDialTimePicker` (new)        |
 | `SliverList`                    | `MESliverList`                  |
 | `SliverGrid`                    | `MESliverGrid`                  |
 | `SliverPersistentHeader`        | `MESliverPinnedHeader`          |
@@ -62,6 +66,11 @@ and the M3 Expressive motion scheme.
 | `ReorderableListView`           | `MEReorderableList`             |
 | `CircleAvatar`                  | `MEAvatar` + `MEAvatarGroup`    |
 | `Dismissible`                   | `MEDismissible`                 |
+| —                               | `MEDismissibleColumn` / `MEDismissibleList` (new) |
+| —                               | `MEExpandableList` (new)        |
+| —                               | `MESelection` (new)             |
+| —                               | `showMEFullScreenDialog` (new)  |
+| —                               | `showMESelectionDialog` (new)   |
 | `Autocomplete`                  | `MEAutocomplete`                |
 | —                               | `MEPageIndicator` (new)         |
 | —                               | `showMESideSheet` (new)         |

@@ -14,11 +14,15 @@ class MECheckbox extends StatefulWidget {
     required this.value,
     required this.onChanged,
     this.semanticsLabel,
+    this.label,
   });
 
   final bool value;
   final ValueChanged<bool>? onChanged;
   final String? semanticsLabel;
+
+  /// Optional label that is part of the tap target.
+  final Widget? label;
 
   @override
   State<MECheckbox> createState() => _MECheckboxState();
@@ -60,54 +64,66 @@ class _MECheckboxState extends State<MECheckbox>
       child: GestureDetector(
         behavior: HitTestBehavior.opaque,
         onTap: enabled ? () => widget.onChanged!(!widget.value) : null,
-        child: SizedBox(
-          width: 48,
-          height: 48,
-          child: Center(
-            child: AnimatedBuilder(
-              animation: _controller,
-              builder: (context, _) {
-                final t = _controller.value.clamp(0.0, 1.0);
-                final overshoot = _controller.value.clamp(0.0, 1.5);
-                final scale = 1.0 + (overshoot - t) * 0.3;
-                return Transform.scale(
-                  scale: scale,
-                  child: Container(
-                    width: 20,
-                    height: 20,
-                    decoration: BoxDecoration(
-                      color: Color.lerp(
-                        Colors.transparent,
-                        enabled
-                            ? colors.primary
-                            : colors.onSurface.withValues(alpha: 0.38),
-                        t,
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            SizedBox(
+              width: 48,
+              height: 48,
+              child: Center(
+                child: AnimatedBuilder(
+                  animation: _controller,
+                  builder: (context, _) {
+                    final t = _controller.value.clamp(0.0, 1.0);
+                    final overshoot = _controller.value.clamp(0.0, 1.5);
+                    final scale = 1.0 + (overshoot - t) * 0.3;
+                    return Transform.scale(
+                      scale: scale,
+                      child: Container(
+                        width: 20,
+                        height: 20,
+                        decoration: BoxDecoration(
+                          color: Color.lerp(
+                            Colors.transparent,
+                            enabled
+                                ? colors.primary
+                                : colors.onSurface.withValues(alpha: 0.38),
+                            t,
+                          ),
+                          border: Border.all(
+                            color: Color.lerp(
+                              enabled
+                                  ? colors.onSurfaceVariant
+                                  : colors.onSurface.withValues(alpha: 0.38),
+                              Colors.transparent,
+                              t,
+                            )!,
+                            width: 2,
+                          ),
+                          borderRadius: BorderRadius.circular(
+                            MECorners.extraSmall + 2 * t,
+                          ),
+                        ),
+                        child: CustomPaint(
+                          painter: _CheckPainter(
+                            progress: t,
+                            color: colors.onPrimary,
+                          ),
+                        ),
                       ),
-                      border: Border.all(
-                        color: Color.lerp(
-                          enabled
-                              ? colors.onSurfaceVariant
-                              : colors.onSurface.withValues(alpha: 0.38),
-                          Colors.transparent,
-                          t,
-                        )!,
-                        width: 2,
-                      ),
-                      borderRadius: BorderRadius.circular(
-                        MECorners.extraSmall + 2 * t,
-                      ),
-                    ),
-                    child: CustomPaint(
-                      painter: _CheckPainter(
-                        progress: t,
-                        color: colors.onPrimary,
-                      ),
-                    ),
-                  ),
-                );
-              },
+                    );
+                  },
+                ),
+              ),
             ),
-          ),
+            if (widget.label != null) ...[
+              const SizedBox(width: 4),
+              DefaultTextStyle.merge(
+                style: Theme.of(context).textTheme.bodyLarge!,
+                child: widget.label!,
+              ),
+            ],
+          ],
         ),
       ),
     );
