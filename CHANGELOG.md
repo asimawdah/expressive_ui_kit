@@ -64,7 +64,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   charts, compare slider, stopwatch, hold abort, coachmark, lists) spring
   with `MEMotionBuilder` / `MEMotionReveal` / `MEMotionWidth` /
   `MEMotionOpacity` instead of hardcoded `Duration`/`Curves`.
-- `ActionItem` press uses `MEPressable` corner-radius morph (no squash).
+- `MEMotionBuilder.from` matches motor `SingleMotionBuilder.from` for
+  enter springs (charts, gauges, like counts).
+- Deprecated `ExpressiveButton` press uses `MEPressable` corner morph
+  (no squash, no `Curves.easeOutCubic`).
+- PIN reject shake, refresh-indicator snap/scale, heatmap/funnel/
+  candlestick/bubble enter, and remaining switchers spring with motor.
 - Core surfaces animate with `motor` springs (`MaterialSpringMotion` tokens,
   the same engine as `m3e_core`) via `METheme` — menus use the popup spring.
 - Buttons, icon buttons, FABs, chips and cards morph **corner radius** on

@@ -150,20 +150,17 @@ class _MELikeButtonState extends State<MELikeButton>
               ),
               if (widget.count != null) ...[
                 const SizedBox(width: 2),
-                AnimatedSwitcher(
-                  duration: METheme.of(context)
-                      .motion
-                      .fastEffects
-                      .approximateDuration,
-                  switchInCurve: METheme.of(context).motion.fastSpatial.curve,
-                  switchOutCurve: METheme.of(context).motion.fastEffects.curve,
-                  transitionBuilder: (child, animation) => ScaleTransition(
-                    scale: animation,
-                    child: FadeTransition(opacity: animation, child: child),
+                MEMotionBuilder(
+                  key: ValueKey<int>(widget.count!),
+                  value: 1,
+                  from: 0,
+                  spec: METheme.of(context).motion.fastSpatial,
+                  builder: (context, t, child) => Transform.scale(
+                    scale: 0.7 + 0.3 * t.clamp(0.0, 1.4),
+                    child: child,
                   ),
                   child: Text(
                     '${widget.count}',
-                    key: ValueKey<int>(widget.count!),
                     style: textTheme.labelLarge!.copyWith(
                       color: widget.liked ? fill : scheme.onSurfaceVariant,
                       fontFeatures: const [FontFeature.tabularFigures()],

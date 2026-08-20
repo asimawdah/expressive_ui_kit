@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import '../theme/me_motion.dart';
 import '../theme/me_shapes.dart';
 import '../theme/me_theme.dart';
 
@@ -46,24 +47,25 @@ class MEFunnelChart extends StatefulWidget {
 
 class _MEFunnelChartState extends State<MEFunnelChart>
     with SingleTickerProviderStateMixin {
-  late final AnimationController _entrance = AnimationController(
-    vsync: this,
-    duration: const Duration(milliseconds: 900),
-  );
+  late final AnimationController _entrance =
+      AnimationController.unbounded(vsync: this, value: 0);
+  bool _entered = false;
 
   @override
-  void initState() {
-    super.initState();
-    _entrance.forward();
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    if (!_entered) {
+      _entered = true;
+      springTo(_entrance, 1, METheme.of(context).motion.slowSpatial);
+    }
   }
 
   @override
   void didUpdateWidget(MEFunnelChart oldWidget) {
     super.didUpdateWidget(oldWidget);
     if (widget.stages.length != oldWidget.stages.length) {
-      _entrance
-        ..reset()
-        ..forward();
+      _entrance.value = 0;
+      springTo(_entrance, 1, METheme.of(context).motion.slowSpatial);
     }
   }
 

@@ -42,11 +42,11 @@ class MESparkline extends StatelessWidget {
     final motion = METheme.of(context).motion;
     final lineColor = color ?? scheme.primary;
 
-    return TweenAnimationBuilder<double>(
+    return MEMotionBuilder(
       key: ValueKey(Object.hashAll(values)),
-      tween: Tween(begin: 0, end: 1),
-      duration: motion.slowSpatial.approximateDuration,
-      curve: motion.slowSpatial.curve,
+      value: 1,
+      from: 0,
+      spec: motion.slowSpatial,
       builder: (context, t, _) => SizedBox(
         height: height,
         width: double.infinity,
@@ -285,16 +285,10 @@ class _MEBarChartState extends State<MEBarChart> {
             }
             widget.onBarSelected?.call(index);
           },
-          child: TweenAnimationBuilder<double>(
-            tween: Tween(begin: 0, end: targetHeight),
-            // Stagger: each bar starts a beat after the previous one.
-            duration: motion.defaultSpatial.approximateDuration +
-                Duration(milliseconds: index * 60),
-            curve: Interval(
-              (index * 0.08).clamp(0.0, 0.5),
-              1.0,
-              curve: motion.defaultSpatial.curve,
-            ),
+          child: MEMotionBuilder(
+            value: targetHeight,
+            from: 0,
+            spec: motion.defaultSpatial,
             builder: (context, h, _) => MEMotionBuilder(
               value: selected ? 1.0 : 0.0,
               spec: motion.defaultEffects,

@@ -125,20 +125,16 @@ class _MEDonutChartState extends State<MEDonutChart> {
 
     final chart = GestureDetector(
       onTapDown: _handleTapDown,
-      child: TweenAnimationBuilder<double>(
+      child: MEMotionBuilder(
         key: ValueKey(
           Object.hashAll(widget.segments.map((s) => s.value)),
         ),
-        tween: Tween(begin: 0, end: 1),
-        duration: motion.slowSpatial.approximateDuration,
-        curve: motion.slowSpatial.curve,
-        builder: (context, sweepT, _) => TweenAnimationBuilder<double>(
-          tween: Tween(
-            begin: 0,
-            end: _selected == null ? 0 : 1,
-          ),
-          duration: motion.defaultSpatial.approximateDuration,
-          curve: motion.defaultSpatial.curve,
+        value: 1,
+        from: 0,
+        spec: motion.slowSpatial,
+        builder: (context, sweepT, _) => MEMotionBuilder(
+          value: _selected == null ? 0 : 1,
+          spec: motion.defaultSpatial,
           builder: (context, selectT, _) => SizedBox(
             width: widget.size,
             height: widget.size,
@@ -256,13 +252,17 @@ class _DonutCenter extends StatelessWidget {
     return Column(
       mainAxisSize: MainAxisSize.min,
       children: [
-        AnimatedSwitcher(
-          duration: METheme.of(context).motion.fastEffects.approximateDuration,
-          switchInCurve: METheme.of(context).motion.fastEffects.curve,
-          switchOutCurve: METheme.of(context).motion.fastEffects.curve,
+        MEMotionBuilder(
+          key: ValueKey(value),
+          value: 1,
+          from: 0,
+          spec: METheme.of(context).motion.fastEffects,
+          builder: (context, t, child) => Opacity(
+            opacity: t.clamp(0.0, 1.0),
+            child: child,
+          ),
           child: Text(
             value,
-            key: ValueKey(value),
             style: METypography.emphasize(
               text.headlineSmall!.copyWith(color: scheme.onSurface),
             ),

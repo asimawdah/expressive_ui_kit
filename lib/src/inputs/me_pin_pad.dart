@@ -1,5 +1,3 @@
-import 'dart:math' as math;
-
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
@@ -59,9 +57,9 @@ class _MEPinPadState extends State<MEPinPad> with TickerProviderStateMixin {
     vsync: this,
     value: 1,
   );
-  late final AnimationController _shake = AnimationController(
+  late final AnimationController _shake = AnimationController.unbounded(
     vsync: this,
-    duration: const Duration(milliseconds: 500),
+    value: 0,
   );
 
   @override
@@ -108,7 +106,16 @@ class _MEPinPadState extends State<MEPinPad> with TickerProviderStateMixin {
 
   void _reject() {
     HapticFeedback.heavyImpact();
-    _shake.forward(from: 0).whenComplete(_clear);
+    _shake.removeStatusListener(_onShakeStatus);
+    _shake.value = 1;
+    _shake.addStatusListener(_onShakeStatus);
+    springTo(_shake, 0, METheme.of(context).motion.fastSpatial);
+  }
+
+  void _onShakeStatus(AnimationStatus status) {
+    if (status != AnimationStatus.completed) return;
+    _shake.removeStatusListener(_onShakeStatus);
+    _clear();
   }
 
   void _clear() {
@@ -129,11 +136,7 @@ class _MEPinPadState extends State<MEPinPad> with TickerProviderStateMixin {
         AnimatedBuilder(
           animation: Listenable.merge([_pop, _shake]),
           builder: (context, _) {
-            // Damped sine shake: ~3 swings decaying to zero.
-            final s = _shake.value;
-            final dx = s == 0 || s == 1
-                ? 0.0
-                : 12 * (1 - s) * math.sin(s * 6 * math.pi);
+            final dx = 12 * _shake.value;
             return Transform.translate(
               offset: Offset(dx, 0),
               child: Row(

@@ -254,12 +254,17 @@ class MEMotionBuilder extends StatelessWidget {
     required this.value,
     required this.spec,
     required this.builder,
+    this.from,
     this.child,
   });
 
   final double value;
   final MESpringSpec spec;
   final ValueWidgetBuilder<double> builder;
+
+  /// Starting value for the first animation — same as motor's
+  /// [SingleMotionBuilder.from]. When null, the builder starts at [value].
+  final double? from;
   final Widget? child;
 
   @override
@@ -267,6 +272,7 @@ class MEMotionBuilder extends StatelessWidget {
     if (spec.instant) return builder(context, value, child);
     return SingleMotionBuilder(
       value: value,
+      from: from,
       motion: spec.toMotion(),
       builder: builder,
       child: child,

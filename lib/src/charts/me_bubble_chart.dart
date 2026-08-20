@@ -2,6 +2,7 @@ import 'dart:math' as math;
 
 import 'package:flutter/material.dart';
 
+import '../theme/me_motion.dart';
 import '../theme/me_theme.dart';
 
 /// A single bubble in an [MEBubbleChart].
@@ -66,21 +67,28 @@ class MEBubbleChart extends StatefulWidget {
 
 class _MEBubbleChartState extends State<MEBubbleChart>
     with TickerProviderStateMixin {
-  late final AnimationController _enter;
+  late final AnimationController _enter =
+      AnimationController.unbounded(vsync: this, value: 0);
+  bool _entered = false;
   AnimationController? _idle;
 
   @override
   void initState() {
     super.initState();
-    _enter = AnimationController(
-      vsync: this,
-      duration: const Duration(milliseconds: 1400),
-    )..forward();
     if (widget.drift) {
       _idle = AnimationController(
         vsync: this,
         duration: const Duration(seconds: 6),
       )..repeat();
+    }
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    if (!_entered) {
+      _entered = true;
+      springTo(_enter, 1, METheme.of(context).motion.slowSpatial);
     }
   }
 
@@ -97,7 +105,8 @@ class _MEBubbleChartState extends State<MEBubbleChart>
       _idle = null;
     }
     if (!listEquals(oldWidget.bubbles, widget.bubbles)) {
-      _enter.forward(from: 0);
+      _enter.value = 0;
+      springTo(_enter, 1, METheme.of(context).motion.slowSpatial);
     }
   }
 
@@ -136,7 +145,7 @@ class _MEBubbleChartState extends State<MEBubbleChart>
             return CustomPaint(
               painter: _BubblePainter(
                 bubbles: widget.bubbles,
-                enter: _enter.value,
+                enter: _enter.value.clamp(0.0, 1.2),
                 idle: _idle?.value ?? 0,
                 curve: curve,
                 minRadius: widget.minRadius,

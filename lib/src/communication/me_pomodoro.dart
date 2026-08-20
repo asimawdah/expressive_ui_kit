@@ -158,19 +158,32 @@ class _MEPomodoroState extends State<MEPomodoro> with TickerProviderStateMixin {
             Column(
               mainAxisSize: MainAxisSize.min,
               children: [
-                AnimatedSwitcher(
-                  duration: METheme.of(context)
-                      .motion
-                      .defaultEffects
-                      .approximateDuration,
-                  switchInCurve:
-                      METheme.of(context).motion.defaultEffects.curve,
-                  switchOutCurve: METheme.of(context).motion.fastEffects.curve,
-                  child: Text(
-                    _isFocus ? 'Focus' : 'Break',
-                    key: ValueKey(_isFocus),
-                    style: textTheme.labelLarge!.copyWith(color: active),
-                  ),
+                MEMotionBuilder(
+                  value: _isFocus ? 1.0 : 0.0,
+                  spec: METheme.of(context).motion.defaultEffects,
+                  builder: (context, t, _) {
+                    return Stack(
+                      alignment: Alignment.center,
+                      children: [
+                        Opacity(
+                          opacity: t.clamp(0.0, 1.0),
+                          child: Text(
+                            'Focus',
+                            style:
+                                textTheme.labelLarge!.copyWith(color: active),
+                          ),
+                        ),
+                        Opacity(
+                          opacity: (1.0 - t).clamp(0.0, 1.0),
+                          child: Text(
+                            'Break',
+                            style:
+                                textTheme.labelLarge!.copyWith(color: active),
+                          ),
+                        ),
+                      ],
+                    );
+                  },
                 ),
                 const SizedBox(height: 4),
                 Text(

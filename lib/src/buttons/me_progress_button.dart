@@ -71,7 +71,7 @@ class _MEProgressButtonState extends State<MEProgressButton>
     return AnimatedBuilder(
       animation: _anim,
       builder: (context, child) {
-        final t = _anim.value.clamp(0.0, 1.0);
+        final t = _anim.value;
         return MEPressable(
           onPressed: enabled ? _run : null,
           enabled: enabled,

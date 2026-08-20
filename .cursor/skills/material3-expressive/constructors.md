@@ -17,6 +17,7 @@ springTo(controller, 1, motion.popup); // menus / dropdowns
 springTo(controller, 1, motion.overflow); // overflow extra-actions
 MEMotionBuilder(
   value: pressed ? 1 : 0,
+  from: 0, // optional enter spring, same as motor SingleMotionBuilder.from
   spec: motion.defaultSpatial,
   builder: (context, t, child) => child!,
 );

@@ -159,6 +159,25 @@ void main() {
     final opacity = tester.widget<Opacity>(find.byType(Opacity));
     expect(opacity.opacity, 0);
   });
+
+  testWidgets('MEMotionBuilder from springs toward value', (tester) async {
+    await tester.pumpWidget(
+      Directionality(
+        textDirection: TextDirection.ltr,
+        child: Center(
+          child: MEMotionBuilder(
+            value: 80,
+            from: 0,
+            spec: MESpringSpec.expressiveSpatialDefault,
+            builder: (context, w, child) => SizedBox(width: w, height: 10),
+          ),
+        ),
+      ),
+    );
+    expect(tester.getSize(find.byType(SizedBox)).width, lessThan(80));
+    await tester.pumpAndSettle();
+    expect(tester.getSize(find.byType(SizedBox)).width, closeTo(80, 1));
+  });
 }
 
 bool _matches(MESpringSpec spec, MaterialSpringMotion motion) {

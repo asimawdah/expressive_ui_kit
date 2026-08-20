@@ -48,16 +48,18 @@ class MEHeatmap extends StatefulWidget {
 
 class _MEHeatmapState extends State<MEHeatmap>
     with SingleTickerProviderStateMixin {
-  late final AnimationController _enter;
+  late final AnimationController _enter =
+      AnimationController.unbounded(vsync: this, value: 0);
+  bool _entered = false;
   int? _selected;
 
   @override
-  void initState() {
-    super.initState();
-    _enter = AnimationController(
-      vsync: this,
-      duration: const Duration(milliseconds: 900),
-    )..forward();
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    if (!_entered) {
+      _entered = true;
+      springTo(_enter, 1, METheme.of(context).motion.slowSpatial);
+    }
   }
 
   @override
@@ -100,21 +102,20 @@ class _MEHeatmapState extends State<MEHeatmap>
           ],
         ),
         // Selected cell details.
-        AnimatedSize(
-          duration: motion.defaultEffects.approximateDuration,
-          curve: motion.defaultEffects.curve,
+        MEMotionReveal(
+          visible: selectedTooltip != null,
+          spec: motion.defaultEffects,
+          axis: Axis.vertical,
           alignment: Alignment.topLeft,
-          child: selectedTooltip == null
-              ? const SizedBox(width: double.infinity)
-              : Padding(
-                  padding: const EdgeInsets.only(top: 12),
-                  child: Text(
-                    selectedTooltip,
-                    style: Theme.of(context).textTheme.bodySmall!.copyWith(
-                          color: scheme.onSurfaceVariant,
-                        ),
+          child: Padding(
+            padding: const EdgeInsets.only(top: 12),
+            child: Text(
+              selectedTooltip ?? '',
+              style: Theme.of(context).textTheme.bodySmall!.copyWith(
+                    color: scheme.onSurfaceVariant,
                   ),
-                ),
+            ),
+          ),
         ),
       ],
     );
@@ -141,7 +142,7 @@ class _MEHeatmapState extends State<MEHeatmap>
     return AnimatedBuilder(
       animation: _enter,
       builder: (context, child) {
-        final t = curve.transform(_enter.value);
+        final t = curve.transform(_enter.value.clamp(0.0, 1.0));
         return Transform.scale(scale: t.clamp(0.0, 1.1), child: child);
       },
       child: GestureDetector(

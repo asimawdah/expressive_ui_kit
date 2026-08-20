@@ -5,6 +5,7 @@ import 'package:flutter/cupertino.dart' hide RefreshCallback;
 import 'package:flutter/foundation.dart' show clampDouble;
 import 'package:flutter/material.dart';
 
+import '../theme/me_theme.dart';
 import 'me_loading_indicator.dart';
 
 // The over-scroll distance that moves the indicator to its maximum
@@ -14,14 +15,6 @@ const double _kDragContainerExtentPercentage = 0.25;
 // How much the scroll's drag gesture can overshoot the RefreshIndicator's
 // displacement; max displacement = _kDragSizeFactorLimit * displacement.
 const double _kDragSizeFactorLimit = 1.5;
-
-// When the scroll ends, the duration of the refresh indicator's animation
-// to the RefreshIndicator's displacement.
-const Duration _kIndicatorSnapDuration = Duration(milliseconds: 150);
-
-// The duration of the ScaleTransition that starts when the refresh action
-// has completed.
-const Duration _kIndicatorScaleDuration = Duration(milliseconds: 200);
 
 /// Indicates current status of Material `RefreshIndicator`.
 enum MERefreshIndicatorStatus {
@@ -346,6 +339,11 @@ class MERefreshIndicatorState extends State<MERefreshIndicator>
   late Color _effectiveValueColor =
       widget.color ?? Theme.of(context).colorScheme.primary;
 
+  Duration get _snapDuration =>
+      METheme.of(context).motion.fastSpatial.approximateDuration;
+  Duration get _scaleDuration =>
+      METheme.of(context).motion.fastEffects.approximateDuration;
+
   static final Animatable<double> _kDragSizeFactorLimitTween = Tween<double>(
     begin: 0.0,
     end: _kDragSizeFactorLimit,
@@ -578,12 +576,12 @@ class MERefreshIndicatorState extends State<MERefreshIndicator>
       case MERefreshIndicatorStatus.done:
         await _scaleController.animateTo(
           1.0,
-          duration: _kIndicatorScaleDuration,
+          duration: _scaleDuration,
         );
       case MERefreshIndicatorStatus.canceled:
         await _positionController.animateTo(
           0.0,
-          duration: _kIndicatorScaleDuration,
+          duration: _scaleDuration,
         );
       case MERefreshIndicatorStatus.armed:
       case MERefreshIndicatorStatus.drag:
@@ -610,7 +608,7 @@ class MERefreshIndicatorState extends State<MERefreshIndicator>
     _positionController
         .animateTo(
       1.0 / _kDragSizeFactorLimit,
-      duration: _kIndicatorSnapDuration,
+      duration: _snapDuration,
     )
         .then<void>((void value) {
       if (mounted && _status == MERefreshIndicatorStatus.snap) {
