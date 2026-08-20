@@ -260,10 +260,13 @@ class _MEBarChartState extends State<MEBarChart> {
       mainAxisAlignment: MainAxisAlignment.end,
       children: [
         // Value label pops in above the selected bar.
-        AnimatedScale(
-          scale: selected ? 1 : 0,
-          duration: motion.fastSpatial.approximateDuration,
-          curve: motion.fastSpatial.curve,
+        MEMotionBuilder(
+          value: selected ? 1.0 : 0.0,
+          spec: motion.fastSpatial,
+          builder: (context, t, child) => Transform.scale(
+            scale: t,
+            child: child,
+          ),
           child: Text(
             entry.value % 1 == 0
                 ? entry.value.toInt().toString()
@@ -292,18 +295,24 @@ class _MEBarChartState extends State<MEBarChart> {
               1.0,
               curve: motion.defaultSpatial.curve,
             ),
-            builder: (context, h, _) => AnimatedContainer(
-              duration: motion.defaultEffects.approximateDuration,
-              curve: motion.defaultEffects.curve,
-              width: widget.barWidth,
-              height: math.max(h, 4),
-              decoration: BoxDecoration(
-                color: barColor,
-                borderRadius: BorderRadius.vertical(
-                  top: Radius.circular(widget.barWidth / 2),
-                  bottom: Radius.circular(selected ? widget.barWidth / 4 : 4),
-                ),
-              ),
+            builder: (context, h, _) => MEMotionBuilder(
+              value: selected ? 1.0 : 0.0,
+              spec: motion.defaultEffects,
+              builder: (context, t, _) {
+                return Container(
+                  width: widget.barWidth,
+                  height: math.max(h, 4),
+                  decoration: BoxDecoration(
+                    color: barColor,
+                    borderRadius: BorderRadius.vertical(
+                      top: Radius.circular(widget.barWidth / 2),
+                      bottom: Radius.circular(
+                        4 + (widget.barWidth / 4 - 4) * t,
+                      ),
+                    ),
+                  ),
+                );
+              },
             ),
           ),
         ),

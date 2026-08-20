@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 
+import '../theme/me_motion.dart';
 import '../theme/me_shapes.dart';
+import '../theme/me_theme.dart';
 
 /// A Material 3 Expressive skeleton loading placeholder.
 ///
@@ -105,13 +107,22 @@ class MESkeletonizer extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return AnimatedSwitcher(
-      duration: const Duration(milliseconds: 350),
-      switchInCurve: Curves.easeOutCubic,
-      switchOutCurve: Curves.easeInCubic,
-      child: loading
-          ? KeyedSubtree(key: const ValueKey('skeleton'), child: skeleton)
-          : KeyedSubtree(key: const ValueKey('content'), child: child),
+    final motion = METheme.of(context).motion;
+    return MEMotionBuilder(
+      value: loading ? 0.0 : 1.0,
+      spec: motion.defaultEffects,
+      builder: (context, t, _) {
+        if (t < 0.5) {
+          return Opacity(
+            opacity: (1.0 - t * 2).clamp(0.0, 1.0),
+            child: skeleton,
+          );
+        }
+        return Opacity(
+          opacity: ((t - 0.5) * 2).clamp(0.0, 1.0),
+          child: child,
+        );
+      },
     );
   }
 }

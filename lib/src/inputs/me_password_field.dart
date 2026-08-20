@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
+import '../theme/me_motion.dart';
 import '../theme/me_theme.dart';
 import 'me_text_field.dart';
 
@@ -191,66 +192,60 @@ class _MEPasswordFieldState extends State<MEPasswordField> {
           onChanged: _handleChanged,
           onSubmitted: widget.onSubmitted,
         ),
-        AnimatedSize(
-          duration: motion.defaultEffects.approximateDuration,
-          curve: motion.defaultEffects.curve,
+        MEMotionReveal(
+          visible: showMeter,
+          spec: motion.defaultEffects,
+          axis: Axis.vertical,
           alignment: Alignment.topCenter,
-          child: showMeter
-              ? Padding(
-                  padding: const EdgeInsetsDirectional.only(
-                    start: 4,
-                    end: 4,
-                    top: 8,
-                  ),
+          child: Padding(
+            padding: const EdgeInsetsDirectional.only(
+              start: 4,
+              end: 4,
+              top: 8,
+            ),
+            child: Row(
+              children: [
+                Expanded(
                   child: Row(
                     children: [
-                      Expanded(
-                        child: Row(
-                          children: [
-                            for (var i = 0; i < 4; i++) ...[
-                              if (i > 0) const SizedBox(width: 4),
-                              Expanded(
-                                child: TweenAnimationBuilder<double>(
-                                  tween: Tween(
-                                    end: (_strength * 4 - i).clamp(0.0, 1.0),
-                                  ),
-                                  duration:
-                                      motion.defaultEffects.approximateDuration,
-                                  curve: motion.defaultEffects.curve,
-                                  builder: (context, fill, _) => Container(
-                                    height: 4,
-                                    decoration: BoxDecoration(
-                                      color: Color.lerp(
-                                        scheme.surfaceContainerHighest,
-                                        strengthColor(_strength),
-                                        fill,
-                                      ),
-                                      borderRadius: BorderRadius.circular(2),
-                                    ),
-                                  ),
+                      for (var i = 0; i < 4; i++) ...[
+                        if (i > 0) const SizedBox(width: 4),
+                        Expanded(
+                          child: MEMotionBuilder(
+                            value: (_strength * 4 - i).clamp(0.0, 1.0),
+                            spec: motion.defaultEffects,
+                            builder: (context, fill, _) => Container(
+                              height: 4,
+                              decoration: BoxDecoration(
+                                color: Color.lerp(
+                                  scheme.surfaceContainerHighest,
+                                  strengthColor(_strength),
+                                  fill.clamp(0.0, 1.0),
                                 ),
+                                borderRadius: BorderRadius.circular(2),
                               ),
-                            ],
-                          ],
-                        ),
-                      ),
-                      if (widget.strengthLabel != null && _strength > 0) ...[
-                        const SizedBox(width: 10),
-                        AnimatedDefaultTextStyle(
-                          duration: motion.defaultEffects.approximateDuration,
-                          curve: motion.defaultEffects.curve,
-                          style:
-                              Theme.of(context).textTheme.labelMedium!.copyWith(
-                                    color: strengthColor(_strength),
-                                    fontWeight: FontWeight.w600,
-                                  ),
-                          child: Text(widget.strengthLabel!(_strength) ?? ''),
+                            ),
+                          ),
                         ),
                       ],
                     ],
                   ),
-                )
-              : const SizedBox.shrink(),
+                ),
+                if (widget.strengthLabel != null && _strength > 0) ...[
+                  const SizedBox(width: 10),
+                  AnimatedDefaultTextStyle(
+                    duration: motion.defaultEffects.approximateDuration,
+                    curve: motion.defaultEffects.curve,
+                    style: Theme.of(context).textTheme.labelMedium!.copyWith(
+                          color: strengthColor(_strength),
+                          fontWeight: FontWeight.w600,
+                        ),
+                    child: Text(widget.strengthLabel!(_strength) ?? ''),
+                  ),
+                ],
+              ],
+            ),
+          ),
         ),
       ],
     );

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import '../theme/me_motion.dart';
 import '../theme/me_shapes.dart';
 import '../theme/me_theme.dart';
 
@@ -73,16 +74,15 @@ class _MEDismissibleState extends State<MEDismissible> {
       background: _buildBackground(context, AlignmentDirectional.centerStart),
       secondaryBackground:
           _buildBackground(context, AlignmentDirectional.centerEnd),
-      child: AnimatedContainer(
-        duration: METheme.of(context).motion.fastSpatial.approximateDuration,
-        curve: METheme.of(context).motion.fastSpatial.curve,
-        clipBehavior: Clip.antiAlias,
-        decoration: BoxDecoration(
-          // While dragging, the row lifts and rounds its corners.
-          borderRadius: BorderRadius.circular(
-            _dragging ? MECorners.large : MECorners.none,
-          ),
-        ),
+      child: MEMotionBuilder(
+        value: _dragging ? 1.0 : 0.0,
+        spec: METheme.of(context).motion.fastSpatial,
+        builder: (context, t, child) {
+          return ClipRRect(
+            borderRadius: BorderRadius.circular(MECorners.large * t),
+            child: child,
+          );
+        },
         child: widget.child,
       ),
     );

@@ -273,3 +273,91 @@ class MEMotionBuilder extends StatelessWidget {
     );
   }
 }
+
+/// Springs [child] open/closed along [axis] — the motor equivalent of
+/// [AnimatedSize] used by `m3e_core` expandables and filter chips.
+class MEMotionReveal extends StatelessWidget {
+  const MEMotionReveal({
+    super.key,
+    required this.visible,
+    required this.spec,
+    required this.child,
+    this.axis = Axis.horizontal,
+    this.alignment = Alignment.center,
+  });
+
+  final bool visible;
+  final MESpringSpec spec;
+  final Widget child;
+  final Axis axis;
+  final AlignmentGeometry alignment;
+
+  @override
+  Widget build(BuildContext context) {
+    return MEMotionBuilder(
+      value: visible ? 1.0 : 0.0,
+      spec: spec,
+      builder: (context, t, child) {
+        if (t <= 0.001) return const SizedBox.shrink();
+        return ClipRect(
+          child: Align(
+            alignment: alignment,
+            widthFactor: axis == Axis.horizontal ? t : null,
+            heightFactor: axis == Axis.vertical ? t : null,
+            child: child,
+          ),
+        );
+      },
+      child: child,
+    );
+  }
+}
+
+/// Springs a width constraint — used instead of [AnimatedContainer] width.
+class MEMotionWidth extends StatelessWidget {
+  const MEMotionWidth({
+    super.key,
+    required this.width,
+    required this.spec,
+    required this.child,
+  });
+
+  final double width;
+  final MESpringSpec spec;
+  final Widget child;
+
+  @override
+  Widget build(BuildContext context) {
+    return MEMotionBuilder(
+      value: width,
+      spec: spec,
+      builder: (context, w, child) => SizedBox(width: w, child: child),
+      child: child,
+    );
+  }
+}
+
+/// Springs opacity — used instead of [AnimatedOpacity] / [FadeTransition].
+class MEMotionOpacity extends StatelessWidget {
+  const MEMotionOpacity({
+    super.key,
+    required this.opacity,
+    required this.spec,
+    required this.child,
+  });
+
+  final double opacity;
+  final MESpringSpec spec;
+  final Widget child;
+
+  @override
+  Widget build(BuildContext context) {
+    return MEMotionBuilder(
+      value: opacity,
+      spec: spec,
+      builder: (context, t, child) =>
+          Opacity(opacity: t.clamp(0.0, 1.0), child: child),
+      child: child,
+    );
+  }
+}

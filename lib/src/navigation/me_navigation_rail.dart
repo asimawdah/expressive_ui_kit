@@ -129,144 +129,150 @@ class _MENavigationRailState extends State<MENavigationRail>
         count: count,
         onSelected: widget.onDestinationSelected,
       ),
-      child: AnimatedContainer(
-        duration: motion.defaultSpatial.approximateDuration,
-        curve: motion.defaultSpatial.curve,
+      child: MEMotionWidth(
         width: widget.expanded ? 220 : 96,
-        color: widget.backgroundColor ?? colors.surface,
-        child: SafeArea(
-          right: false,
-          left: false,
-          bottom: false,
-          child: Column(
-            crossAxisAlignment: widget.expanded
-                ? CrossAxisAlignment.start
-                : CrossAxisAlignment.center,
-            children: [
-              if (widget.leading != null)
-                Padding(
-                  padding: const EdgeInsets.fromLTRB(12, 16, 12, 8),
-                  child: widget.leading!,
-                ),
-              if (widget.fab != null)
-                Padding(
-                  padding: const EdgeInsets.fromLTRB(12, 8, 12, 8),
-                  child: widget.fab!,
-                ),
-              const SizedBox(height: 8),
-              Expanded(
-                child: LayoutBuilder(
-                  builder: (context, constraints) {
-                    return AnimatedBuilder(
-                      animation: Listenable.merge([_indicator, _iconBounce]),
-                      builder: (context, _) {
-                        final pos = _indicator.value;
-                        final remaining = (pos - widget.selectedIndex).abs();
-                        final stretch = 1.0 + remaining.clamp(0.0, 1.0) * 0.45;
-                        final squash = 1.0 - (stretch - 1.0) * 0.2;
-                        final pillH = _pillHeight * squash * stretch;
-                        final tops = _destinationTops(itemHeight);
-                        final i0 =
-                            pos.floor().clamp(0, count == 0 ? 0 : count - 1);
-                        final i1 =
-                            pos.ceil().clamp(0, count == 0 ? 0 : count - 1);
-                        final t = (pos - i0).clamp(0.0, 1.0);
-                        final itemTop = count == 0
-                            ? 0.0
-                            : tops[i0] + (tops[i1] - tops[i0]) * t;
+        spec: motion.defaultSpatial,
+        child: ColoredBox(
+          color: widget.backgroundColor ?? colors.surface,
+          child: SafeArea(
+            right: false,
+            left: false,
+            bottom: false,
+            child: Column(
+              crossAxisAlignment: widget.expanded
+                  ? CrossAxisAlignment.start
+                  : CrossAxisAlignment.center,
+              children: [
+                if (widget.leading != null)
+                  Padding(
+                    padding: const EdgeInsets.fromLTRB(12, 16, 12, 8),
+                    child: widget.leading!,
+                  ),
+                if (widget.fab != null)
+                  Padding(
+                    padding: const EdgeInsets.fromLTRB(12, 8, 12, 8),
+                    child: widget.fab!,
+                  ),
+                const SizedBox(height: 8),
+                Expanded(
+                  child: LayoutBuilder(
+                    builder: (context, constraints) {
+                      return AnimatedBuilder(
+                        animation: Listenable.merge([_indicator, _iconBounce]),
+                        builder: (context, _) {
+                          final pos = _indicator.value;
+                          final remaining = (pos - widget.selectedIndex).abs();
+                          final stretch =
+                              1.0 + remaining.clamp(0.0, 1.0) * 0.45;
+                          final squash = 1.0 - (stretch - 1.0) * 0.2;
+                          final pillH = _pillHeight * squash * stretch;
+                          final tops = _destinationTops(itemHeight);
+                          final i0 =
+                              pos.floor().clamp(0, count == 0 ? 0 : count - 1);
+                          final i1 =
+                              pos.ceil().clamp(0, count == 0 ? 0 : count - 1);
+                          final t = (pos - i0).clamp(0.0, 1.0);
+                          final itemTop = count == 0
+                              ? 0.0
+                              : tops[i0] + (tops[i1] - tops[i0]) * t;
 
-                        // Collapsed: sit behind the icon slot.
-                        // Expanded: sit vertically centered in the row.
-                        final pillTop = widget.expanded
-                            ? itemTop + (itemHeight - pillH) / 2
-                            : itemTop +
-                                _collapsedIconTop +
-                                (_pillHeight - pillH) / 2;
+                          // Collapsed: sit behind the icon slot.
+                          // Expanded: sit vertically centered in the row.
+                          final pillTop = widget.expanded
+                              ? itemTop + (itemHeight - pillH) / 2
+                              : itemTop +
+                                  _collapsedIconTop +
+                                  (_pillHeight - pillH) / 2;
 
-                        final pillLeft = widget.expanded
-                            ? 12.0
-                            : (constraints.maxWidth - _pillWidth) / 2;
-                        final pillW = widget.expanded
-                            ? constraints.maxWidth - 24
-                            : _pillWidth;
+                          final pillLeft = widget.expanded
+                              ? 12.0
+                              : (constraints.maxWidth - _pillWidth) / 2;
+                          final pillW = widget.expanded
+                              ? constraints.maxWidth - 24
+                              : _pillWidth;
 
-                        // Scroll when destinations exceed available height
-                        // (e.g. landscape / split-screen). Pill stays in the
-                        // same scrollable so it tracks the selected item.
-                        return SingleChildScrollView(
-                          child: SizedBox(
-                            height: _stackHeight(itemHeight),
-                            width: constraints.maxWidth,
-                            child: Stack(
-                              clipBehavior: Clip.none,
-                              children: [
-                                Positioned(
-                                  top: pillTop,
-                                  left: pillLeft,
-                                  child: Container(
-                                    width: pillW,
-                                    height: pillH,
-                                    decoration: BoxDecoration(
-                                      color: colors.secondaryContainer,
-                                      borderRadius:
-                                          BorderRadius.circular(pillH / 2),
+                          // Scroll when destinations exceed available height
+                          // (e.g. landscape / split-screen). Pill stays in the
+                          // same scrollable so it tracks the selected item.
+                          return SingleChildScrollView(
+                            child: SizedBox(
+                              height: _stackHeight(itemHeight),
+                              width: constraints.maxWidth,
+                              child: Stack(
+                                clipBehavior: Clip.none,
+                                children: [
+                                  Positioned(
+                                    top: pillTop,
+                                    left: pillLeft,
+                                    child: Container(
+                                      width: pillW,
+                                      height: pillH,
+                                      decoration: BoxDecoration(
+                                        color: colors.secondaryContainer,
+                                        borderRadius:
+                                            BorderRadius.circular(pillH / 2),
+                                      ),
                                     ),
                                   ),
-                                ),
-                                Column(
-                                  mainAxisSize: MainAxisSize.min,
-                                  children: [
-                                    for (var i = 0; i < count; i++) ...[
-                                      if (widget.expanded &&
-                                          widget.destinations[i].sectionLabel !=
-                                              null)
-                                        SizedBox(
-                                          height: _sectionHeaderHeight,
-                                          width: double.infinity,
-                                          child: Padding(
-                                            padding: const EdgeInsets.fromLTRB(
-                                                16, 8, 12, 0),
-                                            child: Text(
-                                              widget.destinations[i]
-                                                  .sectionLabel!,
-                                              style: textTheme.labelSmall!
-                                                  .copyWith(
-                                                color: colors.onSurfaceVariant,
-                                                fontWeight: FontWeight.w700,
+                                  Column(
+                                    mainAxisSize: MainAxisSize.min,
+                                    children: [
+                                      for (var i = 0; i < count; i++) ...[
+                                        if (widget.expanded &&
+                                            widget.destinations[i]
+                                                    .sectionLabel !=
+                                                null)
+                                          SizedBox(
+                                            height: _sectionHeaderHeight,
+                                            width: double.infinity,
+                                            child: Padding(
+                                              padding:
+                                                  const EdgeInsets.fromLTRB(
+                                                      16, 8, 12, 0),
+                                              child: Text(
+                                                widget.destinations[i]
+                                                    .sectionLabel!,
+                                                style: textTheme.labelSmall!
+                                                    .copyWith(
+                                                  color:
+                                                      colors.onSurfaceVariant,
+                                                  fontWeight: FontWeight.w700,
+                                                ),
                                               ),
                                             ),
                                           ),
+                                        SizedBox(
+                                          height: itemHeight,
+                                          width: double.infinity,
+                                          child: _RailItem(
+                                            destination: widget.destinations[i],
+                                            selected: i == widget.selectedIndex,
+                                            expanded: widget.expanded,
+                                            bounceScale:
+                                                i == widget.selectedIndex
+                                                    ? _iconBounce.value
+                                                        .clamp(0.7, 1.15)
+                                                    : 1,
+                                            onTap: () =>
+                                                widget.onDestinationSelected(i),
+                                            colors: colors,
+                                            textTheme: textTheme,
+                                          ),
                                         ),
-                                      SizedBox(
-                                        height: itemHeight,
-                                        width: double.infinity,
-                                        child: _RailItem(
-                                          destination: widget.destinations[i],
-                                          selected: i == widget.selectedIndex,
-                                          expanded: widget.expanded,
-                                          bounceScale: i == widget.selectedIndex
-                                              ? _iconBounce.value
-                                                  .clamp(0.7, 1.15)
-                                              : 1,
-                                          onTap: () =>
-                                              widget.onDestinationSelected(i),
-                                          colors: colors,
-                                          textTheme: textTheme,
-                                        ),
-                                      ),
+                                      ],
                                     ],
-                                  ],
-                                ),
-                              ],
+                                  ),
+                                ],
+                              ),
                             ),
-                          ),
-                        );
-                      },
-                    );
-                  },
+                          );
+                        },
+                      );
+                    },
+                  ),
                 ),
-              ),
-            ],
+              ],
+            ),
           ),
         ),
       ),

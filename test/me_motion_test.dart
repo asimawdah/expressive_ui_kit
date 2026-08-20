@@ -1,4 +1,4 @@
-import 'package:flutter/animation.dart';
+import 'package:flutter/widgets.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:material3_expressive/material3_expressive.dart';
 import 'package:motor/motor.dart';
@@ -99,6 +99,65 @@ void main() {
     expect(controller.isAnimating, isTrue);
     expect(controller.value, isNot(1));
     controller.stop();
+  });
+
+  testWidgets('MEMotionReveal hides when not visible', (tester) async {
+    await tester.pumpWidget(
+      const Directionality(
+        textDirection: TextDirection.ltr,
+        child: MEMotionReveal(
+          visible: false,
+          spec: MESpringSpec.zero,
+          child: Text('secret'),
+        ),
+      ),
+    );
+    expect(find.text('secret'), findsNothing);
+  });
+
+  testWidgets('MEMotionReveal shows instantly when reduced', (tester) async {
+    await tester.pumpWidget(
+      const Directionality(
+        textDirection: TextDirection.ltr,
+        child: MEMotionReveal(
+          visible: true,
+          spec: MESpringSpec.zero,
+          child: Text('shown'),
+        ),
+      ),
+    );
+    expect(find.text('shown'), findsOneWidget);
+  });
+
+  testWidgets('MEMotionWidth snaps instantly when reduced', (tester) async {
+    await tester.pumpWidget(
+      const Directionality(
+        textDirection: TextDirection.ltr,
+        child: Center(
+          child: MEMotionWidth(
+            width: 80,
+            spec: MESpringSpec.zero,
+            child: ColoredBox(color: Color(0xFF000000)),
+          ),
+        ),
+      ),
+    );
+    expect(tester.getSize(find.byType(ColoredBox)).width, 80);
+  });
+
+  testWidgets('MEMotionOpacity clamps to 0..1', (tester) async {
+    await tester.pumpWidget(
+      const Directionality(
+        textDirection: TextDirection.ltr,
+        child: MEMotionOpacity(
+          opacity: 0,
+          spec: MESpringSpec.zero,
+          child: Text('ghost'),
+        ),
+      ),
+    );
+    final opacity = tester.widget<Opacity>(find.byType(Opacity));
+    expect(opacity.opacity, 0);
   });
 }
 

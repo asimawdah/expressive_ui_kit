@@ -235,15 +235,14 @@ class _MESegmentedButtonState<T> extends State<MESegmentedButton<T>> {
             mainAxisSize: widget.expanded ? MainAxisSize.max : MainAxisSize.min,
             children: [
               if (widget.showCheckmark)
-                AnimatedSize(
-                  duration: _duration(context),
-                  curve: _curve(context),
-                  child: isSelected
-                      ? Padding(
-                          padding: const EdgeInsetsDirectional.only(end: 8),
-                          child: Icon(Icons.check, size: 18, color: fg),
-                        )
-                      : const SizedBox.shrink(),
+                MEMotionReveal(
+                  visible: isSelected,
+                  spec: METheme.of(context).motion.defaultSpatial,
+                  alignment: AlignmentDirectional.centerStart,
+                  child: Padding(
+                    padding: const EdgeInsetsDirectional.only(end: 8),
+                    child: Icon(Icons.check, size: 18, color: fg),
+                  ),
                 ),
               if (segment.icon != null &&
                   !(isSelected && widget.showCheckmark)) ...[
@@ -302,56 +301,67 @@ class _MESegmentedButtonState<T> extends State<MESegmentedButton<T>> {
     return GestureDetector(
       behavior: HitTestBehavior.opaque,
       onTap: enabled ? () => _handleTap(segment.value) : null,
-      child: AnimatedContainer(
-        duration: _duration(context),
-        curve: _curve(context),
-        height: widget.height,
-        width: widget.expanded ? double.infinity : null,
-        decoration: ShapeDecoration(
-          color: isSelected ? colors.secondaryContainer : Colors.transparent,
-          shape: const StadiumBorder(),
-        ),
-        padding: const EdgeInsets.symmetric(horizontal: 12),
-        alignment: Alignment.center,
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          mainAxisSize: widget.expanded ? MainAxisSize.max : MainAxisSize.min,
-          children: [
-            if (widget.showCheckmark)
-              AnimatedSize(
-                duration: _duration(context),
-                curve: _curve(context),
-                child: isSelected
-                    ? Padding(
-                        padding: const EdgeInsetsDirectional.only(end: 8),
-                        child: Icon(Icons.check, size: 18, color: fg),
-                      )
-                    : const SizedBox.shrink(),
+      child: MEMotionBuilder(
+        value: isSelected ? 1.0 : 0.0,
+        spec: METheme.of(context).motion.fastEffects,
+        builder: (context, t, child) {
+          return SizedBox(
+            height: widget.height,
+            width: widget.expanded ? double.infinity : null,
+            child: DecoratedBox(
+              decoration: ShapeDecoration(
+                color: Color.lerp(
+                  Colors.transparent,
+                  colors.secondaryContainer,
+                  t.clamp(0.0, 1.0),
+                ),
+                shape: const StadiumBorder(),
               ),
-            if (segment.icon != null &&
-                !(isSelected && widget.showCheckmark)) ...[
-              IconTheme.merge(
-                data: IconThemeData(size: 18, color: fg),
-                child: segment.icon!,
-              ),
-              const SizedBox(width: 8),
-            ],
-            if (widget.expanded)
-              Flexible(
-                child: DefaultTextStyle.merge(
+              child: child,
+            ),
+          );
+        },
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 12),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            mainAxisSize: widget.expanded ? MainAxisSize.max : MainAxisSize.min,
+            children: [
+              if (widget.showCheckmark)
+                MEMotionReveal(
+                  visible: isSelected,
+                  spec: METheme.of(context).motion.defaultSpatial,
+                  alignment: AlignmentDirectional.centerStart,
+                  child: Padding(
+                    padding: const EdgeInsetsDirectional.only(end: 8),
+                    child: Icon(Icons.check, size: 18, color: fg),
+                  ),
+                ),
+              if (segment.icon != null &&
+                  !(isSelected && widget.showCheckmark)) ...[
+                IconTheme.merge(
+                  data: IconThemeData(size: 18, color: fg),
+                  child: segment.icon!,
+                ),
+                const SizedBox(width: 8),
+              ],
+              if (widget.expanded)
+                Flexible(
+                  child: DefaultTextStyle.merge(
+                    style: textTheme.labelLarge!.copyWith(color: fg),
+                    textAlign: TextAlign.center,
+                    overflow: TextOverflow.ellipsis,
+                    maxLines: 1,
+                    child: segment.label,
+                  ),
+                )
+              else
+                DefaultTextStyle.merge(
                   style: textTheme.labelLarge!.copyWith(color: fg),
-                  textAlign: TextAlign.center,
-                  overflow: TextOverflow.ellipsis,
-                  maxLines: 1,
                   child: segment.label,
                 ),
-              )
-            else
-              DefaultTextStyle.merge(
-                style: textTheme.labelLarge!.copyWith(color: fg),
-                child: segment.label,
-              ),
-          ],
+            ],
+          ),
         ),
       ),
     );

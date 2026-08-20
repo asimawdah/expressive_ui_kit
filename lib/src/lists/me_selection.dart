@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../internal/me_pressable.dart';
+import '../theme/me_motion.dart';
 import '../theme/me_shapes.dart';
 import '../theme/me_theme.dart';
 
@@ -210,12 +211,24 @@ class MESelectionLeading extends StatelessWidget {
 
     return GestureDetector(
       onTap: onTap,
-      child: AnimatedSwitcher(
-        duration: METheme.of(context).motion.fastSpatial.approximateDuration,
-        switchInCurve: METheme.of(context).motion.fastSpatial.curve,
-        child: selected
-            ? KeyedSubtree(key: const ValueKey('on'), child: check)
-            : KeyedSubtree(key: const ValueKey('off'), child: child),
+      child: MEMotionBuilder(
+        value: selected ? 1.0 : 0.0,
+        spec: METheme.of(context).motion.fastSpatial,
+        builder: (context, t, _) {
+          return Stack(
+            alignment: Alignment.center,
+            children: [
+              Opacity(
+                opacity: (1.0 - t).clamp(0.0, 1.0),
+                child: IgnorePointer(ignoring: t > 0.5, child: child),
+              ),
+              Opacity(
+                opacity: t.clamp(0.0, 1.0),
+                child: IgnorePointer(ignoring: t < 0.5, child: check),
+              ),
+            ],
+          );
+        },
       ),
     );
   }

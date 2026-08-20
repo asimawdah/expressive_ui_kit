@@ -101,8 +101,8 @@ class _MEHeatmapState extends State<MEHeatmap>
         ),
         // Selected cell details.
         AnimatedSize(
-          duration: const Duration(milliseconds: 200),
-          curve: Curves.easeOut,
+          duration: motion.defaultEffects.approximateDuration,
+          curve: motion.defaultEffects.curve,
           alignment: Alignment.topLeft,
           child: selectedTooltip == null
               ? const SizedBox(width: double.infinity)
@@ -151,22 +151,28 @@ class _MEHeatmapState extends State<MEHeatmap>
                 setState(() => _selected = selected ? null : index);
                 widget.onCellPressed?.call(index);
               },
-        child: AnimatedContainer(
-          duration: const Duration(milliseconds: 200),
-          curve: Curves.easeOut,
-          width: widget.cellSize,
-          height: widget.cellSize,
-          decoration: BoxDecoration(
-            color: intensity == 0
-                ? scheme.surfaceContainerHigh
-                : Color.lerp(
-                    scheme.primaryContainer, scheme.primary, intensity * 0.85),
-            // Selected cells morph rounder — the M3E selection signal.
-            borderRadius: BorderRadius.circular(
-                selected ? widget.cellSize / 2 : widget.cellSize * 0.25),
-            border:
-                selected ? Border.all(color: scheme.onSurface, width: 2) : null,
-          ),
+        child: MEMotionBuilder(
+          value: selected ? 1.0 : 0.0,
+          spec: motion.fastSpatial,
+          builder: (context, t, _) {
+            return Container(
+              width: widget.cellSize,
+              height: widget.cellSize,
+              decoration: BoxDecoration(
+                color: intensity == 0
+                    ? scheme.surfaceContainerHigh
+                    : Color.lerp(scheme.primaryContainer, scheme.primary,
+                        intensity * 0.85),
+                borderRadius: BorderRadius.circular(
+                  widget.cellSize * 0.25 +
+                      (widget.cellSize / 2 - widget.cellSize * 0.25) * t,
+                ),
+                border: selected
+                    ? Border.all(color: scheme.onSurface, width: 2)
+                    : null,
+              ),
+            );
+          },
         ),
       ),
     );

@@ -64,6 +64,7 @@ MaterialApp(
 Springs are the same **motor** `MaterialSpringMotion` tokens `m3e_core` uses
 (`expressiveSpatial*`, `standardSpatial*`, `*Effects`, plus `overflow` /
 `popup`). Drive them with `springTo` / `MEMotionBuilder` /
+`MEMotionReveal` / `MEMotionWidth` / `MEMotionOpacity` /
 `MESpringSpec.toMotion()`. Button press morphs **corner radius** (not
 `Transform.scale`). Button groups neighbor-squish by transferring width.
 Never import `m3e_core` or `M3E*` types.

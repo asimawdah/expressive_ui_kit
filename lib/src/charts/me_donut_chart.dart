@@ -2,6 +2,7 @@ import 'dart:math' as math;
 
 import 'package:flutter/material.dart';
 
+import '../theme/me_motion.dart';
 import '../theme/me_theme.dart';
 
 /// A segment of an [MEDonutChart].
@@ -186,17 +187,22 @@ class _MEDonutChartState extends State<MEDonutChart> {
                     child: Row(
                       mainAxisSize: MainAxisSize.min,
                       children: [
-                        AnimatedContainer(
-                          duration: motion.fastSpatial.approximateDuration,
-                          curve: motion.fastSpatial.curve,
-                          width: _selected == i ? 14 : 10,
-                          height: _selected == i ? 14 : 10,
-                          decoration: BoxDecoration(
-                            color: colors[i],
-                            borderRadius: BorderRadius.circular(
-                              _selected == i ? 4 : 5,
-                            ),
-                          ),
+                        MEMotionBuilder(
+                          value: _selected == i ? 1.0 : 0.0,
+                          spec: motion.fastSpatial,
+                          builder: (context, t, _) {
+                            final size = 10 + 4 * t;
+                            return Container(
+                              width: size,
+                              height: size,
+                              decoration: BoxDecoration(
+                                color: colors[i],
+                                borderRadius: BorderRadius.circular(
+                                  5 - t,
+                                ),
+                              ),
+                            );
+                          },
                         ),
                         const SizedBox(width: 8),
                         Flexible(
@@ -251,7 +257,9 @@ class _DonutCenter extends StatelessWidget {
       mainAxisSize: MainAxisSize.min,
       children: [
         AnimatedSwitcher(
-          duration: const Duration(milliseconds: 200),
+          duration: METheme.of(context).motion.fastEffects.approximateDuration,
+          switchInCurve: METheme.of(context).motion.fastEffects.curve,
+          switchOutCurve: METheme.of(context).motion.fastEffects.curve,
           child: Text(
             value,
             key: ValueKey(value),

@@ -20,6 +20,9 @@ MEMotionBuilder(
   spec: motion.defaultSpatial,
   builder: (context, t, child) => child!,
 );
+MEMotionReveal(visible: open, spec: motion.defaultSpatial, child: child);
+MEMotionWidth(width: expanded ? 220 : 96, spec: motion.defaultSpatial, child: child);
+MEMotionOpacity(opacity: shown ? 1 : 0, spec: motion.defaultEffects, child: child);
 ```
 
 ## Buttons

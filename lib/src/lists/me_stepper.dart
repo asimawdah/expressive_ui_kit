@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import '../theme/me_motion.dart';
 import '../theme/me_shapes.dart';
 import '../theme/me_theme.dart';
 
@@ -90,17 +91,16 @@ class MEStepper extends StatelessWidget {
             ),
           ),
           // Content + connector line.
-          AnimatedSize(
-            duration: motion.defaultSpatial.approximateDuration,
-            curve: motion.defaultSpatial.curve,
+          MEMotionReveal(
+            visible: i == currentStep,
+            spec: motion.defaultSpatial,
+            axis: Axis.vertical,
             alignment: Alignment.topCenter,
-            child: i == currentStep
-                ? Padding(
-                    padding: const EdgeInsetsDirectional.only(
-                        start: 44, top: 4, bottom: 12),
-                    child: steps[i].content,
-                  )
-                : const SizedBox(width: double.infinity),
+            child: Padding(
+              padding: const EdgeInsetsDirectional.only(
+                  start: 44, top: 4, bottom: 12),
+              child: steps[i].content,
+            ),
           ),
           if (i < steps.length - 1)
             Padding(
@@ -151,18 +151,22 @@ class _StepIndicator extends StatelessWidget {
         ),
     };
 
-    return AnimatedContainer(
-      duration: METheme.of(context).motion.fastSpatial.approximateDuration,
-      curve: METheme.of(context).motion.fastSpatial.curve,
-      width: 36,
-      height: 36,
-      decoration: BoxDecoration(
-        color: bg,
-        // Active step is a squircle; others are circles — shape signals
-        // state per M3E.
-        borderRadius: BorderRadius.circular(
-            state == _StepState.active ? MECorners.medium : 18),
-      ),
+    return MEMotionBuilder(
+      value: state == _StepState.active ? 1.0 : 0.0,
+      spec: METheme.of(context).motion.fastSpatial,
+      builder: (context, t, child) {
+        return Container(
+          width: 36,
+          height: 36,
+          decoration: BoxDecoration(
+            color: bg,
+            borderRadius: BorderRadius.circular(
+              18 - (18 - MECorners.medium) * t,
+            ),
+          ),
+          child: child,
+        );
+      },
       child: Center(
         child: state == _StepState.complete
             ? Icon(Icons.check, size: 18, color: fg)

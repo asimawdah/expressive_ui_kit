@@ -159,7 +159,13 @@ class _MEPomodoroState extends State<MEPomodoro> with TickerProviderStateMixin {
               mainAxisSize: MainAxisSize.min,
               children: [
                 AnimatedSwitcher(
-                  duration: const Duration(milliseconds: 300),
+                  duration: METheme.of(context)
+                      .motion
+                      .defaultEffects
+                      .approximateDuration,
+                  switchInCurve:
+                      METheme.of(context).motion.defaultEffects.curve,
+                  switchOutCurve: METheme.of(context).motion.fastEffects.curve,
                   child: Text(
                     _isFocus ? 'Focus' : 'Break',
                     key: ValueKey(_isFocus),

@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 
 import '../progress/me_skeleton.dart';
+import '../theme/me_motion.dart';
 import '../theme/me_shapes.dart';
+import '../theme/me_theme.dart';
 
 /// A Material 3 Expressive network image.
 ///
@@ -44,10 +46,9 @@ class MEImage extends StatelessWidget {
       semanticLabel: semanticLabel,
       frameBuilder: (context, child, frame, wasSynchronouslyLoaded) {
         if (wasSynchronouslyLoaded) return child;
-        return AnimatedOpacity(
+        return MEMotionOpacity(
           opacity: frame == null ? 0 : 1,
-          duration: const Duration(milliseconds: 350),
-          curve: Curves.easeOut,
+          spec: METheme.of(context).motion.defaultEffects,
           child: child,
         );
       },

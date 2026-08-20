@@ -118,13 +118,8 @@ class _MEHoldButtonState extends State<MEHoldButton>
     if (_confirmed) return;
     // Abort: fill springs back to zero instead of linearly reversing.
     _fill.stop();
-    final spring = METheme.of(context).motion.defaultSpatial;
-    _fill.animateBack(
-      0,
-      duration: spring.approximateDuration,
-      curve: spring.curve,
-    );
-    springTo(_shape, 0, spring);
+    springTo(_fill, 0, METheme.of(context).motion.defaultEffects);
+    springTo(_shape, 0, METheme.of(context).motion.defaultSpatial);
   }
 
   @override

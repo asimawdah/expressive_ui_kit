@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
 
+import '../theme/me_motion.dart';
+import '../theme/me_theme.dart';
+
 /// One entry in an [METimeline].
 class METimelineEntry {
   const METimelineEntry({
@@ -108,18 +111,23 @@ class _METimelineRow extends StatelessWidget {
                       ? null
                       : _MEConnector(filled: lineAboveFilled, scheme: scheme),
                 ),
-                AnimatedContainer(
-                  duration: const Duration(milliseconds: 350),
-                  curve: Curves.easeOutBack,
-                  width: nodeSize,
-                  height: nodeSize,
-                  decoration: BoxDecoration(
-                    color: nodeColor,
-                    shape: BoxShape.circle,
-                    border: state == _MENodeState.active
-                        ? Border.all(color: scheme.primary, width: 2)
-                        : null,
-                  ),
+                MEMotionBuilder(
+                  value: nodeSize,
+                  spec: METheme.of(context).motion.defaultSpatial,
+                  builder: (context, size, child) {
+                    return Container(
+                      width: size,
+                      height: size,
+                      decoration: BoxDecoration(
+                        color: nodeColor,
+                        shape: BoxShape.circle,
+                        border: state == _MENodeState.active
+                            ? Border.all(color: scheme.primary, width: 2)
+                            : null,
+                      ),
+                      child: child,
+                    );
+                  },
                   child: Icon(
                     entry.icon ??
                         (state == _MENodeState.completed
@@ -179,15 +187,24 @@ class _MEConnector extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Center(
-      child: AnimatedContainer(
-        duration: const Duration(milliseconds: 350),
-        width: filled ? 3 : 2,
-        decoration: BoxDecoration(
-          color: filled ? scheme.primary : scheme.outlineVariant,
-          borderRadius: BorderRadius.circular(1.5),
-        ),
-      ),
+    return MEMotionBuilder(
+      value: filled ? 1.0 : 0.0,
+      spec: METheme.of(context).motion.defaultEffects,
+      builder: (context, t, _) {
+        return Center(
+          child: Container(
+            width: 2 + t,
+            decoration: BoxDecoration(
+              color: Color.lerp(
+                scheme.outlineVariant,
+                scheme.primary,
+                t.clamp(0.0, 1.0),
+              ),
+              borderRadius: BorderRadius.circular(1.5),
+            ),
+          ),
+        );
+      },
     );
   }
 }

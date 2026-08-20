@@ -128,32 +128,53 @@ class _MEOtpInputState extends State<MEOtpInput> with TickerProviderStateMixin {
                     scale: _pops[i].value.clamp(0.0, 1.3),
                     child: child,
                   ),
-                  child: AnimatedContainer(
-                    duration: const Duration(milliseconds: 150),
-                    width: 48,
-                    height: 56,
-                    alignment: Alignment.center,
-                    decoration: BoxDecoration(
-                      color: filled
-                          ? scheme.secondaryContainer
-                          : scheme.surfaceContainerHigh,
-                      borderRadius: BorderRadius.circular(
-                        filled ? MECorners.medium : MECorners.large,
-                      ),
-                      border: Border.all(
-                        color: isActive ? scheme.primary : Colors.transparent,
-                        width: 2,
-                      ),
-                    ),
-                    child: Text(
-                      char,
-                      style: Theme.of(context).textTheme.titleLarge!.copyWith(
-                            color: filled
-                                ? scheme.onSecondaryContainer
-                                : scheme.onSurface,
-                            fontWeight: FontWeight.w600,
-                          ),
-                    ),
+                  child: MEMotionBuilder(
+                    value: filled ? 1.0 : 0.0,
+                    spec: METheme.of(context).motion.fastEffects,
+                    builder: (context, fillT, _) {
+                      return MEMotionBuilder(
+                        value: isActive ? 1.0 : 0.0,
+                        spec: METheme.of(context).motion.fastEffects,
+                        builder: (context, activeT, child) {
+                          return Container(
+                            width: 48,
+                            height: 56,
+                            alignment: Alignment.center,
+                            decoration: BoxDecoration(
+                              color: Color.lerp(
+                                scheme.surfaceContainerHigh,
+                                scheme.secondaryContainer,
+                                fillT.clamp(0.0, 1.0),
+                              ),
+                              borderRadius: BorderRadius.circular(
+                                MECorners.large +
+                                    (MECorners.medium - MECorners.large) *
+                                        fillT,
+                              ),
+                              border: Border.all(
+                                color: Color.lerp(
+                                  Colors.transparent,
+                                  scheme.primary,
+                                  activeT.clamp(0.0, 1.0),
+                                )!,
+                                width: 2,
+                              ),
+                            ),
+                            child: child,
+                          );
+                        },
+                        child: Text(
+                          char,
+                          style:
+                              Theme.of(context).textTheme.titleLarge!.copyWith(
+                                    color: filled
+                                        ? scheme.onSecondaryContainer
+                                        : scheme.onSurface,
+                                    fontWeight: FontWeight.w600,
+                                  ),
+                        ),
+                      );
+                    },
                   ),
                 ),
               );

@@ -219,18 +219,27 @@ class _CommandRow extends StatelessWidget {
 
     return MouseRegion(
       onEnter: (_) => onHover(),
-      child: AnimatedContainer(
-        duration: motion.fastSpatial.approximateDuration,
-        curve: motion.fastSpatial.curve,
-        margin: const EdgeInsets.symmetric(vertical: 2),
-        decoration: ShapeDecoration(
-          color: selected ? scheme.secondaryContainer : Colors.transparent,
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(
-              selected ? MECorners.large : MECorners.medium,
+      child: MEMotionBuilder(
+        value: selected ? 1.0 : 0.0,
+        spec: motion.fastSpatial,
+        builder: (context, t, child) {
+          return Container(
+            margin: const EdgeInsets.symmetric(vertical: 2),
+            decoration: ShapeDecoration(
+              color: Color.lerp(
+                Colors.transparent,
+                scheme.secondaryContainer,
+                t.clamp(0.0, 1.0),
+              ),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(
+                  MECorners.medium + (MECorners.large - MECorners.medium) * t,
+                ),
+              ),
             ),
-          ),
-        ),
+            child: child,
+          );
+        },
         child: InkWell(
           onTap: onPressed,
           borderRadius: BorderRadius.circular(MECorners.large),

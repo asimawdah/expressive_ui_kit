@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
+import '../theme/me_theme.dart';
+
 /// A lightweight, zero-dependency syntax highlighter used by [MEMarkdown]
 /// code blocks (and usable standalone via [MECodeView]).
 ///
@@ -303,7 +305,9 @@ class _CopyButtonState extends State<_CopyButton> {
       tooltip: _copied ? 'Copied' : 'Copy code',
       onPressed: _copy,
       icon: AnimatedSwitcher(
-        duration: const Duration(milliseconds: 200),
+        duration: METheme.of(context).motion.fastEffects.approximateDuration,
+        switchInCurve: METheme.of(context).motion.fastSpatial.curve,
+        switchOutCurve: METheme.of(context).motion.fastEffects.curve,
         transitionBuilder: (child, anim) =>
             ScaleTransition(scale: anim, child: child),
         child: Icon(

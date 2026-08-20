@@ -169,9 +169,11 @@ class _MESlideToConfirmState extends State<MESlideToConfirm>
                       Positioned(
                         left: 4 + travel * t,
                         top: 4,
-                        child: AnimatedScale(
-                          scale: _dragging ? 1.06 : 1.0,
-                          duration: const Duration(milliseconds: 120),
+                        child: MEMotionBuilder(
+                          value: _dragging ? 1.06 : 1.0,
+                          spec: METheme.of(context).motion.fastSpatial,
+                          builder: (context, s, child) =>
+                              Transform.scale(scale: s, child: child),
                           child: Container(
                             width: thumbSize,
                             height: thumbSize,

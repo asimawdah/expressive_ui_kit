@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import '../theme/me_theme.dart';
 import 'me_list_tile.dart';
 
 /// A Material 3 Expressive reorderable list.
@@ -58,7 +59,11 @@ class MEReorderableList extends StatelessWidget {
         return AnimatedBuilder(
           animation: animation,
           builder: (context, child) {
-            final t = Curves.easeOut.transform(animation.value);
+            final t = METheme.of(context)
+                .motion
+                .fastSpatial
+                .curve
+                .transform(animation.value);
             return Material(
               elevation: 4 * t,
               borderRadius: BorderRadius.circular(12),

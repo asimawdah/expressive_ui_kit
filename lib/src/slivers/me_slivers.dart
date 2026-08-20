@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import '../theme/me_motion.dart';
 import '../theme/me_shapes.dart';
 import '../theme/me_theme.dart';
 
@@ -164,19 +165,23 @@ class _MEPinnedHeaderDelegate extends SliverPersistentHeaderDelegate {
   ) {
     final scheme = Theme.of(context).colorScheme;
 
-    return AnimatedContainer(
-      duration: METheme.of(context).motion.fastEffects.approximateDuration,
-      curve: METheme.of(context).motion.fastEffects.curve,
-      height: height,
-      padding: const EdgeInsets.symmetric(horizontal: 16),
-      decoration: BoxDecoration(
-        color: overlapsContent ? scheme.surfaceContainer : scheme.surface,
-        borderRadius: overlapsContent
-            ? const BorderRadius.vertical(
-                bottom: Radius.circular(MECorners.large),
-              )
-            : BorderRadius.zero,
-      ),
+    return MEMotionBuilder(
+      value: overlapsContent ? 1.0 : 0.0,
+      spec: METheme.of(context).motion.fastEffects,
+      builder: (context, t, child) {
+        return Container(
+          height: height,
+          padding: const EdgeInsets.symmetric(horizontal: 16),
+          decoration: BoxDecoration(
+            color: Color.lerp(
+                scheme.surface, scheme.surfaceContainer, t.clamp(0.0, 1.0)),
+            borderRadius: BorderRadius.vertical(
+              bottom: Radius.circular(MECorners.large * t),
+            ),
+          ),
+          child: child,
+        );
+      },
       child: Row(
         children: [
           Expanded(

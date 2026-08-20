@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../internal/me_pressable.dart';
+import '../theme/me_motion.dart';
 import '../theme/me_shapes.dart';
 import '../theme/me_theme.dart';
 
@@ -92,15 +93,14 @@ class MEChip extends StatelessWidget {
           mainAxisSize: MainAxisSize.min,
           children: [
             if (isFilter)
-              AnimatedSize(
-                duration: motion.defaultSpatial.approximateDuration,
-                curve: motion.defaultSpatial.curve,
-                child: showCheck
-                    ? Padding(
-                        padding: const EdgeInsetsDirectional.only(end: 8),
-                        child: Icon(Icons.check, size: 18, color: fg),
-                      )
-                    : const SizedBox.shrink(),
+              MEMotionReveal(
+                visible: showCheck,
+                spec: motion.defaultSpatial,
+                alignment: AlignmentDirectional.centerStart,
+                child: Padding(
+                  padding: const EdgeInsetsDirectional.only(end: 8),
+                  child: Icon(Icons.check, size: 18, color: fg),
+                ),
               ),
             if (showIcon) ...[
               IconTheme.merge(

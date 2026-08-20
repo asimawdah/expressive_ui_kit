@@ -151,7 +151,12 @@ class _MELikeButtonState extends State<MELikeButton>
               if (widget.count != null) ...[
                 const SizedBox(width: 2),
                 AnimatedSwitcher(
-                  duration: const Duration(milliseconds: 250),
+                  duration: METheme.of(context)
+                      .motion
+                      .fastEffects
+                      .approximateDuration,
+                  switchInCurve: METheme.of(context).motion.fastSpatial.curve,
+                  switchOutCurve: METheme.of(context).motion.fastEffects.curve,
                   transitionBuilder: (child, animation) => ScaleTransition(
                     scale: animation,
                     child: FadeTransition(opacity: animation, child: child),

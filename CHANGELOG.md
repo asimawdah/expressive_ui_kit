@@ -30,6 +30,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - `MESlider.wavy` / `.centered` / `.vertical` and `MERangeSlider.wavy`.
 - `MEDivider.vertical`, chip types, badge alignment, radio/checkbox labels.
 - Searchable example gallery with a live playground for every public widget.
+- `MEMotionReveal`, `MEMotionWidth`, and `MEMotionOpacity` — implicit
+  motor springs that replace `AnimatedSize` / width `AnimatedContainer` /
+  `AnimatedOpacity` on ME widgets.
 - Overlay-based `MEMenu` popup (Y-axis spring expand) matching Material 3
   Expressive menus — no slow `PopupRoute` transition.
 - Cursor skill (`.cursor/skills/material3-expressive/SKILL.md`) so agents
@@ -55,6 +58,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   instead of height ratios.
 - Chips use 8/16 start-end padding and 8dp icon gaps; cards press toward
   a squarer corner; list tiles are at least 56/72dp; snackbars are pills.
+- Remaining ME surfaces (chips, dismissible, segmented, rail, dock, stepper,
+  selection, command palette, slivers, OTP, password meter, wheel picker,
+  timeline, image fade, skeletonizer, slide-to-confirm, mood, heatmap,
+  charts, compare slider, stopwatch, hold abort, coachmark, lists) spring
+  with `MEMotionBuilder` / `MEMotionReveal` / `MEMotionWidth` /
+  `MEMotionOpacity` instead of hardcoded `Duration`/`Curves`.
+- `ActionItem` press uses `MEPressable` corner-radius morph (no squash).
 - Core surfaces animate with `motor` springs (`MaterialSpringMotion` tokens,
   the same engine as `m3e_core`) via `METheme` — menus use the popup spring.
 - Buttons, icon buttons, FABs, chips and cards morph **corner radius** on

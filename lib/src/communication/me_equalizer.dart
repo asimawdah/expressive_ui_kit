@@ -2,6 +2,8 @@ import 'dart:math' as math;
 
 import 'package:flutter/material.dart';
 
+import '../theme/me_theme.dart';
+
 /// An animated "now playing" equalizer glyph.
 ///
 /// New in the expressive idiom: a compact set of rounded bars that bob up
@@ -58,8 +60,9 @@ class _MEEqualizerState extends State<MEEqualizer>
       } else {
         _controller.animateTo(
           _controller.value > 0.5 ? 1.0 : 0.0,
-          duration: const Duration(milliseconds: 300),
-          curve: Curves.easeOut,
+          duration:
+              METheme.of(context).motion.defaultEffects.approximateDuration,
+          curve: METheme.of(context).motion.defaultEffects.curve,
         );
       }
     }

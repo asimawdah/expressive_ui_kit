@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
+import '../theme/me_motion.dart';
 import '../theme/me_shapes.dart';
 import '../theme/me_theme.dart';
 
@@ -116,8 +117,7 @@ class _MEDockState extends State<MEDock> {
                       baseSize: widget.baseSize,
                       scale: _scaleFor(i),
                       hovered: _activeIndex == i,
-                      duration: motion.fastSpatial.approximateDuration,
-                      curve: motion.fastSpatial.curve,
+                      spec: motion.fastSpatial,
                     ),
                 ],
               ),
@@ -135,51 +135,62 @@ class _DockCell extends StatelessWidget {
     required this.baseSize,
     required this.scale,
     required this.hovered,
-    required this.duration,
-    required this.curve,
+    required this.spec,
   });
 
   final MEDockItem item;
   final double baseSize;
   final double scale;
   final bool hovered;
-  final Duration duration;
-  final Curve curve;
+  final MESpringSpec spec;
 
   @override
   Widget build(BuildContext context) {
     final scheme = Theme.of(context).colorScheme;
 
-    Widget cell = AnimatedContainer(
-      duration: duration,
-      curve: curve,
-      width: baseSize,
-      height: baseSize * scale,
-      alignment: Alignment.bottomCenter,
-      child: AnimatedContainer(
-        duration: duration,
-        curve: curve,
-        width: baseSize * scale - 6,
-        height: baseSize * scale - 6,
-        decoration: ShapeDecoration(
-          color: hovered ? scheme.primaryContainer : Colors.transparent,
-          // Hovered cells morph from a circle toward a rounded square,
-          // the M3E selection shape signal.
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(
-              hovered ? MECorners.large : baseSize,
+    Widget cell = MEMotionBuilder(
+      value: scale,
+      spec: spec,
+      builder: (context, s, child) {
+        return SizedBox(
+          width: baseSize,
+          height: baseSize * s,
+          child: Align(
+            alignment: Alignment.bottomCenter,
+            child: MEMotionBuilder(
+              value: hovered ? 1.0 : 0.0,
+              spec: spec,
+              builder: (context, h, _) {
+                final size = baseSize * s - 6;
+                return Container(
+                  width: size,
+                  height: size,
+                  decoration: ShapeDecoration(
+                    color: Color.lerp(
+                      Colors.transparent,
+                      scheme.primaryContainer,
+                      h.clamp(0.0, 1.0),
+                    ),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(
+                        baseSize - (baseSize - MECorners.large) * h,
+                      ),
+                    ),
+                  ),
+                  child: child,
+                );
+              },
             ),
           ),
-        ),
-        child: InkWell(
-          onTap: item.onPressed,
-          customBorder: const CircleBorder(),
-          child: Icon(
-            item.icon,
-            size: (baseSize * scale - 6) * 0.55,
-            color:
-                hovered ? scheme.onPrimaryContainer : scheme.onSurfaceVariant,
-          ),
+        );
+      },
+      child: InkWell(
+        onTap: item.onPressed,
+        customBorder: const CircleBorder(),
+        child: Icon(
+          item.icon,
+          size: (baseSize * scale - 6) * 0.55,
+          color: hovered ? scheme.onPrimaryContainer : scheme.onSurfaceVariant,
         ),
       ),
     );
