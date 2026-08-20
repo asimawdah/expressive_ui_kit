@@ -44,7 +44,7 @@ class MEDialog extends StatelessWidget {
             children: [
               if (icon != null) ...[
                 IconTheme.merge(
-                  data: IconThemeData(size: 28, color: colors.secondary),
+                  data: IconThemeData(size: 24, color: colors.secondary),
                   child: icon!,
                 ),
                 const SizedBox(height: 16),
@@ -133,7 +133,7 @@ Future<T?> showMEFullScreenDialog<T>({
       final curved = CurvedAnimation(
         parent: animation,
         curve: motion.defaultSpatial.curve,
-        reverseCurve: Curves.easeIn,
+        reverseCurve: motion.fastSpatial.curve,
       );
       return FadeTransition(
         opacity: curved,
@@ -258,12 +258,12 @@ Future<T?> showMEDialog<T>({
       final scale = CurvedAnimation(
         parent: animation,
         curve: motion.defaultSpatial.curve,
-        reverseCurve: Curves.easeIn,
+        reverseCurve: motion.fastSpatial.curve,
       );
       final fade = CurvedAnimation(
         parent: animation,
         curve: motion.defaultEffects.curve,
-        reverseCurve: Curves.easeIn,
+        reverseCurve: motion.fastSpatial.curve,
       );
       return FadeTransition(
         opacity: fade,

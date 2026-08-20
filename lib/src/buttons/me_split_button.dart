@@ -63,6 +63,8 @@ class _MESplitButtonState extends State<MESplitButton> {
 
     final r = height / 2;
     const inner = Radius.circular(MECorners.extraSmall);
+    final pad = widget.size.horizontalPadding;
+    final iconSize = widget.size.iconSize;
     final side = widget.variant == MEButtonVariant.outlined
         ? BorderSide(color: colors.outlineVariant)
         : null;
@@ -84,19 +86,19 @@ class _MESplitButtonState extends State<MESplitButton> {
           overlayColor: fg.withValues(alpha: 0.1),
           child: Container(
             height: height,
-            padding: const EdgeInsets.symmetric(horizontal: 20),
+            padding: EdgeInsets.symmetric(horizontal: pad),
             child: Row(
               mainAxisSize: MainAxisSize.min,
               children: [
                 if (widget.icon != null) ...[
                   IconTheme.merge(
-                    data: IconThemeData(size: 20, color: fg),
+                    data: IconThemeData(size: iconSize, color: fg),
                     child: widget.icon!,
                   ),
-                  const SizedBox(width: 8),
+                  SizedBox(width: widget.size.iconGap),
                 ],
                 DefaultTextStyle.merge(
-                  style: textTheme.labelLarge!.copyWith(color: fg),
+                  style: widget.size.labelStyle(textTheme).copyWith(color: fg),
                   child: widget.child,
                 ),
               ],
@@ -135,7 +137,7 @@ class _MESplitButtonState extends State<MESplitButton> {
                     _menuOpen
                         ? Icons.keyboard_arrow_up
                         : Icons.keyboard_arrow_down,
-                    size: 22,
+                    size: iconSize,
                     color: fg,
                   ),
                 ),

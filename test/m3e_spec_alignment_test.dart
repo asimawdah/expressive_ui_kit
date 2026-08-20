@@ -131,6 +131,75 @@ void main() {
     expect(MEButtonSize.small.pressedCornerRadius, 8);
     expect(MEButtonSize.medium.pressedCornerRadius, 12);
     expect(MEButtonSize.large.pressedCornerRadius, 16);
+    expect(MEButtonSize.small.horizontalPadding, 16);
+    expect(MEButtonSize.medium.horizontalPadding, 24);
+    expect(MEButtonSize.extraSmall.iconGap, 4);
+    expect(MEButtonSize.small.iconGap, 8);
+    expect(MEButtonSize.large.iconGap, 12);
+  });
+
+  testWidgets(
+      'MEPressable morphs from the real child size, not a 100x40 fallback',
+      (tester) async {
+    await tester.pumpWidget(
+      _host(
+        MEButton.filled(
+          size: MEButtonSize.extraLarge,
+          onPressed: () {},
+          child: const Text('XL'),
+        ),
+      ),
+    );
+    await tester.pump();
+    await tester.pump();
+
+    final box = tester.getSize(find.byType(MEButton));
+    expect(box.height, 136);
+
+    final material = tester.widget<Material>(
+      find
+          .descendant(
+            of: find.byType(MEButton),
+            matching: find.byType(Material),
+          )
+          .first,
+    );
+    expect(material.shape, isA<RoundedRectangleBorder>());
+    final radius = (material.shape! as RoundedRectangleBorder)
+        .borderRadius
+        .resolve(TextDirection.ltr)
+        .topLeft
+        .x;
+    expect(radius, closeTo(68, 1.5));
+  });
+
+  testWidgets('MEListTile one-line is at least 56dp tall', (tester) async {
+    await tester.pumpWidget(
+      _host(
+        const SizedBox(
+          width: 320,
+          child: MEListTile(title: Text('Inbox')),
+        ),
+      ),
+    );
+    await tester.pump();
+    expect(tester.getSize(find.byType(MEListTile)).height,
+        greaterThanOrEqualTo(56));
+  });
+
+  testWidgets('MEChip without a leading icon uses 16dp start padding',
+      (tester) async {
+    await tester.pumpWidget(
+      _host(
+        MEChip(
+          label: const Text('Assist'),
+          onPressed: () {},
+        ),
+      ),
+    );
+    await tester.pump();
+    final chip = tester.getSize(find.byType(MEChip));
+    expect(chip.height, 32);
   });
 }
 

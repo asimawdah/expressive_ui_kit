@@ -139,7 +139,7 @@ class _MESearchAnchorState extends State<MESearchAnchor> {
           final curved = CurvedAnimation(
             parent: animation,
             curve: motion.defaultSpatial.curve,
-            reverseCurve: Curves.easeIn,
+            reverseCurve: motion.fastSpatial.curve,
           );
           return FadeTransition(
             opacity: curved,

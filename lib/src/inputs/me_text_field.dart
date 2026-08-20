@@ -169,7 +169,7 @@ class _METextFieldState extends State<METextField>
                     ? scheme.surfaceContainerHigh
                     : Colors.transparent,
                 contentPadding: const EdgeInsets.symmetric(
-                  horizontal: 20,
+                  horizontal: 16,
                   vertical: 16,
                 ),
                 border: OutlineInputBorder(

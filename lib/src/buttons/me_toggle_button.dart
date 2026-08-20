@@ -83,19 +83,8 @@ class METoggleButton extends StatelessWidget {
     final colors = Theme.of(context).colorScheme;
     final textTheme = Theme.of(context).textTheme;
     final height = size.height;
-    final iconSize = switch (size) {
-      MEButtonSize.extraSmall || MEButtonSize.small => 20.0,
-      MEButtonSize.medium => 24.0,
-      MEButtonSize.large => 32.0,
-      MEButtonSize.extraLarge => 40.0,
-    };
-    final pad = switch (size) {
-      MEButtonSize.extraSmall => 12.0,
-      MEButtonSize.small => 16.0,
-      MEButtonSize.medium => 24.0,
-      MEButtonSize.large => 48.0,
-      MEButtonSize.extraLarge => 64.0,
-    };
+    final iconSize = size.iconSize;
+    final pad = size.horizontalPadding;
     final enabled = onCheckedChange != null;
 
     final (Color bg, Color fg) = switch (variant) {
@@ -155,10 +144,12 @@ class METoggleButton extends StatelessWidget {
                   data: IconThemeData(size: iconSize, color: effectiveFg),
                   child: shownIcon,
                 ),
-              if (shownIcon != null && label != null) const SizedBox(width: 8),
+              if (shownIcon != null && label != null)
+                SizedBox(width: size.iconGap),
               if (label != null)
                 DefaultTextStyle.merge(
-                  style: textTheme.labelLarge!.copyWith(color: effectiveFg),
+                  style:
+                      size.labelStyle(textTheme).copyWith(color: effectiveFg),
                   child: label!,
                 ),
             ],

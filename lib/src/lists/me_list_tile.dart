@@ -70,58 +70,61 @@ class MEListTile extends StatelessWidget {
       onLongPress: enabled ? onLongPress : null,
       enabled: enabled,
       color: selected ? scheme.secondaryContainer : scheme.surfaceContainerLow,
-      child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-        child: Row(
-          children: [
-            if (leading != null) ...[
-              IconTheme(
-                data: IconThemeData(
-                  color: selected
-                      ? scheme.onSecondaryContainer
-                      : scheme.onSurfaceVariant,
-                  size: 24,
-                ),
-                child: leading!,
-              ),
-              const SizedBox(width: 16),
-            ],
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  DefaultTextStyle(
-                    style: textTheme.bodyLarge!.copyWith(
-                      color: selected
-                          ? scheme.onSecondaryContainer
-                          : scheme.onSurface,
-                    ),
-                    child: title,
+      child: ConstrainedBox(
+        constraints: BoxConstraints(minHeight: subtitle == null ? 56 : 72),
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+          child: Row(
+            children: [
+              if (leading != null) ...[
+                IconTheme(
+                  data: IconThemeData(
+                    color: selected
+                        ? scheme.onSecondaryContainer
+                        : scheme.onSurfaceVariant,
+                    size: 24,
                   ),
-                  if (subtitle != null)
+                  child: leading!,
+                ),
+                const SizedBox(width: 16),
+              ],
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
                     DefaultTextStyle(
-                      style: textTheme.bodyMedium!.copyWith(
+                      style: textTheme.bodyLarge!.copyWith(
                         color: selected
                             ? scheme.onSecondaryContainer
-                            : scheme.onSurfaceVariant,
+                            : scheme.onSurface,
                       ),
-                      child: subtitle!,
+                      child: title,
                     ),
-                ],
-              ),
-            ),
-            if (trailing != null) ...[
-              const SizedBox(width: 16),
-              IconTheme(
-                data: IconThemeData(
-                  color: scheme.onSurfaceVariant,
-                  size: 24,
+                    if (subtitle != null)
+                      DefaultTextStyle(
+                        style: textTheme.bodyMedium!.copyWith(
+                          color: selected
+                              ? scheme.onSecondaryContainer
+                              : scheme.onSurfaceVariant,
+                        ),
+                        child: subtitle!,
+                      ),
+                  ],
                 ),
-                child: trailing!,
               ),
+              if (trailing != null) ...[
+                const SizedBox(width: 16),
+                IconTheme(
+                  data: IconThemeData(
+                    color: scheme.onSurfaceVariant,
+                    size: 24,
+                  ),
+                  child: trailing!,
+                ),
+              ],
             ],
-          ],
+          ),
         ),
       ),
     );

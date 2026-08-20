@@ -40,6 +40,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   arm64-v8a, x86_64).
 
 ### Changed
+- `MEPressable` morphs against the **laid-out child size** instead of a
+  100×40 fallback, so large/XL pills and wrap-content buttons keep the
+  correct stadium radius.
+- Shared `MEButtonSizeTokens` now also expose padding, icon size, icon
+  gap and label style; split and toggle buttons follow the same scale.
+- Extended FAB padding/gap uses the spec tokens (16/8, 26/12, 28/16)
+  instead of height ratios.
+- Chips use 8/16 start-end padding and 8dp icon gaps; cards press toward
+  a squarer corner; list tiles are at least 56/72dp; snackbars are pills.
+- Core surfaces (chips, segmented buttons, nav labels, dialogs, sheets,
+  search, steppers, dismissible rows) animate with `METheme` springs
+  instead of hardcoded `Duration`/`Curves`.
 - Buttons, icon buttons and toggles morph on press to the M3E **pressed
   corner radii** (not all the way to square/stadium).
 - Toggle unselected/selected colors follow M3E tokens (filled unselected

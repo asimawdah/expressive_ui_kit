@@ -266,7 +266,11 @@ class _RailItem extends StatelessWidget {
                 const SizedBox(width: 4),
                 Expanded(
                   child: AnimatedDefaultTextStyle(
-                    duration: const Duration(milliseconds: 180),
+                    duration: METheme.of(context)
+                        .motion
+                        .fastEffects
+                        .approximateDuration,
+                    curve: METheme.of(context).motion.fastEffects.curve,
                     style: textTheme.labelLarge!.copyWith(
                       color: selected
                           ? colors.onSecondaryContainer
@@ -306,7 +310,9 @@ class _RailItem extends StatelessWidget {
               ),
               const SizedBox(height: 4),
               AnimatedDefaultTextStyle(
-                duration: const Duration(milliseconds: 180),
+                duration:
+                    METheme.of(context).motion.fastEffects.approximateDuration,
+                curve: METheme.of(context).motion.fastEffects.curve,
                 style: textTheme.labelMedium!.copyWith(
                   color: selected ? colors.onSurface : colors.onSurfaceVariant,
                   fontWeight: selected ? FontWeight.w700 : FontWeight.w500,

@@ -129,7 +129,7 @@ class _METabBarState extends State<METabBar>
                                 if (widget.tabs[i].icon != null) ...[
                                   Icon(
                                     widget.tabs[i].icon,
-                                    size: 18,
+                                    size: 20,
                                     color: i == widget.selectedIndex
                                         ? scheme.onSecondaryContainer
                                         : scheme.onSurfaceVariant,

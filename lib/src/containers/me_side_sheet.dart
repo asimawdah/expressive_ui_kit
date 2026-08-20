@@ -47,7 +47,7 @@ Future<T?> showMESideSheet<T>({
       final curved = CurvedAnimation(
         parent: animation,
         curve: motion.defaultSpatial.curve,
-        reverseCurve: Curves.easeIn,
+        reverseCurve: motion.fastSpatial.curve,
       );
       final isRtl = Directionality.of(context) == TextDirection.rtl;
       return SlideTransition(

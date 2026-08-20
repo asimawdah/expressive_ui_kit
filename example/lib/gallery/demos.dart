@@ -12,6 +12,7 @@ class DemoMEButton extends StatelessWidget {
     return Wrap(
       spacing: 12,
       runSpacing: 12,
+      crossAxisAlignment: WrapCrossAlignment.center,
       children: [
         MEButton.filled(onPressed: () {}, child: const Text('Filled')),
         MEButton.tonal(onPressed: () {}, child: const Text('Tonal')),
@@ -19,10 +20,30 @@ class DemoMEButton extends StatelessWidget {
         MEButton.outlined(onPressed: () {}, child: const Text('Outlined')),
         MEButton.text(onPressed: () {}, child: const Text('Text')),
         MEButton.filled(
+          size: MEButtonSize.extraSmall,
+          onPressed: () {},
+          child: const Text('XS'),
+        ),
+        MEButton.filled(
+          size: MEButtonSize.small,
+          onPressed: () {},
+          child: const Text('S'),
+        ),
+        MEButton.filled(
+          size: MEButtonSize.medium,
+          onPressed: () {},
+          child: const Text('M'),
+        ),
+        MEButton.filled(
           size: MEButtonSize.large,
           icon: const Icon(Icons.send),
           onPressed: () {},
-          child: const Text('Send'),
+          child: const Text('L'),
+        ),
+        MEButton.filled(
+          size: MEButtonSize.extraLarge,
+          onPressed: () {},
+          child: const Text('XL'),
         ),
       ],
     );

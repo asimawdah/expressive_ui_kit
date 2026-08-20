@@ -87,7 +87,13 @@ class MEFab extends StatelessWidget {
           )
         : Container(
             height: container,
-            padding: EdgeInsets.symmetric(horizontal: container * 0.32),
+            padding: EdgeInsets.symmetric(
+              horizontal: switch (size) {
+                MEFabSize.small => 16.0,
+                MEFabSize.medium => 26.0,
+                MEFabSize.large => 28.0,
+              },
+            ),
             child: Row(
               mainAxisSize: MainAxisSize.min,
               children: [
@@ -95,7 +101,13 @@ class MEFab extends StatelessWidget {
                   data: IconThemeData(size: iconSize, color: fg),
                   child: icon,
                 ),
-                SizedBox(width: iconSize * 0.4),
+                SizedBox(
+                  width: switch (size) {
+                    MEFabSize.small => 8.0,
+                    MEFabSize.medium => 12.0,
+                    MEFabSize.large => 16.0,
+                  },
+                ),
                 DefaultTextStyle.merge(
                   style: (size == MEFabSize.small
                           ? textTheme.titleMedium

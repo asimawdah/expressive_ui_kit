@@ -43,73 +43,40 @@ extension MEButtonSizeTokens on MEButtonSize {
   ShapeBorder get pressedContainerShape => RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(pressedCornerRadius),
       );
+
+  /// Leading/trailing padding: 12 / 16 / 24 / 48 / 64.
+  double get horizontalPadding => switch (this) {
+        MEButtonSize.extraSmall => 12,
+        MEButtonSize.small => 16,
+        MEButtonSize.medium => 24,
+        MEButtonSize.large => 48,
+        MEButtonSize.extraLarge => 64,
+      };
+
+  /// Icon size: 20 / 20 / 24 / 32 / 40.
+  double get iconSize => switch (this) {
+        MEButtonSize.extraSmall || MEButtonSize.small => 20,
+        MEButtonSize.medium => 24,
+        MEButtonSize.large => 32,
+        MEButtonSize.extraLarge => 40,
+      };
+
+  /// Gap between icon and label: 4 / 8 / 8 / 12 / 16.
+  double get iconGap => switch (this) {
+        MEButtonSize.extraSmall => 4,
+        MEButtonSize.small || MEButtonSize.medium => 8,
+        MEButtonSize.large => 12,
+        MEButtonSize.extraLarge => 16,
+      };
+
+  /// Label style for this size on [theme].
+  TextStyle labelStyle(TextTheme theme) => switch (this) {
+        MEButtonSize.extraSmall || MEButtonSize.small => theme.labelLarge!,
+        MEButtonSize.medium => theme.titleMedium!,
+        MEButtonSize.large => theme.headlineSmall!,
+        MEButtonSize.extraLarge => theme.headlineLarge!,
+      };
 }
-
-class _MEButtonSizeSpec {
-  const _MEButtonSizeSpec({
-    required this.height,
-    required this.horizontalPadding,
-    required this.iconSize,
-    required this.textStyle,
-    required this.squareRadius,
-    required this.gap,
-  });
-
-  final double height;
-  final double horizontalPadding;
-  final double iconSize;
-  final TextStyle Function(TextTheme) textStyle;
-  final double squareRadius;
-  final double gap;
-}
-
-const Map<MEButtonSize, _MEButtonSizeSpec> _sizeSpecs = {
-  MEButtonSize.extraSmall: _MEButtonSizeSpec(
-    height: 32,
-    horizontalPadding: 12,
-    iconSize: 20,
-    textStyle: _labelLarge,
-    squareRadius: MECorners.medium,
-    gap: 4,
-  ),
-  MEButtonSize.small: _MEButtonSizeSpec(
-    height: 40,
-    horizontalPadding: 16,
-    iconSize: 20,
-    textStyle: _labelLarge,
-    squareRadius: MECorners.medium,
-    gap: 8,
-  ),
-  MEButtonSize.medium: _MEButtonSizeSpec(
-    height: 56,
-    horizontalPadding: 24,
-    iconSize: 24,
-    textStyle: _titleMedium,
-    squareRadius: MECorners.large,
-    gap: 8,
-  ),
-  MEButtonSize.large: _MEButtonSizeSpec(
-    height: 96,
-    horizontalPadding: 48,
-    iconSize: 32,
-    textStyle: _headlineSmall,
-    squareRadius: MECorners.extraLarge,
-    gap: 12,
-  ),
-  MEButtonSize.extraLarge: _MEButtonSizeSpec(
-    height: 136,
-    horizontalPadding: 64,
-    iconSize: 40,
-    textStyle: _headlineLarge,
-    squareRadius: MECorners.extraLargeIncreased,
-    gap: 16,
-  ),
-};
-
-TextStyle _labelLarge(TextTheme t) => t.labelLarge!;
-TextStyle _titleMedium(TextTheme t) => t.titleMedium!;
-TextStyle _headlineSmall(TextTheme t) => t.headlineSmall!;
-TextStyle _headlineLarge(TextTheme t) => t.headlineLarge!;
 
 /// A Material 3 Expressive button.
 ///
@@ -211,7 +178,6 @@ class MEButton extends StatelessWidget {
   Widget build(BuildContext context) {
     final colors = Theme.of(context).colorScheme;
     final textTheme = Theme.of(context).textTheme;
-    final spec = _sizeSpecs[size]!;
     final enabled = onPressed != null || onLongPress != null;
     final isSelected = selected ?? false;
 
@@ -262,9 +228,9 @@ class MEButton extends StatelessWidget {
     final restingShape = (isToggle ? !isSelected : shape == MEButtonShape.round)
         ? const StadiumBorder()
         : RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(spec.squareRadius));
+            borderRadius: BorderRadius.circular(size.squareCornerRadius));
     final selectedShape = RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(spec.squareRadius));
+        borderRadius: BorderRadius.circular(size.squareCornerRadius));
 
     return MEPressable(
       onPressed: onPressed,
@@ -281,8 +247,8 @@ class MEButton extends StatelessWidget {
       overlayColor: effectiveFg.withValues(alpha: 0.1),
       haptics: true,
       child: Container(
-        height: spec.height,
-        padding: EdgeInsets.symmetric(horizontal: spec.horizontalPadding),
+        height: size.height,
+        padding: EdgeInsets.symmetric(horizontal: size.horizontalPadding),
         alignment: Alignment.center,
         child: FittedBox(
           fit: BoxFit.scaleDown,
@@ -292,13 +258,13 @@ class MEButton extends StatelessWidget {
             children: [
               if (icon != null) ...[
                 IconTheme.merge(
-                  data: IconThemeData(size: spec.iconSize, color: effectiveFg),
+                  data: IconThemeData(size: size.iconSize, color: effectiveFg),
                   child: icon!,
                 ),
-                SizedBox(width: spec.gap),
+                SizedBox(width: size.iconGap),
               ],
               DefaultTextStyle.merge(
-                style: spec.textStyle(textTheme).copyWith(color: effectiveFg),
+                style: size.labelStyle(textTheme).copyWith(color: effectiveFg),
                 child: child,
               ),
             ],
