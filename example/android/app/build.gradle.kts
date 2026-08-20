@@ -21,10 +21,9 @@ android {
         targetSdk = flutter.targetSdkVersion
         versionCode = flutter.versionCode
         versionName = flutter.versionName
-        ndk {
-            // Fat APK for phones, emulators, and ChromeOS.
-            abiFilters += listOf("armeabi-v7a", "arm64-v8a", "x86_64")
-        }
+        // Do not set ndk.abiFilters here: it conflicts with
+        // `flutter build apk --split-per-abi`. Pass ABIs via
+        // --target-platform instead (android-arm, android-arm64, android-x64).
     }
 
     buildTypes {
