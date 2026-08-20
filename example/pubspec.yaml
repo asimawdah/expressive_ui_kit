@@ -1,7 +1,7 @@
 name: material3_expressive_example
 description: Gallery demo for the material3_expressive package.
 publish_to: "none"
-version: 1.4.0+5
+version: 1.5.0+6
 
 environment:
   sdk: ">=3.4.0 <4.0.0"
