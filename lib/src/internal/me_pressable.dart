@@ -10,8 +10,9 @@ import '../theme/me_theme.dart';
 /// Internal: an interactive Material surface with M3 Expressive
 /// spring-driven shape morphing.
 ///
-/// Matches `m3e_core` buttons: press morphs **corner radius** with a snappy
-/// effects spring; release uses the spatial spring so the shape can bounce.
+/// Matches `m3e_buttons`: press morphs **corner radius** with a snappy
+/// effects spring; release and selection use the fast spatial spring so the
+/// shape can bounce without feeling sluggish.
 /// The surface is not scaled unless [pressedScale] is below 1.0.
 class MEPressable extends StatefulWidget {
   const MEPressable({
@@ -128,9 +129,11 @@ class _MEPressableState extends State<MEPressable> {
     final interactive = widget.enabled &&
         (widget.onPressed != null || widget.onLongPress != null);
     final motion = METheme.of(context).motion;
-    // Same pairing as m3e_core: snappy effects spring while pressed,
-    // spatial spring on release so the morph can bounce.
-    final pressSpec = _pressed ? motion.fastEffects : motion.defaultSpatial;
+    // Press-in uses the snappy effects spring (same as m3e_buttons
+    // `_kPressedRadiusMotion`). Release and selection morph use the *fast*
+    // spatial spring — default spatial (380 / 0.8) reads as sluggish on
+    // buttons compared with other Material Expressive libraries.
+    final pressSpec = _pressed ? motion.fastEffects : motion.fastSpatial;
 
     return Semantics(
       button: widget.onPressed != null,
@@ -144,7 +147,7 @@ class _MEPressableState extends State<MEPressable> {
         ),
         child: MEMotionBuilder(
           value: widget.selected ? 1.0 : 0.0,
-          spec: motion.defaultSpatial,
+          spec: motion.fastSpatial,
           builder: (context, selectT, _) {
             return MEMotionBuilder(
               value: _pressed ? 1.0 : 0.0,
@@ -174,6 +177,9 @@ class _MEPressableState extends State<MEPressable> {
                         : WidgetStatePropertyAll(widget.overlayColor),
                     onTap: interactive ? widget.onPressed : null,
                     onLongPress: interactive ? widget.onLongPress : null,
+                    onTapDown: interactive ? (_) => _setPressed(true) : null,
+                    onTapUp: interactive ? (_) => _setPressed(false) : null,
+                    onTapCancel: interactive ? () => _setPressed(false) : null,
                     onHighlightChanged: interactive ? _setPressed : null,
                     child: child,
                   ),

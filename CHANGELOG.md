@@ -58,6 +58,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   instead of height ratios.
 - Chips use 8/16 start-end padding and 8dp icon gaps; cards press toward
   a squarer corner; list tiles are at least 56/72dp; snackbars are pills.
+- Button press/selection morph uses **fast** spatial springs on release
+  (press-in stays snappy effects). Corner changes no longer use the slower
+  default spatial token.
+- `MEDismissible` / `MEDismissibleColumn` swipe is motor-spring physics
+  (finger follow, pill archive/delete, icon scale, snap-back, fly-off,
+  neighbour pull) instead of stock `Dismissible`.
 - Remaining ME surfaces (chips, dismissible, segmented, rail, dock, stepper,
   selection, command palette, slivers, OTP, password meter, wheel picker,
   timeline, image fade, skeletonizer, slide-to-confirm, mood, heatmap,

@@ -369,6 +369,37 @@ void main() {
       expect(find.text('Mail 0'), findsOneWidget);
       expect(find.text('Mail 1'), findsOneWidget);
     });
+
+    testWidgets('swipe toward the end dismisses the card', (tester) async {
+      final items = <String>['Mail 0', 'Mail 1'];
+
+      await tester.pumpWidget(
+        _host(
+          StatefulBuilder(
+            builder: (context, setState) {
+              return MEDismissibleColumn(
+                itemCount: items.length,
+                onDismiss: (i, dir) async {
+                  setState(() => items.removeAt(i));
+                  return true;
+                },
+                itemBuilder: (context, i) => SizedBox(
+                  height: 56,
+                  width: 320,
+                  child: Text(items[i]),
+                ),
+              );
+            },
+          ),
+        ),
+      );
+
+      await tester.drag(find.text('Mail 0'), const Offset(-280, 0));
+      await tester.pumpAndSettle();
+
+      expect(find.text('Mail 0'), findsNothing);
+      expect(find.text('Mail 1'), findsOneWidget);
+    });
   });
 
   group('MEFab.extended', () {

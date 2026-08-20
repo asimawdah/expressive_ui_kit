@@ -2120,6 +2120,7 @@ class _DemoMEDismissibleState extends State<DemoMEDismissible> {
         for (final email in _emails)
           MEDismissible(
             dismissKey: ValueKey(email),
+            direction: DismissDirection.horizontal,
             onDismissed: (_) => setState(() => _emails.remove(email)),
             child: MEListTile(
               title: Text(email),
@@ -2139,19 +2140,19 @@ class DemoMEDismissibleColumn extends StatefulWidget {
 }
 
 class _DemoMEDismissibleColumnState extends State<DemoMEDismissibleColumn> {
-  int _count = 3;
+  final List<int> _items = [0, 1, 2];
 
   @override
   Widget build(BuildContext context) {
     return MEDismissibleColumn(
-      itemCount: _count,
+      itemCount: _items.length,
       onDismiss: (i, _) async {
-        setState(() => _count--);
+        setState(() => _items.removeAt(i));
         return true;
       },
       itemBuilder: (context, i) => Padding(
         padding: const EdgeInsets.all(16),
-        child: Text('Swipe to dismiss $i'),
+        child: Text('Swipe to archive or delete ${_items[i]}'),
       ),
     );
   }

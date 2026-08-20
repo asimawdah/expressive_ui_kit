@@ -252,7 +252,7 @@ MESegmentedButton<String>(
 MEAvatar(child: const Text('JD'), onPressed: () {}, selected: isSelected);
 MEAvatarGroup(avatars: [for (final u in users) MEAvatar(child: Text(u))]);
 
-// Swipe to dismiss with themed action reveal.
+// Swipe to archive (start) or delete (end) with spring fly-off.
 MEDismissible(
   dismissKey: ValueKey(item.id),
   onDismissed: (_) => remove(item),

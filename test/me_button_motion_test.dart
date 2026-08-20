@@ -31,21 +31,35 @@ void main() {
       findsNothing,
     );
 
-    final material = tester.widget<Material>(
-      find
-          .descendant(
-            of: find.byType(MEButton),
-            matching: find.byType(Material),
-          )
-          .first,
-    );
-    expect(material.shape, isA<RoundedRectangleBorder>());
-    final radius = (material.shape! as RoundedRectangleBorder)
-        .borderRadius
-        .resolve(TextDirection.ltr)
-        .topLeft
-        .x;
-    expect(radius, closeTo(20, 1.5));
+    Material materialOf() {
+      return tester.widget<Material>(
+        find
+            .descendant(
+              of: find.byType(MEButton),
+              matching: find.byType(Material),
+            )
+            .first,
+      );
+    }
+
+    double radiusOf() {
+      return (materialOf().shape! as RoundedRectangleBorder)
+          .borderRadius
+          .resolve(TextDirection.ltr)
+          .topLeft
+          .x;
+    }
+
+    expect(materialOf().shape, isA<RoundedRectangleBorder>());
+    expect(radiusOf(), closeTo(20, 1.5));
+
+    final gesture = await tester.press(find.text('Send'));
+    await tester.pump();
+    await tester.pump(const Duration(milliseconds: 20));
+    expect(radiusOf(), lessThan(16));
+
+    await gesture.up();
+    await tester.pump();
   });
 
   testWidgets('MEButtonGroup neighbor-squish uses Align, not Transform.scale',

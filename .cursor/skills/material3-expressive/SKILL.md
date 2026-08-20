@@ -116,7 +116,7 @@ Live playgrounds for every public widget: `example/lib/gallery/catalog.dart`.
 | Popup / overflow menu | `MEMenu` (`anchorBuilder`) | `PopupMenuButton` |
 | Dropdown field | `MEDropdown` (`.future` / `searchEnabled` / `multiSelect`) | `DropdownButton` |
 | Multi-select list with contextual bar | `MESelection` | Custom `AppBar` swap |
-| Swipe to dismiss one / column / deck | `MEDismissible` / `MEDismissibleColumn` / `MEDismissibleList` | Stock `Dismissible` only |
+| Swipe to dismiss one / column / deck | `MEDismissible` / `MEDismissibleColumn` / `MEDismissibleList` | Spring swipe with archive/delete |
 | Reorder | `MEReorderableList` | `ReorderableListView` |
 | Table | `MEDataTable` / `MEPaginatedDataTable` | `DataTable` |
 | Stepper / timeline / tree | `MEStepper` / `METimeline` / `METreeView` | `Stepper` |

@@ -234,8 +234,9 @@ class MEMotionScheme {
 TickerFuture springTo(
   AnimationController controller,
   double target,
-  MESpringSpec spec,
-) {
+  MESpringSpec spec, {
+  double? velocity,
+}) {
   if (spec.instant) {
     controller.value = target;
     return TickerFuture.complete();
@@ -244,7 +245,7 @@ TickerFuture springTo(
     spec.toMotion().createSimulation(
           start: controller.value,
           end: target,
-          velocity: controller.velocity,
+          velocity: velocity ?? controller.velocity,
         ),
   );
 }
