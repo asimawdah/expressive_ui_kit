@@ -85,8 +85,8 @@ before generating code.
 | `MEAccordion` | `lib/src/lists/me_accordion.dart` | `ExpansionPanelList` | Several expandable sections. |
 | `MEExpandableList` | `lib/src/lists/me_expandable_list.dart` | — | Expandable **cards** (also `.scrollable` / `.sliver`). |
 | `MESelection` + `MESelectionAppBar` | `lib/src/lists/me_selection.dart` | custom CAB | Multi-select list with contextual bar. |
-| `MEDismissible` | `lib/src/lists/me_dismissible.dart` | `Dismissible` | Swipe one row. |
-| `MEDismissibleColumn` / `MEDismissibleList` | `lib/src/lists/me_dismissible_list.dart` | — | Swipe a column or horizontal deck. |
+| `MEDismissible` | `lib/src/lists/me_dismissible.dart` | `Dismissible` | Spring swipe; archive start / delete end. |
+| `MEDismissibleColumn` / `MEDismissibleList` | `lib/src/lists/me_dismissible_list.dart` | — | Neighbour-pull card stack. |
 | `MEReorderableList` | `lib/src/lists/me_reorderable_list.dart` | `ReorderableListView` | Drag to reorder. |
 | `MEDataTable` / `MEPaginatedDataTable` | `lib/src/lists/me_data_table.dart` | `DataTable` | Tabular data. |
 | `MEStepper` | `lib/src/lists/me_stepper.dart` | `Stepper` | Linear steps. |
