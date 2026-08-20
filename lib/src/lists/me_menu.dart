@@ -393,6 +393,7 @@ class _MEMenuPopupState<T> extends State<_MEMenuPopup<T>>
   bool _dismissing = false;
   bool _selected = false;
   bool _removed = false;
+  bool _opened = false;
   String _query = '';
   final FocusScopeNode _focusScope = FocusScopeNode(debugLabel: 'MEMenu');
 
@@ -401,11 +402,18 @@ class _MEMenuPopupState<T> extends State<_MEMenuPopup<T>>
     super.initState();
     _expand = AnimationController.unbounded(vsync: this, value: 0)
       ..addListener(_onTick);
-    springTo(_expand, 1, MEMotionScheme.expressive.defaultSpatial);
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (!mounted) return;
       _focusScope.requestFocus();
     });
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    if (_opened) return;
+    _opened = true;
+    springTo(_expand, 1, METheme.of(context).motion.popup);
   }
 
   @override
@@ -430,7 +438,7 @@ class _MEMenuPopupState<T> extends State<_MEMenuPopup<T>>
     if (_dismissing) return;
     if (!_selected) widget.onDismiss();
     _dismissing = true;
-    springTo(_expand, 0, METheme.of(context).motion.fastSpatial);
+    springTo(_expand, 0, METheme.of(context).motion.popup);
   }
 
   void _handleSelect(Object? value, VoidCallback? onPressed) {
@@ -541,15 +549,17 @@ class _MEMenuPopupState<T> extends State<_MEMenuPopup<T>>
                 child: AnimatedBuilder(
                   animation: _expand,
                   builder: (context, child) {
-                    final progress = _expand.value.clamp(0.0, 1.5);
-                    final scale = progress.clamp(0.0, 1.2);
+                    final progress = _expand.value;
+                    // Same popup feel as m3e_core: uniform spring scale with
+                    // overshoot left unclamped (0.72 → 1.0, then a little past).
+                    final scale = 0.72 + (progress * 0.28);
                     return IgnorePointer(
                       ignoring: progress < 0.02,
                       child: Opacity(
                         opacity: progress.clamp(0.0, 1.0),
                         child: Transform.scale(
                           alignment: scaleAlignment,
-                          scaleY: scale,
+                          scale: scale,
                           child: child,
                         ),
                       ),

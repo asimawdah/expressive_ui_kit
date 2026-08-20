@@ -24,6 +24,8 @@ dependencies:
   flutter:
     sdk: flutter
   material_new_shapes: ^1.0.0
+  # Same physics engine as m3e_core (MaterialSpringMotion tokens). Do not depend on m3e_core.
+  motor: ^1.1.0
 
 dev_dependencies:
   flutter_test:

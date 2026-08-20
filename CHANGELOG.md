@@ -55,9 +55,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   instead of height ratios.
 - Chips use 8/16 start-end padding and 8dp icon gaps; cards press toward
   a squarer corner; list tiles are at least 56/72dp; snackbars are pills.
-- Core surfaces (chips, segmented buttons, nav labels, dialogs, sheets,
-  search, steppers, dismissible rows) animate with `METheme` springs
-  instead of hardcoded `Duration`/`Curves`.
+- Core surfaces animate with `motor` springs (`MaterialSpringMotion` tokens,
+  the same engine as `m3e_core`) via `METheme` — menus use the popup spring.
 - Buttons, icon buttons and toggles morph on press to the M3E **pressed
   corner radii** (not all the way to square/stadium).
 - Toggle unselected/selected colors follow M3E tokens (filled unselected

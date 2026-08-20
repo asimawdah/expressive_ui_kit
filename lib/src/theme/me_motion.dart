@@ -2,11 +2,13 @@ import 'dart:math' as math;
 
 import 'package:flutter/physics.dart';
 import 'package:flutter/widgets.dart';
+import 'package:motor/motor.dart';
 
 /// A spring specification following the Material 3 Expressive motion system.
 ///
-/// M3 Expressive replaces duration/easing pairs with physics-based springs,
-/// split into two families:
+/// Backed by the same [motor] physics that `m3e_core` uses
+/// ([MaterialSpringMotion] tokens). M3 Expressive replaces duration/easing
+/// pairs with physics-based springs, split into two families:
 ///
 /// * **Spatial** springs animate position, size and shape. They may bounce.
 /// * **Effects** springs animate color, opacity and elevation. They are
@@ -26,14 +28,79 @@ class MESpringSpec {
     instant: true,
   );
 
+  /// Snappy expressive spatial spring — [MaterialSpringMotion.expressiveSpatialFast].
+  static const expressiveSpatialFast =
+      MESpringSpec(dampingRatio: 0.6, stiffness: 800);
+
+  /// Balanced expressive spatial spring — [MaterialSpringMotion.expressiveSpatialDefault].
+  static const expressiveSpatialDefault =
+      MESpringSpec(dampingRatio: 0.8, stiffness: 380);
+
+  /// Slow expressive spatial spring — [MaterialSpringMotion.expressiveSpatialSlow].
+  static const expressiveSpatialSlow =
+      MESpringSpec(dampingRatio: 0.8, stiffness: 200);
+
+  /// Snappy standard spatial spring — [MaterialSpringMotion.standardSpatialFast].
+  static const standardSpatialFast =
+      MESpringSpec(dampingRatio: 0.9, stiffness: 1400);
+
+  /// Balanced standard spatial spring — [MaterialSpringMotion.standardSpatialDefault].
+  static const standardSpatialDefault =
+      MESpringSpec(dampingRatio: 0.9, stiffness: 700);
+
+  /// Slow standard spatial spring — [MaterialSpringMotion.standardSpatialSlow].
+  static const standardSpatialSlow =
+      MESpringSpec(dampingRatio: 0.9, stiffness: 300);
+
+  /// Fast effects (opacity/color) — [MaterialSpringMotion.standardEffectsFast].
+  static const standardEffectsFast =
+      MESpringSpec(dampingRatio: 1.0, stiffness: 3800);
+
+  /// Default effects — [MaterialSpringMotion.standardEffectsDefault].
+  static const standardEffectsDefault =
+      MESpringSpec(dampingRatio: 1.0, stiffness: 1600);
+
+  /// Slow effects — [MaterialSpringMotion.standardEffectsSlow].
+  static const standardEffectsSlow =
+      MESpringSpec(dampingRatio: 1.0, stiffness: 800);
+
+  /// Same physics as [standardEffectsFast] — [MaterialSpringMotion.expressiveEffectsFast].
+  static const expressiveEffectsFast = standardEffectsFast;
+
+  /// Same physics as [standardEffectsDefault] — [MaterialSpringMotion.expressiveEffectsDefault].
+  static const expressiveEffectsDefault = standardEffectsDefault;
+
+  /// Same physics as [standardEffectsSlow] — [MaterialSpringMotion.expressiveEffectsSlow].
+  static const expressiveEffectsSlow = standardEffectsSlow;
+
+  /// Overflow menu spring used by `m3e_core` button groups (1600 / 0.85).
+  static const standardOverflow =
+      MESpringSpec(dampingRatio: 0.85, stiffness: 1600);
+
+  /// Popup / dropdown bounce used by `m3e_core` menus (1000 / 0.6).
+  static const standardPopup = MESpringSpec(dampingRatio: 0.6, stiffness: 1000);
+
   /// Damping ratio. 1.0 is critically damped (no bounce), < 1.0 bounces.
+  /// Same meaning as [MaterialSpringMotion.damping].
   final double dampingRatio;
 
   /// Spring stiffness. Higher values settle faster.
+  /// Same meaning as [MaterialSpringMotion.stiffness].
   final double stiffness;
 
   /// When true, animations snap to their target with no spring simulation.
   final bool instant;
+
+  /// The [motor] motion that drives this spec — the same conversion
+  /// `m3e_core`'s `M3EMotion.toMotion()` uses (`MaterialSpringMotion.copyWith`).
+  Motion toMotion({bool snapToEnd = false}) {
+    if (instant) return const NoMotion();
+    return const MaterialSpringMotion.expressiveEffectsFast().copyWith(
+      stiffness: stiffness,
+      damping: dampingRatio,
+      snapToEnd: snapToEnd,
+    );
+  }
 
   /// Converts this spec into a [SpringDescription] usable with
   /// [SpringSimulation] or `AnimationController.animateWith`.
@@ -58,22 +125,28 @@ class MESpringSpec {
   /// A [Curve] that follows this spring's motion, for use with standard
   /// curve-driven animations (implicit animations, transitions, etc).
   Curve get curve => instant ? const Threshold(0.0) : MESpringCurve(this);
+
+  @override
+  bool operator ==(Object other) {
+    return other is MESpringSpec &&
+        other.dampingRatio == dampingRatio &&
+        other.stiffness == stiffness &&
+        other.instant == instant;
+  }
+
+  @override
+  int get hashCode => Object.hash(dampingRatio, stiffness, instant);
 }
 
-/// A [Curve] backed by a [SpringSimulation], allowing spring physics to be
-/// used anywhere Flutter expects a curve.
+/// A [Curve] backed by a [motor] spring simulation, allowing spring physics
+/// to be used anywhere Flutter expects a curve.
 class MESpringCurve extends Curve {
   MESpringCurve(this.spec)
-      : _sim = SpringSimulation(
-          spec.toSpringDescription(),
-          0.0,
-          1.0,
-          0.0,
-        ),
+      : _sim = spec.toMotion().createSimulation(),
         _settle = spec.approximateDuration.inMilliseconds / 1000.0;
 
   final MESpringSpec spec;
-  final SpringSimulation _sim;
+  final Simulation _sim;
   final double _settle;
 
   @override
@@ -85,8 +158,9 @@ class MESpringCurve extends Curve {
 
 /// The complete Material 3 Expressive motion scheme.
 ///
-/// Mirrors the `MotionScheme` API from Material Design: three speeds
-/// (fast, default, slow) for each of the two families (spatial, effects).
+/// Mirrors the `MotionScheme` API from Material Design plus the extra
+/// overflow/popup springs from `m3e_core`. Three speeds (fast, default,
+/// slow) for each of the two families (spatial, effects).
 @immutable
 class MEMotionScheme {
   const MEMotionScheme({
@@ -96,6 +170,8 @@ class MEMotionScheme {
     required this.fastEffects,
     required this.defaultEffects,
     required this.slowEffects,
+    this.overflow = MESpringSpec.standardOverflow,
+    this.popup = MESpringSpec.standardPopup,
   });
 
   final MESpringSpec fastSpatial;
@@ -105,26 +181,34 @@ class MEMotionScheme {
   final MESpringSpec defaultEffects;
   final MESpringSpec slowEffects;
 
+  /// Spring for overflow menus and extra actions sliding into view.
+  final MESpringSpec overflow;
+
+  /// Spring for popups and dropdowns (bouncier than spatial default).
+  final MESpringSpec popup;
+
   /// The expressive motion scheme: spatial springs bounce for a playful,
   /// energetic feel. This is the default for Material 3 Expressive.
+  ///
+  /// Tokens match [MaterialSpringMotion] expressive spatial / effects.
   static const MEMotionScheme expressive = MEMotionScheme(
-    fastSpatial: MESpringSpec(dampingRatio: 0.6, stiffness: 800),
-    defaultSpatial: MESpringSpec(dampingRatio: 0.8, stiffness: 380),
-    slowSpatial: MESpringSpec(dampingRatio: 0.8, stiffness: 200),
-    fastEffects: MESpringSpec(dampingRatio: 1.0, stiffness: 3800),
-    defaultEffects: MESpringSpec(dampingRatio: 1.0, stiffness: 1600),
-    slowEffects: MESpringSpec(dampingRatio: 1.0, stiffness: 800),
+    fastSpatial: MESpringSpec.expressiveSpatialFast,
+    defaultSpatial: MESpringSpec.expressiveSpatialDefault,
+    slowSpatial: MESpringSpec.expressiveSpatialSlow,
+    fastEffects: MESpringSpec.standardEffectsFast,
+    defaultEffects: MESpringSpec.standardEffectsDefault,
+    slowEffects: MESpringSpec.standardEffectsSlow,
   );
 
-  /// The standard motion scheme: spatial springs are critically damped and
-  /// do not bounce. Use for utilitarian or dense UIs.
+  /// The standard motion scheme: spatial springs are nearly critically
+  /// damped and do not bounce. Use for utilitarian or dense UIs.
   static const MEMotionScheme standard = MEMotionScheme(
-    fastSpatial: MESpringSpec(dampingRatio: 0.9, stiffness: 1400),
-    defaultSpatial: MESpringSpec(dampingRatio: 0.9, stiffness: 700),
-    slowSpatial: MESpringSpec(dampingRatio: 0.9, stiffness: 300),
-    fastEffects: MESpringSpec(dampingRatio: 1.0, stiffness: 3800),
-    defaultEffects: MESpringSpec(dampingRatio: 1.0, stiffness: 1600),
-    slowEffects: MESpringSpec(dampingRatio: 1.0, stiffness: 800),
+    fastSpatial: MESpringSpec.standardSpatialFast,
+    defaultSpatial: MESpringSpec.standardSpatialDefault,
+    slowSpatial: MESpringSpec.standardSpatialSlow,
+    fastEffects: MESpringSpec.standardEffectsFast,
+    defaultEffects: MESpringSpec.standardEffectsDefault,
+    slowEffects: MESpringSpec.standardEffectsSlow,
   );
 
   /// Instant motion for reduced-motion accessibility settings. All springs
@@ -136,12 +220,14 @@ class MEMotionScheme {
     fastEffects: MESpringSpec.zero,
     defaultEffects: MESpringSpec.zero,
     slowEffects: MESpringSpec.zero,
+    overflow: MESpringSpec.zero,
+    popup: MESpringSpec.zero,
   );
 }
 
-/// Drives an [AnimationController] with a spring simulation toward [target]
-/// (0.0 or 1.0), honoring the current velocity so animations are
-/// interruptible — a core requirement of M3 Expressive motion.
+/// Drives an [AnimationController] with a [motor] spring simulation toward
+/// [target], honoring the current velocity so animations are interruptible —
+/// a core requirement of M3 Expressive motion (same engine as `m3e_core`).
 void springTo(
   AnimationController controller,
   double target,
@@ -151,11 +237,11 @@ void springTo(
     controller.value = target;
     return;
   }
-  final simulation = SpringSimulation(
-    spec.toSpringDescription(),
-    controller.value,
-    target,
-    controller.velocity,
+  controller.animateWith(
+    spec.toMotion().createSimulation(
+          start: controller.value,
+          end: target,
+          velocity: controller.velocity,
+        ),
   );
-  controller.animateWith(simulation);
 }

@@ -56,10 +56,15 @@ MaterialApp(
 | `MEAppBar` first in a `CustomScrollView` / `MESliverScaffold` | `Scaffold(appBar: MEAppBar(...))` — it is a **sliver**. Use `METopAppBar` on a Scaffold |
 | `MEMenu` / `MEMenuAnchor` | `PopupMenuButton` |
 | `MESearchAnchor` / `MESearchAppBar` for live search | Bare `MESearchBar` plus a homemade overlay |
-| `METheme.of(context).motion` + springs | Hard-coded `Duration`/`Curves` on ME surfaces |
+| `METheme.of(context).motion` + motor `MaterialSpringMotion` | Hard-coded `Duration`/`Curves` on ME surfaces |
 | `MEDrawerDestination.icon` as `IconData` | Passing a `Widget` as the drawer icon |
 | `MEButton` | Deprecated `ExpressiveButton` |
 | Honor `MediaQuery.disableAnimations` | Extra animation wrappers that ignore it |
+
+Springs are the same **motor** `MaterialSpringMotion` tokens `m3e_core` uses
+(`expressiveSpatial*`, `standardSpatial*`, `*Effects`, plus `overflow` /
+`popup`). Drive them with `springTo` / `MESpringSpec.toMotion()`. Never import
+`m3e_core` or `M3E*` types.
 
 Live playgrounds for every public widget: `example/lib/gallery/catalog.dart`.
 

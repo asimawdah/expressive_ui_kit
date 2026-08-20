@@ -997,12 +997,16 @@ tiles...) shares the same expressive press choreography:
   bounce.
 - **Haptics** — buttons and FABs emit a light haptic tick on press-down.
 
-All animations run on physics springs, exposed through `MEMotionScheme`:
+All animations run on **motor** physics springs — the same
+`MaterialSpringMotion` engine [m3e_core](https://pub.dev/packages/m3e_core)
+uses — exposed through `MEMotionScheme`:
 
 - `fastSpatial` / `defaultSpatial` / `slowSpatial` — bouncy springs for
   movement, scaling and shape morphs.
 - `fastEffects` / `defaultEffects` / `slowEffects` — critically damped
   springs for color, opacity and other non-spatial effects.
+- `popup` — bouncy spring for menus and dropdowns (1000 / 0.6).
+- `overflow` — snappy spring for overflow extra-actions (1600 / 0.85).
 
 Use them in your own widgets:
 

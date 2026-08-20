@@ -15,7 +15,7 @@ before generating code.
 | Type | File | Use when |
 |---|---|---|
 | `METheme` / `METhemeData` | `lib/src/theme/me_theme.dart` | Wrapping the app; `.expressive` or `.standard` |
-| `MEMotionScheme` / `MESpringSpec` | `lib/src/theme/me_motion.dart` | Custom springs; prefer `METheme.of(context).motion` |
+| `MEMotionScheme` / `MESpringSpec` | `lib/src/theme/me_motion.dart` | Custom springs; prefer `METheme.of(context).motion`. Driven by `motor` (same engine as `m3e_core`). Extra `popup` / `overflow` springs. |
 | `MEShapeScheme` / `MEShapeMorph` | `lib/src/theme/me_shapes.dart` | Custom container shapes |
 | `METypography` | `lib/src/theme/me_theme.dart` | Emphasized headlines |
 
