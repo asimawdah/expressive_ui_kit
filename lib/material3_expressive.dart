@@ -16,7 +16,7 @@
 /// | Switch                         | [MESwitch]                   |
 /// | Checkbox                       | [MECheckbox]                 |
 /// | Radio                          | [MERadio]                    |
-/// | AppBar / SliverAppBar          | [MEAppBar]                   |
+/// | AppBar / SliverAppBar          | [MEAppBar] / [METopAppBar]   |
 /// | BottomAppBar                   | [METoolbar]                  |
 /// | NavigationBar                  | [MENavigationBar]            |
 /// | NavigationRail                 | [MENavigationRail]           |
@@ -44,7 +44,9 @@
 /// | SliverPersistentHeader         | [MESliverPinnedHeader]       |
 /// | Scaffold + CustomScrollView    | [MESliverScaffold]           |
 /// | (new)                          | [MESliverSectionHeader]      |
-/// | (new)                          | [MESplitButton]              |
+/// | (new)                          | [METopAppBar]                |
+/// | (new)                          | [METoggleButtonGroup]        |
+/// | DropdownMenu                   | [MEDropdown] / [MEDropdownMenu] |
 /// | RangeSlider                    | [MERangeSlider]              |
 /// | BottomAppBar                   | [MEBottomAppBar]             |
 /// | MaterialBanner                 | [MEBanner]                   |
@@ -179,6 +181,7 @@ export 'src/buttons/me_progress_button.dart';
 export 'src/buttons/me_segmented_button.dart';
 export 'src/buttons/me_split_button.dart';
 export 'src/buttons/me_toggle_button.dart';
+export 'src/buttons/me_toggle_button_group.dart';
 export 'src/charts/me_activity_rings.dart';
 export 'src/charts/me_bubble_chart.dart';
 export 'src/charts/me_candlestick_chart.dart';

@@ -21,6 +21,7 @@ class MENavigationRail extends StatefulWidget {
     required this.onDestinationSelected,
     this.expanded = false,
     this.leading,
+    this.fab,
     this.backgroundColor,
     this.focusNode,
     this.autofocus = false,
@@ -33,6 +34,9 @@ class MENavigationRail extends StatefulWidget {
   /// Whether the rail shows labels beside icons (expanded) or icon-only stack.
   final bool expanded;
   final Widget? leading;
+
+  /// Optional FAB below [leading], matching the M3E navigation-rail slot.
+  final Widget? fab;
   final Color? backgroundColor;
 
   /// Optional focus node for keyboard navigation.
@@ -85,6 +89,27 @@ class _MENavigationRailState extends State<MENavigationRail>
   static const double _expandedItemHeight = 56;
   static const double _pillHeight = 32;
   static const double _pillWidth = 56;
+  static const double _sectionHeaderHeight = 28;
+
+  List<double> _destinationTops(double itemHeight) {
+    final tops = <double>[];
+    var y = 0.0;
+    final showHeaders = widget.expanded;
+    for (final destination in widget.destinations) {
+      if (showHeaders && destination.sectionLabel != null) {
+        y += _sectionHeaderHeight;
+      }
+      tops.add(y);
+      y += itemHeight;
+    }
+    return tops;
+  }
+
+  double _stackHeight(double itemHeight) {
+    final tops = _destinationTops(itemHeight);
+    if (tops.isEmpty) return 0;
+    return tops.last + itemHeight;
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -123,6 +148,11 @@ class _MENavigationRailState extends State<MENavigationRail>
                   padding: const EdgeInsets.fromLTRB(12, 16, 12, 8),
                   child: widget.leading!,
                 ),
+              if (widget.fab != null)
+                Padding(
+                  padding: const EdgeInsets.fromLTRB(12, 8, 12, 8),
+                  child: widget.fab!,
+                ),
               const SizedBox(height: 8),
               Expanded(
                 child: LayoutBuilder(
@@ -135,12 +165,21 @@ class _MENavigationRailState extends State<MENavigationRail>
                         final stretch = 1.0 + remaining.clamp(0.0, 1.0) * 0.45;
                         final squash = 1.0 - (stretch - 1.0) * 0.2;
                         final pillH = _pillHeight * squash * stretch;
+                        final tops = _destinationTops(itemHeight);
+                        final i0 =
+                            pos.floor().clamp(0, count == 0 ? 0 : count - 1);
+                        final i1 =
+                            pos.ceil().clamp(0, count == 0 ? 0 : count - 1);
+                        final t = (pos - i0).clamp(0.0, 1.0);
+                        final itemTop = count == 0
+                            ? 0.0
+                            : tops[i0] + (tops[i1] - tops[i0]) * t;
 
                         // Collapsed: sit behind the icon slot.
                         // Expanded: sit vertically centered in the row.
                         final pillTop = widget.expanded
-                            ? itemHeight * pos + (itemHeight - pillH) / 2
-                            : itemHeight * pos +
+                            ? itemTop + (itemHeight - pillH) / 2
+                            : itemTop +
                                 _collapsedIconTop +
                                 (_pillHeight - pillH) / 2;
 
@@ -156,7 +195,7 @@ class _MENavigationRailState extends State<MENavigationRail>
                         // same scrollable so it tracks the selected item.
                         return SingleChildScrollView(
                           child: SizedBox(
-                            height: itemHeight * count,
+                            height: _stackHeight(itemHeight),
                             width: constraints.maxWidth,
                             child: Stack(
                               clipBehavior: Clip.none,
@@ -177,7 +216,27 @@ class _MENavigationRailState extends State<MENavigationRail>
                                 Column(
                                   mainAxisSize: MainAxisSize.min,
                                   children: [
-                                    for (var i = 0; i < count; i++)
+                                    for (var i = 0; i < count; i++) ...[
+                                      if (widget.expanded &&
+                                          widget.destinations[i].sectionLabel !=
+                                              null)
+                                        SizedBox(
+                                          height: _sectionHeaderHeight,
+                                          width: double.infinity,
+                                          child: Padding(
+                                            padding: const EdgeInsets.fromLTRB(
+                                                16, 8, 12, 0),
+                                            child: Text(
+                                              widget.destinations[i]
+                                                  .sectionLabel!,
+                                              style: textTheme.labelSmall!
+                                                  .copyWith(
+                                                color: colors.onSurfaceVariant,
+                                                fontWeight: FontWeight.w700,
+                                              ),
+                                            ),
+                                          ),
+                                        ),
                                       SizedBox(
                                         height: itemHeight,
                                         width: double.infinity,
@@ -195,6 +254,7 @@ class _MENavigationRailState extends State<MENavigationRail>
                                           textTheme: textTheme,
                                         ),
                                       ),
+                                    ],
                                   ],
                                 ),
                               ],

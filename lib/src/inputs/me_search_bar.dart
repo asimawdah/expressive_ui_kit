@@ -98,7 +98,7 @@ class _MESearchBarState extends State<MESearchBar>
           children: [
             const SizedBox(width: 16),
             widget.leading ??
-                Icon(Icons.search, color: scheme.onSurfaceVariant),
+                Icon(Icons.search, size: 24, color: scheme.onSurfaceVariant),
             const SizedBox(width: 12),
             Expanded(
               child: TextField(

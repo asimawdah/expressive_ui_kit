@@ -31,6 +31,16 @@ METoggleButton.filled( // also .tonal .outlined .text
   onCheckedChange: (v) => setState(() => favorite = v),
 );
 
+METoggleButtonGroup(
+  selected: const {0},
+  onChanged: (next) {},
+  style: MEButtonGroupStyle.standard, // or .connected
+  items: const [
+    METoggleButtonGroupItem(icon: Icon(Icons.format_bold), tooltip: 'Bold'),
+    METoggleButtonGroupItem(icon: Icon(Icons.format_italic), tooltip: 'Italic'),
+  ],
+);
+
 MEIconButton(
   icon: const Icon(Icons.settings_outlined),
   selectedIcon: const Icon(Icons.settings),
@@ -66,9 +76,18 @@ MESplitButton(
 );
 ```
 
-## App bar (sliver — not Scaffold.appBar)
+## App bar
 
 ```dart
+// Scaffold.appBar — 64dp, not a sliver.
+Scaffold(
+  appBar: METopAppBar(
+    title: const Text('Inbox'),
+    subtitle: const Text('3 unread'),
+  ),
+);
+
+// Collapsing / medium / large — sliver only.
 CustomScrollView(
   slivers: [
     MEAppBar(
@@ -105,6 +124,26 @@ MEDrawer(
   onDestinationSelected: (i) => setState(() => index = i),
   destinations: const [
     MEDrawerDestination(icon: Icons.inbox_outlined, label: 'Inbox'), // IconData, not Widget
+    MEDrawerDestination(
+      icon: Icons.send_outlined,
+      label: 'Sent',
+      sectionLabel: 'Mail',
+    ),
+  ],
+);
+
+MENavigationRail(
+  expanded: true,
+  selectedIndex: index,
+  onDestinationSelected: (i) => setState(() => index = i),
+  fab: MEFab(size: MEFabSize.small, icon: const Icon(Icons.add), onPressed: () {}),
+  destinations: const [
+    MENavigationDestination(
+      icon: Icon(Icons.home_outlined),
+      label: 'Home',
+      sectionLabel: 'Mail',
+    ),
+    MENavigationDestination(icon: Icon(Icons.search), label: 'Search'),
   ],
 );
 
@@ -199,4 +238,39 @@ MECheckbox(
 MESlider(value: value, onChanged: (v) => setState(() => value = v));
 MESlider.wavy(value: value, onChanged: (v) {});
 MESlider.vertical(value: value, onChanged: (v) {});
+MESlider(
+  value: value,
+  thumbLength: 50,
+  cornerRadius: 8,
+  onChanged: (v) {},
+);
+
+MEDropdown<String>(
+  value: selected,
+  hintText: 'Choose',
+  searchEnabled: true,
+  items: const [
+    MEMenuItem(value: 'a', label: 'Alpha'),
+  ],
+  onChanged: (v) {},
+);
+
+MECarousel(
+  type: MECarouselType.hero, // contained / uncontained
+  onChange: (index) {},
+  children: const [ColoredBox(color: Colors.teal)],
+);
+
+MEListTile(
+  variant: MEListTileVariant.outlined,
+  title: const Text('Wireless charging'),
+  onPressed: () {},
+);
+
+METabBar(
+  variant: METabBarVariant.primary, // or .secondary
+  selectedIndex: tab,
+  onSelected: (i) {},
+  tabs: const [METab(label: 'Day'), METab(label: 'Week')],
+);
 ```

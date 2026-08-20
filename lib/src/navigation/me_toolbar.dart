@@ -10,6 +10,14 @@ enum METoolbarStyle {
   docked,
 }
 
+enum METoolbarColorStyle {
+  /// Tonal container (default).
+  standard,
+
+  /// Primary-colored bar for high-emphasis tool clusters.
+  vibrant,
+}
+
 /// A Material 3 Expressive toolbar.
 ///
 /// A new M3E component: a horizontal container of actions (typically
@@ -30,19 +38,28 @@ class METoolbar extends StatelessWidget {
     super.key,
     required this.children,
     this.style = METoolbarStyle.floating,
+    this.colorStyle = METoolbarColorStyle.standard,
     this.color,
     this.gap = 4,
+    this.fab,
   });
 
   final List<Widget> children;
   final METoolbarStyle style;
+  final METoolbarColorStyle colorStyle;
   final Color? color;
   final double gap;
+
+  /// Optional trailing FAB, typically [MEFab] small.
+  final Widget? fab;
 
   @override
   Widget build(BuildContext context) {
     final colors = Theme.of(context).colorScheme;
-    final bg = color ?? colors.primaryContainer;
+    final bg = color ??
+        (colorStyle == METoolbarColorStyle.vibrant
+            ? colors.primary
+            : colors.primaryContainer);
 
     final content = Padding(
       padding: const EdgeInsets.all(8),
@@ -57,6 +74,10 @@ class METoolbar extends StatelessWidget {
           for (var i = 0; i < children.length; i++) ...[
             if (i > 0) SizedBox(width: gap),
             children[i],
+          ],
+          if (fab != null) ...[
+            SizedBox(width: gap + 4),
+            fab!,
           ],
         ],
       ),

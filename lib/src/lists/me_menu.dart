@@ -123,6 +123,7 @@ class MEMenu extends StatefulWidget {
     this.closeOnSelect = true,
     this.preferredWidth,
     this.onOpenChanged,
+    this.searchHint,
   }) : assert(
           children != null || entries != null,
           'Provide children or entries.',
@@ -139,6 +140,7 @@ class MEMenu extends StatefulWidget {
     bool closeOnSelect = true,
     double? preferredWidth,
     ValueChanged<bool>? onOpenChanged,
+    String? searchHint,
   }) {
     return MEMenu(
       key: key,
@@ -150,6 +152,7 @@ class MEMenu extends StatefulWidget {
       closeOnSelect: closeOnSelect,
       preferredWidth: preferredWidth,
       onOpenChanged: onOpenChanged,
+      searchHint: searchHint,
     );
   }
 
@@ -162,6 +165,9 @@ class MEMenu extends StatefulWidget {
   final bool closeOnSelect;
   final double? preferredWidth;
   final ValueChanged<bool>? onOpenChanged;
+
+  /// When set, the popup shows a search field that filters entries by label.
+  final String? searchHint;
 
   List<MEMenuNode> get _nodes => children ?? entries!;
 
@@ -190,6 +196,7 @@ class _MEMenuState extends State<MEMenu> {
       selectedValue: widget.selectedValue,
       closeOnSelect: widget.closeOnSelect,
       preferredWidth: widget.preferredWidth,
+      searchHint: widget.searchHint,
     );
     if (mounted) {
       setState(() => _open = false);
@@ -259,6 +266,7 @@ Future<T?> showMEMenu<T>({
   T? selectedValue,
   bool closeOnSelect = true,
   double? preferredWidth,
+  String? searchHint,
 }) {
   final completer = Completer<T?>();
   late OverlayEntry entry;
@@ -271,6 +279,7 @@ Future<T?> showMEMenu<T>({
         selectedValue: selectedValue,
         closeOnSelect: closeOnSelect,
         preferredWidth: preferredWidth,
+        searchHint: searchHint,
         onSelected: (value) => _completeOnce(completer, value),
         onDismiss: () => _completeOnce(completer, null),
         onRemove: () => entry.remove(),
@@ -350,6 +359,7 @@ class _MEMenuPopup<T> extends StatefulWidget {
     this.selectedValue,
     this.closeOnSelect = true,
     this.preferredWidth,
+    this.searchHint,
   });
 
   final Rect anchor;
@@ -358,6 +368,7 @@ class _MEMenuPopup<T> extends StatefulWidget {
   final T? selectedValue;
   final bool closeOnSelect;
   final double? preferredWidth;
+  final String? searchHint;
   final ValueChanged<T?> onSelected;
   final VoidCallback onDismiss;
   final VoidCallback onRemove;
@@ -382,6 +393,7 @@ class _MEMenuPopupState<T> extends State<_MEMenuPopup<T>>
   bool _dismissing = false;
   bool _selected = false;
   bool _removed = false;
+  String _query = '';
   final FocusScopeNode _focusScope = FocusScopeNode(debugLabel: 'MEMenu');
 
   @override
@@ -441,7 +453,7 @@ class _MEMenuPopupState<T> extends State<_MEMenuPopup<T>>
     final width = (widget.preferredWidth ??
             (widget.anchor.width + 176).clamp(_minWidth, _maxWidth))
         .clamp(_minWidth, _maxWidth);
-    final count = _approximateCount(widget.children);
+    final count = _approximateCount(_visibleNodes);
     final approxHeight =
         (count * _entryHeight).clamp(_entryHeight * 2, _maxHeight);
     final spaceBelow = screen.height - widget.anchor.bottom - _edge;
@@ -561,17 +573,72 @@ class _MEMenuPopupState<T> extends State<_MEMenuPopup<T>>
   }
 
   Widget _surfaces(ColorScheme scheme) {
-    final surfaces = _partitionSurfaces(widget.children);
+    final surfaces = _partitionSurfaces(_visibleNodes);
     return ListView(
       padding: const EdgeInsets.all(6),
       shrinkWrap: true,
       children: [
+        if (widget.searchHint != null) _searchField(scheme),
         for (var i = 0; i < surfaces.length; i++) ...[
-          if (i > 0) const SizedBox(height: _sectionGap),
+          if (i > 0 || widget.searchHint != null)
+            const SizedBox(height: _sectionGap),
           _surfaceCard(scheme, surfaces[i]),
         ],
       ],
     );
+  }
+
+  Widget _searchField(ColorScheme scheme) {
+    return Material(
+      color: scheme.surface,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(_containerRadius),
+      ),
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 12),
+        child: TextField(
+          autofocus: true,
+          onChanged: (value) => setState(() => _query = value),
+          decoration: InputDecoration(
+            hintText: widget.searchHint,
+            prefixIcon: Icon(
+              Icons.search,
+              size: 20,
+              color: scheme.onSurfaceVariant,
+            ),
+            border: InputBorder.none,
+            isDense: true,
+          ),
+          style: Theme.of(context).textTheme.bodyLarge,
+        ),
+      ),
+    );
+  }
+
+  List<MEMenuNode> get _visibleNodes => _filterNodes(widget.children, _query);
+
+  List<MEMenuNode> _filterNodes(List<MEMenuNode> nodes, String query) {
+    final q = query.trim().toLowerCase();
+    if (q.isEmpty) return nodes;
+    final out = <MEMenuNode>[];
+    for (final node in nodes) {
+      switch (node) {
+        case MEMenuEntry(:final label):
+          if (label.toLowerCase().contains(q)) out.add(node);
+        case MEMenuDivider():
+          if (out.isNotEmpty && out.last is! MEMenuDivider) out.add(node);
+        case MEMenuGroup(:final children, :final label):
+          final inner = _filterNodes(children, query);
+          final labelHit = label != null && label.toLowerCase().contains(q);
+          if (inner.isNotEmpty || labelHit) {
+            out.add(MEMenuGroup(
+              label: label,
+              children: inner.isNotEmpty ? inner : children,
+            ));
+          }
+      }
+    }
+    return out;
   }
 
   Widget _surfaceCard(ColorScheme scheme, MEMenuGroup group) {

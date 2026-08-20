@@ -25,6 +25,7 @@ before generating code.
 |---|---|---|---|
 | `MEButton` | `lib/src/buttons/me_button.dart` | `FilledButton` / `ElevatedButton` / `OutlinedButton` / `TextButton` | Labeled action. Variants: `.filled` `.tonal` `.elevated` `.outlined` `.text`. Sizes: `MEButtonSize`. |
 | `METoggleButton` | `lib/src/buttons/me_toggle_button.dart` | — | Checked + **label** (favorite, bold). Not icon-only. |
+| `METoggleButtonGroup` | `lib/src/buttons/me_toggle_button_group.dart` | format tool clusters | Neighbor-squish row of `METoggleButton`s. `style:` standard or connected. |
 | `MEIconButton` | `lib/src/buttons/me_icon_button.dart` | `IconButton` | Icon-only; `selected:` for icon toggle. |
 | `MEButtonGroup` | `lib/src/buttons/me_button_group.dart` | connected toggle rows | Neighbor-squish tool cluster. |
 | `MESegmentedButton` | `lib/src/buttons/me_segmented_button.dart` | `SegmentedButton` | Exclusive or multi select in one pill. |
@@ -44,12 +45,13 @@ before generating code.
 | Type | File | Replaces | Use when |
 |---|---|---|---|
 | `MEAppBar` | `lib/src/navigation/me_app_bar.dart` | `AppBar` / `SliverAppBar` | **Sliver** top bar. Put in `CustomScrollView`. Sizes: small/medium/large. |
+| `METopAppBar` | `lib/src/navigation/me_app_bar.dart` | `AppBar` | **Scaffold.appBar** 64dp bar. Not a sliver. |
 | `MESearchAppBar` | `lib/src/navigation/me_app_bar.dart` | search `AppBar` | Top bar that expands into search. |
 | `MEBottomAppBar` | `lib/src/navigation/me_bottom_app_bar.dart` | `BottomAppBar` | Docked actions + trailing FAB. |
 | `MENavigationBar` | `lib/src/navigation/me_navigation_bar.dart` | `NavigationBar` | 2–5 root destinations at the bottom. |
-| `MENavigationRail` | `lib/src/navigation/me_navigation_rail.dart` | `NavigationRail` | Wide/desktop destinations. |
+| `MENavigationRail` | `lib/src/navigation/me_navigation_rail.dart` | `NavigationRail` | Wide/desktop destinations. Optional `fab:` and `sectionLabel` on destinations. |
 | `MEDrawer` | `lib/src/navigation/me_drawer.dart` | `Drawer` / `NavigationDrawer` | Side destinations. `icon` is `IconData`. |
-| `METabBar` | `lib/src/navigation/me_tab_bar.dart` | `TabBar` | In-page sections. |
+| `METabBar` | `lib/src/navigation/me_tab_bar.dart` | `TabBar` | In-page sections. `variant:` primary pill or secondary underline. |
 | `MEBreadcrumbs` | `lib/src/navigation/me_breadcrumbs.dart` | — | Nested location path. |
 | `MEDock` | `lib/src/navigation/me_dock.dart` | — | Magnifying icon dock. |
 | `showMECommandPalette` | `lib/src/overlays/me_command_palette.dart` | — | Keyboard command search. |
@@ -73,12 +75,12 @@ before generating code.
 
 | Type | File | Replaces | Use when |
 |---|---|---|---|
-| `MEListTile` / `MEListGroup` | `lib/src/lists/me_list_tile.dart` | `ListTile` | Settings rows; group sets corner radii. |
+| `MEListTile` / `MEListGroup` | `lib/src/lists/me_list_tile.dart` | `ListTile` | Settings rows; group sets corner radii. `variant:` filled / elevated / outlined. |
 | `MECardList` | `lib/src/lists/me_card_list.dart` | stacked cards | Overlapping card stack. |
 | `MEMenu` / `MEMenuEntry` / `MEMenuGroup` | `lib/src/lists/me_menu.dart` | `PopupMenuButton` | Overflow / dropdown menu. Overlay spring, not `PopupRoute`. |
 | `MEMenuAnchor` | `lib/src/lists/me_menu.dart` | `MenuAnchor` | Menu from a list of `MEMenuItem`. |
 | `showMEMenu` | `lib/src/lists/me_menu.dart` | — | Imperative menu at a rect. |
-| `MEDropdown` | `lib/src/lists/me_dropdown.dart` | `DropdownButton` | Form field that picks one value. |
+| `MEDropdown` / `MEDropdownMenu` | `lib/src/lists/me_dropdown.dart` | `DropdownButton` | Form field that picks one value. `.future` / `multiSelect` / `searchEnabled`. |
 | `MEExpansionTile` | `lib/src/lists/me_expansion_tile.dart` | `ExpansionTile` | One expandable row. |
 | `MEAccordion` | `lib/src/lists/me_accordion.dart` | `ExpansionPanelList` | Several expandable sections. |
 | `MEExpandableList` | `lib/src/lists/me_expandable_list.dart` | — | Expandable **cards** (also `.scrollable` / `.sliver`). |
@@ -97,7 +99,7 @@ before generating code.
 |---|---|---|---|
 | `MECard` | `lib/src/containers/me_card.dart` | `Card` | Elevated/filled/outlined surface. |
 | `MEChip` | `lib/src/containers/me_chip.dart` | `Chip` / `FilterChip` / `InputChip` | `MEChipType` assist/filter/input/suggestion. |
-| `MECarousel` | `lib/src/containers/me_carousel.dart` | `CarouselView` | Peeking horizontal cards. |
+| `MECarousel` | `lib/src/containers/me_carousel.dart` | `CarouselView` | `type:` hero / contained / uncontained. Optional `axis:` and `onChange`. |
 | `MEAvatar` / `MEAvatarGroup` | `lib/src/containers/me_avatar.dart` | `CircleAvatar` | Face or initials. |
 | `ExpressiveIconContainer` | `lib/src/containers/expressive_icon_container.dart` | — | Cookie-shaped icon well. |
 | `MEShapeContainer` | `lib/src/containers/me_shape_container.dart` | — | Clip a child to a `MaterialShapes` polygon. |
@@ -119,7 +121,7 @@ before generating code.
 | `MESwitch` | `lib/src/controls/me_switch.dart` | `Switch` | On/off. |
 | `MECheckbox` | `lib/src/controls/me_checkbox.dart` | `Checkbox` | Optional `label`. |
 | `MERadio` | `lib/src/controls/me_radio.dart` | `Radio` | Optional `label`. |
-| `MESlider` | `lib/src/controls/me_slider.dart` | `Slider` | `.wavy` `.centered` `.vertical`. |
+| `MESlider` | `lib/src/controls/me_slider.dart` | `Slider` | `.wavy` `.centered` `.vertical`. Optional `thumbLength` / `cornerRadius`. |
 | `MERangeSlider` | `lib/src/controls/me_range_slider.dart` | `RangeSlider` | Two thumbs; `.wavy`. |
 | `MERating` | `lib/src/controls/me_rating.dart` | — | Stars. |
 | `MEQuantityStepper` | `lib/src/controls/me_quantity_stepper.dart` | — | − / count / +. |

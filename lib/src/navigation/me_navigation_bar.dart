@@ -24,6 +24,7 @@ class MENavigationDestination {
     this.selectedIcon,
     this.badge,
     this.tooltip,
+    this.sectionLabel,
   });
 
   final Widget icon;
@@ -35,6 +36,10 @@ class MENavigationDestination {
 
   /// Tooltip; defaults to [label].
   final String? tooltip;
+
+  /// Optional section caption drawn above this destination on
+  /// [MENavigationRail]. Ignored by [MENavigationBar].
+  final String? sectionLabel;
 }
 
 /// A Material 3 Expressive navigation bar.

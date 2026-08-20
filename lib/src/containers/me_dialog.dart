@@ -68,11 +68,14 @@ class MEDialog extends StatelessWidget {
                 ),
               if (actions.isNotEmpty) ...[
                 const SizedBox(height: 24),
-                Wrap(
-                  alignment: WrapAlignment.end,
-                  spacing: 8,
-                  runSpacing: 8,
-                  children: actions,
+                Align(
+                  alignment: AlignmentDirectional.centerEnd,
+                  child: Wrap(
+                    alignment: WrapAlignment.end,
+                    spacing: 8,
+                    runSpacing: 8,
+                    children: actions,
+                  ),
                 ),
               ],
             ],

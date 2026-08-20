@@ -19,6 +19,8 @@ class METoggleButton extends StatelessWidget {
     this.variant = MEButtonVariant.tonal,
     this.size = MEButtonSize.small,
     this.tooltip,
+    this.shape,
+    this.selectedShape,
   }) : assert(icon != null || label != null);
 
   const METoggleButton.filled({
@@ -30,6 +32,8 @@ class METoggleButton extends StatelessWidget {
     this.label,
     this.size = MEButtonSize.small,
     this.tooltip,
+    this.shape,
+    this.selectedShape,
   })  : variant = MEButtonVariant.filled,
         assert(icon != null || label != null);
 
@@ -42,6 +46,8 @@ class METoggleButton extends StatelessWidget {
     this.label,
     this.size = MEButtonSize.small,
     this.tooltip,
+    this.shape,
+    this.selectedShape,
   })  : variant = MEButtonVariant.tonal,
         assert(icon != null || label != null);
 
@@ -54,6 +60,8 @@ class METoggleButton extends StatelessWidget {
     this.label,
     this.size = MEButtonSize.small,
     this.tooltip,
+    this.shape,
+    this.selectedShape,
   })  : variant = MEButtonVariant.outlined,
         assert(icon != null || label != null);
 
@@ -66,6 +74,8 @@ class METoggleButton extends StatelessWidget {
     this.label,
     this.size = MEButtonSize.small,
     this.tooltip,
+    this.shape,
+    this.selectedShape,
   })  : variant = MEButtonVariant.text,
         assert(icon != null || label != null);
 
@@ -77,6 +87,12 @@ class METoggleButton extends StatelessWidget {
   final MEButtonVariant variant;
   final MEButtonSize size;
   final String? tooltip;
+
+  /// Resting shape override, used by [METoggleButtonGroup] connected layout.
+  final ShapeBorder? shape;
+
+  /// Selected shape override, used by [METoggleButtonGroup] connected layout.
+  final ShapeBorder? selectedShape;
 
   @override
   Widget build(BuildContext context) {
@@ -120,10 +136,11 @@ class METoggleButton extends StatelessWidget {
       onPressed: enabled ? () => onCheckedChange!(!checked) : null,
       enabled: enabled,
       selected: checked,
-      shape: const StadiumBorder(),
-      selectedShape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(size.squareCornerRadius),
-      ),
+      shape: shape ?? const StadiumBorder(),
+      selectedShape: selectedShape ??
+          RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(size.squareCornerRadius),
+          ),
       pressedShape: size.pressedContainerShape,
       color: effectiveBg,
       side: variant == MEButtonVariant.outlined && enabled && !checked

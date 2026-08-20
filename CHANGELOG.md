@@ -45,6 +45,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   correct stadium radius.
 - Shared `MEButtonSizeTokens` now also expose padding, icon size, icon
   gap and label style; split and toggle buttons follow the same scale.
+- `METopAppBar` for `Scaffold.appBar`, `METoggleButtonGroup` (standard and
+  connected), dropdown `.future` / multi-select / `searchEnabled`, tab
+  `secondary` variant, carousel hero/contained/uncontained + `onChange`,
+  rail FAB slot and destination `sectionLabel`s, drawer sections,
+  list-tile `outlined`/`elevated` variants, slider `thumbLength` /
+  `cornerRadius`.
 - Extended FAB padding/gap uses the spec tokens (16/8, 26/12, 28/16)
   instead of height ratios.
 - Chips use 8/16 start-end padding and 8dp icon gaps; cards press toward

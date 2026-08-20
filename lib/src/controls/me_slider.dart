@@ -26,6 +26,8 @@ class MESlider extends StatefulWidget {
     this.max = 1.0,
     this.divisions,
     this.trackHeight = 16,
+    this.thumbLength = 44,
+    this.cornerRadius = 8,
     this.color,
     this.trackColor,
     this.semanticsLabel,
@@ -42,6 +44,8 @@ class MESlider extends StatefulWidget {
     this.max = 1.0,
     this.divisions,
     this.trackHeight = 16,
+    this.thumbLength = 44,
+    this.cornerRadius = 8,
     this.color,
     this.trackColor,
     this.semanticsLabel,
@@ -58,6 +62,8 @@ class MESlider extends StatefulWidget {
     this.max = 1.0,
     this.divisions,
     this.trackHeight = 16,
+    this.thumbLength = 44,
+    this.cornerRadius = 8,
     this.color,
     this.trackColor,
     this.semanticsLabel,
@@ -74,6 +80,8 @@ class MESlider extends StatefulWidget {
     this.max = 1.0,
     this.divisions,
     this.trackHeight = 16,
+    this.thumbLength = 44,
+    this.cornerRadius = 8,
     this.color,
     this.trackColor,
     this.semanticsLabel,
@@ -88,6 +96,8 @@ class MESlider extends StatefulWidget {
   final double max;
   final int? divisions;
   final double trackHeight;
+  final double thumbLength;
+  final double cornerRadius;
   final Color? color;
   final Color? trackColor;
   final String? semanticsLabel;
@@ -206,6 +216,8 @@ class _MESliderState extends State<MESlider>
                     fraction: _fraction,
                     press: _press.value.clamp(0.0, 1.0),
                     trackHeight: widget.trackHeight,
+                    thumbLength: widget.thumbLength,
+                    cornerRadius: widget.cornerRadius,
                     activeColor: activeColor,
                     inactiveColor: inactiveColor,
                     handleColor: activeColor,
@@ -230,6 +242,8 @@ class _MESliderPainter extends CustomPainter {
     required this.fraction,
     required this.press,
     required this.trackHeight,
+    required this.thumbLength,
+    required this.cornerRadius,
     required this.activeColor,
     required this.inactiveColor,
     required this.handleColor,
@@ -243,6 +257,8 @@ class _MESliderPainter extends CustomPainter {
   final double fraction;
   final double press;
   final double trackHeight;
+  final double thumbLength;
+  final double cornerRadius;
   final Color activeColor;
   final Color inactiveColor;
   final Color handleColor;
@@ -255,7 +271,6 @@ class _MESliderPainter extends CustomPainter {
   static const double _handleGap = 6;
   static const double _handleWidthRest = 4;
   static const double _handleWidthPressed = 2;
-  static const double _handleLength = 44;
 
   @override
   void paint(Canvas canvas, Size size) {
@@ -278,8 +293,12 @@ class _MESliderPainter extends CustomPainter {
     final handleWidth =
         _handleWidthRest + (_handleWidthPressed - _handleWidthRest) * press;
 
-    final innerRadius = Radius.circular(trackHeight * 0.2);
-    final outerRadius = Radius.circular(trackHeight / 2);
+    final innerRadius = Radius.circular(
+      math.min(4, trackHeight / 2),
+    );
+    final outerRadius = Radius.circular(
+      math.min(cornerRadius, trackHeight / 2),
+    );
 
     if (style == MESliderStyle.centered) {
       _paintCentered(canvas, size, cy, handleX, handleWidth, outerRadius);
@@ -350,7 +369,7 @@ class _MESliderPainter extends CustomPainter {
         Rect.fromCenter(
           center: Offset(handleX, cy),
           width: handleWidth,
-          height: _handleLength,
+          height: thumbLength,
         ),
         Radius.circular(handleWidth / 2),
       ),
@@ -421,5 +440,7 @@ class _MESliderPainter extends CustomPainter {
       oldDelegate.press != press ||
       oldDelegate.activeColor != activeColor ||
       oldDelegate.style != style ||
-      oldDelegate.vertical != vertical;
+      oldDelegate.vertical != vertical ||
+      oldDelegate.thumbLength != thumbLength ||
+      oldDelegate.cornerRadius != cornerRadius;
 }

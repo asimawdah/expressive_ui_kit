@@ -280,3 +280,93 @@ class MESearchAppBar extends StatelessWidget implements PreferredSizeWidget {
     );
   }
 }
+
+/// A Material 3 Expressive top app bar for [Scaffold.appBar].
+///
+/// 64dp toolbar row (plus [bottom]). Medium/large collapsing bars remain
+/// [MEAppBar] slivers inside a [CustomScrollView].
+class METopAppBar extends StatelessWidget implements PreferredSizeWidget {
+  const METopAppBar({
+    super.key,
+    required this.title,
+    this.subtitle,
+    this.leading,
+    this.actions = const [],
+    this.backgroundColor,
+    this.centerTitle = false,
+    this.bottom,
+  });
+
+  final Widget title;
+  final Widget? subtitle;
+  final Widget? leading;
+  final List<Widget> actions;
+  final Color? backgroundColor;
+  final bool centerTitle;
+  final PreferredSizeWidget? bottom;
+
+  static const double _toolbarHeight = 64;
+
+  @override
+  Size get preferredSize => Size.fromHeight(
+        _toolbarHeight + (bottom?.preferredSize.height ?? 0),
+      );
+
+  @override
+  Widget build(BuildContext context) {
+    final colors = Theme.of(context).colorScheme;
+    final textTheme = Theme.of(context).textTheme;
+    final align = centerTitle ? TextAlign.center : TextAlign.start;
+
+    return Material(
+      color: backgroundColor ?? colors.surface,
+      child: SafeArea(
+        bottom: false,
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            SizedBox(
+              height: _toolbarHeight,
+              child: NavigationToolbar(
+                leading: leading,
+                middle: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  crossAxisAlignment: centerTitle
+                      ? CrossAxisAlignment.center
+                      : CrossAxisAlignment.start,
+                  children: [
+                    DefaultTextStyle.merge(
+                      style: textTheme.titleLarge!.copyWith(
+                        color: colors.onSurface,
+                        fontWeight: FontWeight.w600,
+                      ),
+                      textAlign: align,
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      child: title,
+                    ),
+                    if (subtitle != null)
+                      DefaultTextStyle.merge(
+                        style: textTheme.labelMedium!
+                            .copyWith(color: colors.onSurfaceVariant),
+                        textAlign: align,
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                        child: subtitle!,
+                      ),
+                  ],
+                ),
+                trailing: actions.isEmpty
+                    ? null
+                    : Row(mainAxisSize: MainAxisSize.min, children: actions),
+                centerMiddle: centerTitle,
+                middleSpacing: 16,
+              ),
+            ),
+            if (bottom != null) bottom!,
+          ],
+        ),
+      ),
+    );
+  }
+}

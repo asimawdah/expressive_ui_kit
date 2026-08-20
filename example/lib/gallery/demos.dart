@@ -114,6 +114,56 @@ class _DemoMEToggleButtonState extends State<DemoMEToggleButton> {
   }
 }
 
+class DemoMEToggleButtonGroup extends StatefulWidget {
+  const DemoMEToggleButtonGroup({super.key});
+  @override
+  State<DemoMEToggleButtonGroup> createState() =>
+      _DemoMEToggleButtonGroupState();
+}
+
+class _DemoMEToggleButtonGroupState extends State<DemoMEToggleButtonGroup> {
+  Set<int> _selected = {0};
+  Set<int> _range = {0};
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      children: [
+        METoggleButtonGroup(
+          selected: _selected,
+          onChanged: (next) => setState(() => _selected = next),
+          items: const [
+            METoggleButtonGroupItem(
+              icon: Icon(Icons.format_bold),
+              tooltip: 'Bold',
+            ),
+            METoggleButtonGroupItem(
+              icon: Icon(Icons.format_italic),
+              tooltip: 'Italic',
+            ),
+            METoggleButtonGroupItem(
+              icon: Icon(Icons.format_underlined),
+              tooltip: 'Underline',
+            ),
+          ],
+        ),
+        const SizedBox(height: 16),
+        METoggleButtonGroup(
+          style: MEButtonGroupStyle.connected,
+          multiSelect: false,
+          selected: _range,
+          onChanged: (next) => setState(() => _range = next),
+          items: const [
+            METoggleButtonGroupItem(label: Text('Day')),
+            METoggleButtonGroupItem(label: Text('Week')),
+            METoggleButtonGroupItem(label: Text('Month')),
+          ],
+        ),
+      ],
+    );
+  }
+}
+
 class DemoMEIconButton extends StatefulWidget {
   const DemoMEIconButton({super.key});
   @override
@@ -186,6 +236,18 @@ class _DemoMEButtonGroupState extends State<DemoMEButtonGroup> {
               onPressed: () {},
               child: const Text('Share'),
             ),
+          ],
+        ),
+        const SizedBox(height: 16),
+        MEButtonGroup(
+          direction: Axis.vertical,
+          style: MEButtonGroupStyle.connected,
+          selectedIndices: _selected,
+          onSelectionChanged: (s) => setState(() => _selected = s),
+          items: const [
+            MEButtonGroupItem(child: Text('Top')),
+            MEButtonGroupItem(child: Text('Middle')),
+            MEButtonGroupItem(child: Text('Bottom')),
           ],
         ),
       ],
@@ -403,14 +465,38 @@ class DemoMEToolbar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return METoolbar(
+    return Column(
       children: [
-        MEIconButton(icon: const Icon(Icons.format_bold), onPressed: () {}),
-        MEIconButton(icon: const Icon(Icons.format_italic), onPressed: () {}),
-        MEButton.filled(
-          size: MEButtonSize.small,
-          onPressed: () {},
-          child: const Text('Done'),
+        METoolbar(
+          children: [
+            MEIconButton(icon: const Icon(Icons.format_bold), onPressed: () {}),
+            MEIconButton(
+                icon: const Icon(Icons.format_italic), onPressed: () {}),
+            MEButton.filled(
+              size: MEButtonSize.small,
+              onPressed: () {},
+              child: const Text('Done'),
+            ),
+          ],
+        ),
+        const SizedBox(height: 16),
+        METoolbar(
+          colorStyle: METoolbarColorStyle.vibrant,
+          fab: MEFab(
+            size: MEFabSize.small,
+            icon: const Icon(Icons.add),
+            onPressed: () {},
+          ),
+          children: [
+            MEIconButton(
+              icon: const Icon(Icons.edit_outlined),
+              onPressed: () {},
+            ),
+            MEIconButton(
+              icon: const Icon(Icons.share_outlined),
+              onPressed: () {},
+            ),
+          ],
         ),
       ],
     );
@@ -1059,6 +1145,39 @@ class DemoMECarousel extends StatelessWidget {
   }
 }
 
+class DemoMECarouselContained extends StatelessWidget {
+  const DemoMECarouselContained({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return MECarousel(
+      height: 140,
+      type: MECarouselType.contained,
+      children: [
+        for (final color in [Colors.indigo, Colors.cyan, Colors.orange])
+          ColoredBox(color: color.shade200),
+      ],
+    );
+  }
+}
+
+class DemoMECarouselUncontained extends StatelessWidget {
+  const DemoMECarouselUncontained({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return MECarousel(
+      height: 140,
+      type: MECarouselType.uncontained,
+      heroAlignment: MECarouselHeroAlignment.center,
+      children: [
+        for (final color in [Colors.purple, Colors.pink, Colors.deepOrange])
+          ColoredBox(color: color.shade200),
+      ],
+    );
+  }
+}
+
 class DemoMEChip extends StatefulWidget {
   const DemoMEChip({super.key});
   @override
@@ -1445,6 +1564,8 @@ class _DemoMESliderState extends State<DemoMESlider> {
         const Text('Standard'),
         MESlider(
           value: _standard,
+          thumbLength: 50,
+          cornerRadius: 8,
           onChanged: (v) => setState(() => _standard = v),
         ),
         const SizedBox(height: 16),
@@ -1872,17 +1993,30 @@ class _DemoMEListTileState extends State<DemoMEListTile> {
 
   @override
   Widget build(BuildContext context) {
-    return MEListGroup(
+    return Column(
       children: [
-        for (var i = 0; i < 3; i++)
-          MEListTile(
-            leading: const Icon(Icons.folder_outlined),
-            title: Text('Item ${i + 1}'),
-            subtitle: const Text('Segmented tile'),
-            trailing: const Icon(Icons.chevron_right),
-            selected: _selected == i,
-            onPressed: () => setState(() => _selected = i),
-          ),
+        MEListGroup(
+          children: [
+            for (var i = 0; i < 3; i++)
+              MEListTile(
+                leading: const Icon(Icons.folder_outlined),
+                title: Text('Item ${i + 1}'),
+                subtitle: const Text('Segmented tile'),
+                trailing: const Icon(Icons.chevron_right),
+                selected: _selected == i,
+                onPressed: () => setState(() => _selected = i),
+              ),
+          ],
+        ),
+        const SizedBox(height: 16),
+        MEListTile(
+          variant: MEListTileVariant.outlined,
+          leading: const Icon(Icons.wifi),
+          title: const Text('Wireless charging'),
+          subtitle: const Text('On · Fast charge enabled'),
+          trailing: const Icon(Icons.chevron_right),
+          onPressed: () {},
+        ),
       ],
     );
   }
@@ -2072,15 +2206,48 @@ class _DemoMEDropdownState extends State<DemoMEDropdown> {
 
   @override
   Widget build(BuildContext context) {
-    return MEDropdown<String>(
-      label: 'Flavor',
-      value: _flavor,
-      items: const [
-        MEMenuItem(value: 'vanilla', label: 'Vanilla'),
-        MEMenuItem(value: 'mint', label: 'Mint'),
-        MEMenuItem(value: 'mocha', label: 'Mocha'),
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        MEDropdown<String>(
+          label: 'Flavor',
+          hintText: 'Choose a flavor',
+          leading: const Icon(Icons.icecream_outlined),
+          value: _flavor,
+          items: const [
+            MEMenuItem(value: 'vanilla', label: 'Vanilla'),
+            MEMenuItem(value: 'mint', label: 'Mint'),
+            MEMenuItem(value: 'mocha', label: 'Mocha'),
+          ],
+          onChanged: (v) => setState(() => _flavor = v),
+        ),
+        const SizedBox(height: 12),
+        MEDropdown<String>.future(
+          label: 'Loaded later',
+          value: _flavor,
+          itemsLoader: () async {
+            await Future<void>.delayed(const Duration(milliseconds: 80));
+            return const [
+              MEMenuItem(value: 'vanilla', label: 'Vanilla'),
+              MEMenuItem(value: 'mint', label: 'Mint'),
+            ];
+          },
+          onChanged: (v) => setState(() => _flavor = v),
+        ),
+        const SizedBox(height: 12),
+        MEDropdown<String>(
+          label: 'Searchable',
+          hintText: 'Filter flavors',
+          searchEnabled: true,
+          value: _flavor,
+          items: const [
+            MEMenuItem(value: 'vanilla', label: 'Vanilla'),
+            MEMenuItem(value: 'mint', label: 'Mint'),
+            MEMenuItem(value: 'mocha', label: 'Mocha'),
+          ],
+          onChanged: (v) => setState(() => _flavor = v),
+        ),
       ],
-      onChanged: (v) => setState(() => _flavor = v),
     );
   }
 }
@@ -2276,8 +2443,16 @@ class _DemoMEDrawerState extends State<DemoMEDrawer> {
         onDestinationSelected: (i) => setState(() => _index = i),
         destinations: const [
           MEDrawerDestination(icon: Icons.inbox, label: 'Inbox'),
-          MEDrawerDestination(icon: Icons.send_outlined, label: 'Sent'),
-          MEDrawerDestination(icon: Icons.star_outline, label: 'Starred'),
+          MEDrawerDestination(
+            icon: Icons.send_outlined,
+            label: 'Sent',
+            sectionLabel: 'Mail',
+          ),
+          MEDrawerDestination(
+            icon: Icons.settings_outlined,
+            label: 'Settings',
+            dividerBefore: true,
+          ),
         ],
       ),
     );
@@ -2331,15 +2506,27 @@ class _DemoMENavigationRailState extends State<DemoMENavigationRail> {
       child: Row(
         children: [
           MENavigationRail(
+            expanded: true,
             selectedIndex: _index,
             onDestinationSelected: (i) => setState(() => _index = i),
+            fab: MEFab(
+              size: MEFabSize.small,
+              icon: const Icon(Icons.add),
+              onPressed: () {},
+            ),
             destinations: const [
               MENavigationDestination(
                 icon: Icon(Icons.home_outlined),
                 label: 'Home',
+                sectionLabel: 'Mail',
               ),
               MENavigationDestination(
                   icon: Icon(Icons.search), label: 'Search'),
+              MENavigationDestination(
+                icon: Icon(Icons.settings_outlined),
+                label: 'Settings',
+                sectionLabel: 'Other',
+              ),
             ],
           ),
           Expanded(child: Center(child: Text('Destination ${_index + 1}'))),
@@ -2360,14 +2547,52 @@ class _DemoMETabBarState extends State<DemoMETabBar> {
 
   @override
   Widget build(BuildContext context) {
-    return METabBar(
-      tabs: const [
-        METab(label: 'Overview'),
-        METab(label: 'Specs'),
-        METab(label: 'Reviews'),
+    return Column(
+      children: [
+        METabBar(
+          tabs: const [
+            METab(label: 'Overview'),
+            METab(label: 'Specs'),
+            METab(label: 'Reviews'),
+          ],
+          selectedIndex: _tab,
+          onSelected: (i) => setState(() => _tab = i),
+        ),
+        const SizedBox(height: 16),
+        METabBar(
+          variant: METabBarVariant.secondary,
+          tabs: const [
+            METab(label: 'Day', icon: Icons.wb_sunny_outlined),
+            METab(label: 'Week', icon: Icons.date_range_outlined),
+            METab(label: 'Month', icon: Icons.calendar_month_outlined),
+          ],
+          selectedIndex: _tab,
+          onSelected: (i) => setState(() => _tab = i),
+        ),
       ],
-      selectedIndex: _tab,
-      onSelected: (i) => setState(() => _tab = i),
+    );
+  }
+}
+
+class DemoMETopAppBar extends StatelessWidget {
+  const DemoMETopAppBar({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return MediaQuery.removePadding(
+      context: context,
+      removeTop: true,
+      child: METopAppBar(
+        title: const Text('Inbox'),
+        subtitle: const Text('3 unread'),
+        leading: IconButton(
+          icon: const Icon(Icons.menu),
+          onPressed: () {},
+        ),
+        actions: [
+          IconButton(icon: const Icon(Icons.search), onPressed: () {}),
+        ],
+      ),
     );
   }
 }

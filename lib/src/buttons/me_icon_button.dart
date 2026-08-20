@@ -108,7 +108,7 @@ class MEIconButton extends StatelessWidget {
       selectedShape: selected == null ? null : selectedShape,
       selected: isSelected,
       color: effectiveBg,
-      side: variant == MEButtonVariant.outlined && enabled
+      side: variant == MEButtonVariant.outlined && enabled && !isSelected
           ? BorderSide(color: colors.outlineVariant)
           : null,
       overlayColor: effectiveFg.withValues(alpha: 0.1),

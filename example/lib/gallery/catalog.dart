@@ -35,6 +35,11 @@ final List<CatalogEntry> kCatalog = [
       category: 'Buttons',
       demo: (_) => const DemoMEToggleButton()),
   CatalogEntry(
+      name: 'METoggleButtonGroup',
+      replaces: 'Toggleable tool clusters',
+      category: 'Buttons',
+      demo: (_) => const DemoMEToggleButtonGroup()),
+  CatalogEntry(
       name: 'MEIconButton',
       replaces: 'IconButton',
       category: 'Buttons',
@@ -378,6 +383,16 @@ final List<CatalogEntry> kCatalog = [
       replaces: 'CarouselView',
       category: 'Containers',
       demo: (_) => const DemoMECarousel()),
+  CatalogEntry(
+      name: 'MECarousel.contained',
+      replaces: 'CarouselView',
+      category: 'Containers',
+      demo: (_) => const DemoMECarouselContained()),
+  CatalogEntry(
+      name: 'MECarousel.uncontained',
+      replaces: 'CarouselView',
+      category: 'Containers',
+      demo: (_) => const DemoMECarouselUncontained()),
   CatalogEntry(
       name: 'MEChip',
       replaces: 'Chip / FilterChip / InputChip',
@@ -860,6 +875,11 @@ final List<CatalogEntry> kCatalog = [
       category: 'Lists',
       demo: (_) => const DemoMEDropdown()),
   CatalogEntry(
+      name: 'MEDropdownMenu',
+      replaces: 'DropdownMenu',
+      category: 'Lists',
+      demo: (_) => const DemoMEDropdown()),
+  CatalogEntry(
       name: 'MEMenu',
       replaces: 'PopupMenuButton / MenuAnchor',
       category: 'Lists',
@@ -993,6 +1013,11 @@ final List<CatalogEntry> kCatalog = [
       replaces: 'TabBar',
       category: 'Navigation',
       demo: (_) => const DemoMETabBar()),
+  CatalogEntry(
+      name: 'METopAppBar',
+      replaces: 'AppBar',
+      category: 'Navigation',
+      demo: (_) => const DemoMETopAppBar()),
   CatalogEntry(
       name: 'showMECommandPalette',
       replaces: '—',

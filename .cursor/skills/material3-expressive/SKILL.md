@@ -53,7 +53,7 @@ MaterialApp(
 | Do | Do not |
 |---|---|
 | Prefix `ME` (`MEButton`, `showMEDialog`) | Prefix `M3E` |
-| `MEAppBar` first in a `CustomScrollView` / `MESliverScaffold` | `Scaffold(appBar: MEAppBar(...))` — it is a **sliver** |
+| `MEAppBar` first in a `CustomScrollView` / `MESliverScaffold` | `Scaffold(appBar: MEAppBar(...))` — it is a **sliver**. Use `METopAppBar` on a Scaffold |
 | `MEMenu` / `MEMenuAnchor` | `PopupMenuButton` |
 | `MESearchAnchor` / `MESearchAppBar` for live search | Bare `MESearchBar` plus a homemade overlay |
 | `METheme.of(context).motion` + springs | Hard-coded `Duration`/`Curves` on ME surfaces |
@@ -77,7 +77,9 @@ Live playgrounds for every public widget: `example/lib/gallery/catalog.dart`.
 | Primary action + overflow on one control | `MESplitButton` | `MEButton` + separate menu |
 | FAB / extended FAB | `MEFab` / `MEFab.extended` | `FloatingActionButton` |
 | Speed dial | `MEFabMenu` | Homemade overlay |
-| Contextual floating action cluster | `METoolbar` | `BottomAppBar` |
+| Top bar on a **Scaffold** | `METopAppBar` | `MEAppBar` (that one is a sliver) |
+| Collapsing / medium / large top bar | `MEAppBar` in `CustomScrollView` | `Scaffold(appBar: …)` |
+| Checked tool cluster (bold/italic) | `METoggleButtonGroup` | Several loose `METoggleButton`s |
 | Docked bar + trailing FAB | `MEBottomAppBar` | `METoolbar` (that one floats) |
 | Selection / format toolbar that floats near content | `MEFloatingToolbar` | `METoolbar` unless it is a bottom cluster |
 | Loading inside a button | `MEProgressButton` | `MEButton` + spinner |
@@ -104,7 +106,7 @@ Live playgrounds for every public widget: `example/lib/gallery/catalog.dart`.
 | List row / grouped rows / stacked cards | `MEListTile` / `MEListGroup` / `MECardList` | `ListTile` |
 | Expand one tile / accordion / expandable cards | `MEExpansionTile` / `MEAccordion` / `MEExpandableList` | `ExpansionTile` |
 | Popup / overflow menu | `MEMenu` (`anchorBuilder`) | `PopupMenuButton` |
-| Dropdown field | `MEDropdown` | `DropdownButton` |
+| Dropdown field | `MEDropdown` (`.future` / `searchEnabled` / `multiSelect`) | `DropdownButton` |
 | Multi-select list with contextual bar | `MESelection` | Custom `AppBar` swap |
 | Swipe to dismiss one / column / deck | `MEDismissible` / `MEDismissibleColumn` / `MEDismissibleList` | Stock `Dismissible` only |
 | Reorder | `MEReorderableList` | `ReorderableListView` |
