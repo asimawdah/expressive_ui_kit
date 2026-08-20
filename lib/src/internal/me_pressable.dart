@@ -10,10 +10,9 @@ import '../theme/me_theme.dart';
 /// Internal: an interactive Material surface with M3 Expressive
 /// spring-driven shape morphing.
 ///
-/// The surface renders [shape] at rest and morphs toward [pressedShape]
-/// while pressed (and toward [selectedShape] when [selected] is true),
-/// driven by the theme's spatial spring so the morph bounces and is
-/// interruptible.
+/// Matches `m3e_core` buttons: press morphs **corner radius** with a snappy
+/// effects spring; release uses the spatial spring so the shape can bounce.
+/// The surface is not scaled unless [pressedScale] is below 1.0.
 class MEPressable extends StatefulWidget {
   const MEPressable({
     super.key,
@@ -32,7 +31,7 @@ class MEPressable extends StatefulWidget {
     this.side,
     this.enabled = true,
     this.semanticLabel,
-    this.pressedScale = 0.97,
+    this.pressedScale = 1.0,
     this.haptics = false,
   });
 
@@ -57,9 +56,9 @@ class MEPressable extends StatefulWidget {
   final bool enabled;
   final String? semanticLabel;
 
-  /// Scale while fully pressed. The release spring naturally overshoots
-  /// past 1.0, giving the M3 Expressive squash-and-bounce feel. Set to
-  /// 1.0 to disable the scale effect.
+  /// Scale while fully pressed. Defaults to 1.0 (shape morph only, like
+  /// `m3e_core` buttons). Values below 1.0 enable squash; the release spring
+  /// is left unclamped so it can overshoot past 1.0.
   final double pressedScale;
 
   /// Emit a light haptic tick on press-down.
@@ -69,50 +68,18 @@ class MEPressable extends StatefulWidget {
   State<MEPressable> createState() => _MEPressableState();
 }
 
-class _MEPressableState extends State<MEPressable>
-    with TickerProviderStateMixin {
-  late final AnimationController _press = AnimationController.unbounded(
-    vsync: this,
-    value: 0,
-  );
-  late final AnimationController _select = AnimationController.unbounded(
-    vsync: this,
-    value: widget.selected ? 1 : 0,
-  );
+class _MEPressableState extends State<MEPressable> {
+  bool _pressed = false;
 
   /// Laid-out child size. Shape morphs (stadium ↔ rounded rect) need the
   /// real box; parent constraints are often unbounded for wrap-content
   /// buttons and must not be substituted with a fake 100×40 fallback.
   Size _layoutSize = Size.zero;
 
-  @override
-  void didUpdateWidget(MEPressable oldWidget) {
-    super.didUpdateWidget(oldWidget);
-    if (widget.selected != oldWidget.selected) {
-      springTo(
-        _select,
-        widget.selected ? 1 : 0,
-        METheme.of(context).motion.defaultSpatial,
-      );
-    }
-  }
-
-  @override
-  void dispose() {
-    _press.dispose();
-    _select.dispose();
-    super.dispose();
-  }
-
   void _setPressed(bool pressed) {
+    if (pressed == _pressed) return;
     if (pressed && widget.haptics) HapticFeedback.lightImpact();
-    springTo(
-      _press,
-      pressed ? 1 : 0,
-      pressed
-          ? METheme.of(context).motion.fastSpatial
-          : METheme.of(context).motion.defaultSpatial,
-    );
+    setState(() => _pressed = pressed);
   }
 
   void _handleChildSize(Size size) {
@@ -124,16 +91,15 @@ class _MEPressableState extends State<MEPressable>
     setState(() => _layoutSize = size);
   }
 
-  ShapeBorder _resolveShape(Size size) {
+  ShapeBorder _resolveShape(Size size, double pressT, double selectT) {
     ShapeBorder base = widget.shape;
     if (widget.selectedShape != null) {
-      final t = _select.value.clamp(0.0, 1.5);
       base = MEShapeMorph(from: widget.shape, to: widget.selectedShape!)
-          .evaluate(t, size);
+          .evaluate(selectT, size);
     }
     final pressedShape = widget.pressedShape ?? _defaultPressedShape(size);
-    final t = _press.value.clamp(0.0, 1.5);
-    var shape = MEShapeMorph(from: base, to: pressedShape).evaluate(t, size);
+    var shape =
+        MEShapeMorph(from: base, to: pressedShape).evaluate(pressT, size);
     if (widget.side != null && shape is RoundedRectangleBorder) {
       shape = shape.copyWith(side: widget.side);
     }
@@ -148,7 +114,6 @@ class _MEPressableState extends State<MEPressable>
   }
 
   ShapeBorder _defaultPressedShape(Size size) {
-    // Press morphs toward a squarer shape: ~35% of the resting roundness.
     final normalized = MEShapeMorph(
       from: widget.shape,
       to: RoundedRectangleBorder(
@@ -162,6 +127,10 @@ class _MEPressableState extends State<MEPressable>
   Widget build(BuildContext context) {
     final interactive = widget.enabled &&
         (widget.onPressed != null || widget.onLongPress != null);
+    final motion = METheme.of(context).motion;
+    // Same pairing as m3e_core: snappy effects spring while pressed,
+    // spatial spring on release so the morph can bounce.
+    final pressSpec = _pressed ? motion.fastEffects : motion.defaultSpatial;
 
     return Semantics(
       button: widget.onPressed != null,
@@ -173,54 +142,55 @@ class _MEPressableState extends State<MEPressable>
           event: event,
           onActivate: interactive ? widget.onPressed : null,
         ),
-        child: AnimatedBuilder(
-          animation: Listenable.merge([_press, _select]),
-          builder: (context, child) {
-            final hasSize = _layoutSize.width > 0 && _layoutSize.height > 0;
-            final shape =
-                hasSize ? _resolveShape(_layoutSize) : _restingShape();
-            final double elevation = widget.pressedElevation == null
-                ? widget.elevation
-                : (widget.elevation +
-                        (widget.pressedElevation! - widget.elevation) *
-                            _press.value.clamp(0.0, 1.0))
-                    .clamp(0.0, 24.0)
-                    .toDouble();
-            // M3 Expressive squash: scale dips toward [pressedScale]
-            // while pressed. Because the release spring is underdamped
-            // the unclamped press value swings below 0, which pushes the
-            // scale slightly past 1.0 for a natural overshoot bounce.
-            final double scale = widget.pressedScale >= 1.0
-                ? 1.0
-                : (1.0 -
-                        (1.0 - widget.pressedScale) *
-                            _press.value.clamp(-0.35, 1.2))
-                    .clamp(widget.pressedScale - 0.02, 1.03);
-            return Transform.scale(
-              scale: scale,
-              child: Material(
-                color: widget.color,
-                shadowColor: widget.shadowColor ?? Colors.black,
-                elevation: elevation,
-                shape: shape,
-                clipBehavior: Clip.antiAlias,
-                child: InkWell(
-                  customBorder: shape,
-                  overlayColor: widget.overlayColor == null
-                      ? null
-                      : WidgetStatePropertyAll(widget.overlayColor),
-                  onTap: interactive ? widget.onPressed : null,
-                  onLongPress: interactive ? widget.onLongPress : null,
-                  onHighlightChanged: interactive ? _setPressed : null,
-                  child: child,
-                ),
+        child: MEMotionBuilder(
+          value: widget.selected ? 1.0 : 0.0,
+          spec: motion.defaultSpatial,
+          builder: (context, selectT, _) {
+            return MEMotionBuilder(
+              value: _pressed ? 1.0 : 0.0,
+              spec: pressSpec,
+              builder: (context, pressT, child) {
+                final hasSize = _layoutSize.width > 0 && _layoutSize.height > 0;
+                final shape = hasSize
+                    ? _resolveShape(_layoutSize, pressT, selectT)
+                    : _restingShape();
+                final double elevation = widget.pressedElevation == null
+                    ? widget.elevation
+                    : (widget.elevation +
+                            (widget.pressedElevation! - widget.elevation) *
+                                pressT.clamp(0.0, 1.0))
+                        .clamp(0.0, 24.0)
+                        .toDouble();
+                Widget surface = Material(
+                  color: widget.color,
+                  shadowColor: widget.shadowColor ?? Colors.black,
+                  elevation: elevation,
+                  shape: shape,
+                  clipBehavior: Clip.antiAlias,
+                  child: InkWell(
+                    customBorder: shape,
+                    overlayColor: widget.overlayColor == null
+                        ? null
+                        : WidgetStatePropertyAll(widget.overlayColor),
+                    onTap: interactive ? widget.onPressed : null,
+                    onLongPress: interactive ? widget.onLongPress : null,
+                    onHighlightChanged: interactive ? _setPressed : null,
+                    child: child,
+                  ),
+                );
+                if (widget.pressedScale < 1.0) {
+                  // Unclamped: release overshoot pushes scale past 1.0.
+                  final scale = 1.0 - (1.0 - widget.pressedScale) * pressT;
+                  surface = Transform.scale(scale: scale, child: surface);
+                }
+                return surface;
+              },
+              child: _SizeProbe(
+                onSize: _handleChildSize,
+                child: widget.child,
               ),
             );
           },
-          child: _SizeProbe(
-            onSize: _handleChildSize,
-            child: widget.child,
-          ),
         ),
       ),
     );

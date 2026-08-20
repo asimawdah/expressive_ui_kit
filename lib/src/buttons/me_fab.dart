@@ -133,8 +133,6 @@ class MEFab extends StatelessWidget {
       overlayColor: fg.withValues(alpha: 0.1),
       semanticLabel: tooltip,
       haptics: true,
-      // FABs squash a touch deeper for a more playful feel.
-      pressedScale: 0.94,
       child: content,
     );
 

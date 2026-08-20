@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../internal/me_keyboard.dart';
+import '../theme/me_motion.dart';
 import '../theme/me_theme.dart';
 
 /// A segment within an [MESegmentedButton].
@@ -94,14 +95,6 @@ class _MESegmentedButtonState<T> extends State<MESegmentedButton<T>> {
     return index < 0 ? 0 : index;
   }
 
-  AlignmentGeometry get _thumbAlignment {
-    final count = widget.segments.length;
-    if (count <= 1) return AlignmentDirectional.center;
-    final t = _selectedIndex / (count - 1);
-    // Directional so the thumb tracks the mirrored Row in RTL.
-    return AlignmentDirectional(-1.0 + 2.0 * t, 0);
-  }
-
   bool get _useSlidingThumb => !widget.multiSelectionEnabled;
 
   Duration _duration(BuildContext context) =>
@@ -144,19 +137,31 @@ class _MESegmentedButtonState<T> extends State<MESegmentedButton<T>> {
         ),
         clipBehavior: Clip.antiAlias,
         child: _useSlidingThumb
-            ? _buildSlidingBody(colors, textTheme)
+            ? MEMotionBuilder(
+                value: _selectedIndex.toDouble(),
+                spec: METheme.of(context).motion.defaultSpatial,
+                builder: (context, index, _) =>
+                    _buildSlidingBody(colors, textTheme, index),
+              )
             : _buildMultiBody(colors, textTheme),
       ),
     );
   }
 
-  Widget _buildSlidingBody(ColorScheme colors, TextTheme textTheme) {
+  Widget _buildSlidingBody(
+    ColorScheme colors,
+    TextTheme textTheme,
+    double selectedIndex,
+  ) {
     final thumb = DecoratedBox(
       decoration: ShapeDecoration(
         color: colors.secondaryContainer,
         shape: const StadiumBorder(),
       ),
     );
+    final count = widget.segments.length;
+    final t = count <= 1 ? 0.0 : selectedIndex / (count - 1);
+    final alignment = AlignmentDirectional(-1.0 + 2.0 * t, 0);
 
     return Stack(
       alignment: Alignment.center,
@@ -165,10 +170,8 @@ class _MESegmentedButtonState<T> extends State<MESegmentedButton<T>> {
           Positioned.fill(
             child: Padding(
               padding: const EdgeInsets.all(_thumbInset),
-              child: AnimatedAlign(
-                duration: _duration(context),
-                curve: _curve(context),
-                alignment: _thumbAlignment,
+              child: Align(
+                alignment: alignment,
                 child: FractionallySizedBox(
                   widthFactor: 1 / widget.segments.length,
                   heightFactor: 1,

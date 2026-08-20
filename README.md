@@ -988,13 +988,14 @@ showMEDialog<void>(
 ## Motion system
 
 Every pressable surface (buttons, FABs, cards, chips, avatars, list
-tiles...) shares the same expressive press choreography:
+tiles...) shares the same expressive press choreography as `m3e_core`:
 
 - **Shape morph** — the surface springs toward a squarer (or rounder)
-  shape while pressed and back on release.
-- **Squash & overshoot** — the surface scales down slightly on press;
-  the underdamped release spring pushes it just past 1.0 for a natural
-  bounce.
+  corner radius while pressed (snappy effects spring) and back on
+  release (spatial spring, which may bounce).
+- **Neighbor squish** — in `MEButtonGroup` / `METoggleButtonGroup` the
+  pressed item grows and neighbors compress in layout, keeping the
+  group's total size.
 - **Haptics** — buttons and FABs emit a light haptic tick on press-down.
 
 All animations run on **motor** physics springs — the same

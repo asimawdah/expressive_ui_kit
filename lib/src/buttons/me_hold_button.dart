@@ -130,7 +130,6 @@ class _MEHoldButtonState extends State<MEHoldButton>
   @override
   Widget build(BuildContext context) {
     final scheme = Theme.of(context).colorScheme;
-    final motion = METheme.of(context).motion;
 
     final double shapeT = _shape.value.clamp(0.0, 1.2);
     final double radius = _confirmed
@@ -159,9 +158,7 @@ class _MEHoldButtonState extends State<MEHoldButton>
         onTapDown: (_) => _startHold(),
         onTapUp: (_) => _cancelHold(),
         onTapCancel: _cancelHold,
-        child: AnimatedContainer(
-          duration: motion.fastEffects.approximateDuration,
-          curve: motion.fastEffects.curve,
+        child: Container(
           height: widget.height,
           decoration: BoxDecoration(
             color: surface,

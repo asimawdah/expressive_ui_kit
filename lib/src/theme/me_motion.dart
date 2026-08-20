@@ -245,3 +245,31 @@ void springTo(
         ),
   );
 }
+
+/// Animates a scalar with the same [SingleMotionBuilder] widget `m3e_core`
+/// uses. Overshoot is left unclamped so expressive springs can bounce.
+class MEMotionBuilder extends StatelessWidget {
+  const MEMotionBuilder({
+    super.key,
+    required this.value,
+    required this.spec,
+    required this.builder,
+    this.child,
+  });
+
+  final double value;
+  final MESpringSpec spec;
+  final ValueWidgetBuilder<double> builder;
+  final Widget? child;
+
+  @override
+  Widget build(BuildContext context) {
+    if (spec.instant) return builder(context, value, child);
+    return SingleMotionBuilder(
+      value: value,
+      motion: spec.toMotion(),
+      builder: builder,
+      child: child,
+    );
+  }
+}

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import '../internal/me_neighbor_squish.dart';
 import '../theme/me_motion.dart';
 import '../theme/me_shapes.dart';
 import '../theme/me_theme.dart';
@@ -56,29 +57,19 @@ class METoggleButtonGroup extends StatefulWidget {
   State<METoggleButtonGroup> createState() => _METoggleButtonGroupState();
 }
 
-class _METoggleButtonGroupState extends State<METoggleButtonGroup>
-    with SingleTickerProviderStateMixin {
-  int _pressedIndex = -1;
-  late final AnimationController _press = AnimationController.unbounded(
-    vsync: this,
-    value: 0,
-  );
-
-  @override
-  void dispose() {
-    _press.dispose();
-    super.dispose();
-  }
+class _METoggleButtonGroupState extends State<METoggleButtonGroup> {
+  int? _pressedIndex;
+  int? _lastPressedIndex;
 
   void _setPressed(int index, bool pressed) {
-    setState(() => _pressedIndex = pressed ? index : -1);
-    springTo(
-      _press,
-      pressed ? 1 : 0,
-      pressed
-          ? METheme.of(context).motion.fastSpatial
-          : METheme.of(context).motion.defaultSpatial,
-    );
+    setState(() {
+      if (pressed) {
+        _pressedIndex = index;
+        _lastPressedIndex = index;
+      } else if (_pressedIndex == index) {
+        _pressedIndex = null;
+      }
+    });
   }
 
   void _toggle(int index) {
@@ -94,12 +85,12 @@ class _METoggleButtonGroupState extends State<METoggleButtonGroup>
 
   @override
   Widget build(BuildContext context) {
-    return AnimatedBuilder(
-      animation: _press,
-      builder: (context, _) {
-        final t = _press.value.clamp(0.0, 1.2);
-        final connected = widget.style == MEButtonGroupStyle.connected;
-        final gap = widget.gap ?? (connected ? 2.0 : 8.0);
+    final connected = widget.style == MEButtonGroupStyle.connected;
+    final gap = widget.gap ?? (connected ? 2.0 : 8.0);
+    return MEMotionBuilder(
+      value: _pressedIndex != null ? 1.0 : 0.0,
+      spec: METheme.of(context).motion.defaultSpatial,
+      builder: (context, t, _) {
         final children = [
           for (var i = 0; i < widget.items.length; i++) ...[
             if (i > 0)
@@ -118,13 +109,6 @@ class _METoggleButtonGroupState extends State<METoggleButtonGroup>
   }
 
   Widget _buildItem(int i, double t, bool connected) {
-    final isPressed = _pressedIndex == i;
-    final isNeighbor = (_pressedIndex - i).abs() == 1;
-    final scale = isPressed
-        ? 1 + 0.08 * t
-        : isNeighbor
-            ? 1 - 0.06 * t
-            : 1.0;
     final item = widget.items[i];
     ShapeBorder? connectedShape;
     if (connected) {
@@ -144,13 +128,23 @@ class _METoggleButtonGroupState extends State<METoggleButtonGroup>
       );
     }
 
-    return Listener(
-      onPointerDown: (_) => _setPressed(i, true),
-      onPointerUp: (_) => _setPressed(i, false),
-      onPointerCancel: (_) => _setPressed(i, false),
-      child: Transform.scale(
-        scaleX: widget.direction == Axis.horizontal ? scale : 1,
-        scaleY: widget.direction == Axis.vertical ? scale : 1,
+    return MENeighborSquish(
+      factor: meNeighborSquishFactor(
+        index: i,
+        count: widget.items.length,
+        pressedIndex: _lastPressedIndex,
+        t: t,
+      ),
+      alignment: meNeighborSquishAlignment(
+        index: i,
+        pressedIndex: _lastPressedIndex,
+        direction: widget.direction,
+      ),
+      direction: widget.direction,
+      child: Listener(
+        onPointerDown: (_) => _setPressed(i, true),
+        onPointerUp: (_) => _setPressed(i, false),
+        onPointerCancel: (_) => _setPressed(i, false),
         child: METoggleButton(
           checked: widget.selected.contains(i),
           icon: item.icon,
