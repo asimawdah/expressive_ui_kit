@@ -12,7 +12,8 @@ METheme(
 );
 
 final motion = METheme.of(context).motion;
-springTo(controller, 1, motion.defaultSpatial); // motor MaterialSpringMotion
+springTo(controller, 1, motion.defaultSpatial); // motor MaterialSpringMotion (returns TickerFuture)
+await springTo(controller, 1, motion.slowSpatial); // dice / coin / splash exit
 springTo(controller, 1, motion.popup); // menus / dropdowns
 springTo(controller, 1, motion.overflow); // overflow extra-actions
 MEMotionBuilder(

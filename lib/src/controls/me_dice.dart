@@ -4,13 +4,14 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
 import '../internal/me_pressable.dart';
+import '../theme/me_motion.dart';
 import '../theme/me_shapes.dart';
 import '../theme/me_theme.dart';
 
 /// A tappable die that tumbles to a random face.
 ///
 /// Tapping the die (or calling roll via [MEDiceController]) spins it with
-/// a fast spatial spring — it scales down, rotates through several turns
+/// a slow spatial spring — it scales down, rotates through several turns
 /// while cycling faces, then lands on the result with an overshoot bounce
 /// and a haptic. The pip layout matches a physical die.
 ///
@@ -52,9 +53,9 @@ class MEDiceController {
 }
 
 class _MEDiceState extends State<MEDice> with SingleTickerProviderStateMixin {
-  late final AnimationController _tumble = AnimationController(
+  late final AnimationController _tumble = AnimationController.unbounded(
     vsync: this,
-    duration: const Duration(milliseconds: 700),
+    value: 0,
   );
   final math.Random _random = math.Random();
 
@@ -66,7 +67,6 @@ class _MEDiceState extends State<MEDice> with SingleTickerProviderStateMixin {
   void initState() {
     super.initState();
     widget.controller?._state = this;
-    _tumble.addStatusListener(_onStatus);
   }
 
   @override
@@ -85,31 +85,27 @@ class _MEDiceState extends State<MEDice> with SingleTickerProviderStateMixin {
     super.dispose();
   }
 
-  void _onStatus(AnimationStatus status) {
-    if (status == AnimationStatus.completed) {
-      setState(() {
-        _face = _pendingFace;
-        _rolling = false;
-      });
-      HapticFeedback.mediumImpact();
-      widget.onRolled?.call(_face);
-    }
-  }
-
-  void _roll() {
+  Future<void> _roll() async {
     if (_rolling) return;
     setState(() {
       _rolling = true;
       _pendingFace = _random.nextInt(widget.sides) + 1;
     });
     HapticFeedback.selectionClick();
-    _tumble.forward(from: 0);
+    _tumble.value = 0;
+    await springTo(_tumble, 1, METheme.of(context).motion.slowSpatial);
+    if (!mounted) return;
+    setState(() {
+      _face = _pendingFace;
+      _rolling = false;
+    });
+    HapticFeedback.mediumImpact();
+    widget.onRolled?.call(_face);
   }
 
   @override
   Widget build(BuildContext context) {
     final scheme = Theme.of(context).colorScheme;
-    final motion = METheme.of(context).motion;
 
     return Semantics(
       label: widget.semanticLabel ?? 'Die showing $_face',
@@ -117,19 +113,16 @@ class _MEDiceState extends State<MEDice> with SingleTickerProviderStateMixin {
       child: AnimatedBuilder(
         animation: _tumble,
         builder: (context, _) {
-          final t = _tumble.value.clamp(0.0, 1.0).toDouble();
-          // Spin fast at the start, decelerating into the landing; the
-          // landing segment uses the spring curve for overshoot.
-          final spinCurve = Curves.easeOutCubic.transform(t);
-          final angle = spinCurve * math.pi * 4;
-          final landingT = ((t - 0.7) / 0.3).clamp(0.0, 1.0).toDouble();
-          final landing =
-              t < 0.7 ? 0.0 : motion.fastSpatial.curve.transform(landingT);
-          final scale =
-              _rolling ? (0.82 + 0.18 * landing).clamp(0.7, 1.05) : 1.0;
-          // Cycle through random-looking faces while spinning.
-          final shownFace = _rolling && t < 0.7
-              ? ((t * 17).floor() % widget.sides) + 1
+          final t = _tumble.value;
+          // The slow spatial spring itself decelerates into the landing
+          // with a small overshoot — no duration curve on top.
+          final spinT = t.clamp(0.0, 1.2);
+          final angle = spinT * math.pi * 4;
+          final scale = _rolling ? (0.82 + 0.18 * t).clamp(0.7, 1.08) : 1.0;
+          // Cycle through random-looking faces while the spring is still
+          // climbing; lock the pending face near the settle.
+          final shownFace = _rolling && t < 0.85
+              ? ((t.clamp(0.0, 1.0) * 17).floor() % widget.sides) + 1
               : (_rolling ? _pendingFace : _face);
 
           return Transform.rotate(
@@ -142,7 +135,9 @@ class _MEDiceState extends State<MEDice> with SingleTickerProviderStateMixin {
                 child: MEPressable(
                   shape: MEShapeScheme.fromCorner(MECorners.extraLarge),
                   color: scheme.primaryContainer,
-                  onPressed: _roll,
+                  onPressed: () {
+                    _roll();
+                  },
                   haptics: false,
                   child: Center(
                     child: _MEDiceFace(

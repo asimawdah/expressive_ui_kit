@@ -228,16 +228,19 @@ class MEMotionScheme {
 /// Drives an [AnimationController] with a [motor] spring simulation toward
 /// [target], honoring the current velocity so animations are interruptible —
 /// a core requirement of M3 Expressive motion (same engine as `m3e_core`).
-void springTo(
+///
+/// Returns the same [TickerFuture] as [AnimationController.animateWith], so
+/// callers can `await` settlement (splash exit, dice landing, coin flip).
+TickerFuture springTo(
   AnimationController controller,
   double target,
   MESpringSpec spec,
 ) {
   if (spec.instant) {
     controller.value = target;
-    return;
+    return TickerFuture.complete();
   }
-  controller.animateWith(
+  return controller.animateWith(
     spec.toMotion().createSimulation(
           start: controller.value,
           end: target,

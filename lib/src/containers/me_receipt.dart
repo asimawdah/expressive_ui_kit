@@ -2,9 +2,12 @@ import 'dart:math' as math;
 
 import 'package:flutter/material.dart';
 
+import '../theme/me_motion.dart';
+import '../theme/me_theme.dart';
+
 /// A receipt-style container that "prints" itself on mount.
 ///
-/// The paper unrolls from the top with a slow ease, revealing [lines]
+/// The paper unrolls from the top with a slow spatial spring, revealing [lines]
 /// one by one, ending with a zig-zag torn bottom edge. Useful for order
 /// confirmations, summaries and playful checkout flows.
 class MEReceipt extends StatefulWidget {
@@ -25,7 +28,8 @@ class MEReceipt extends StatefulWidget {
   /// Paper width.
   final double width;
 
-  /// Time for the full print-out.
+  /// Kept for API compatibility. Print motion is driven by [METheme]
+  /// (`slowSpatial`); a zero duration still snaps the receipt open.
   final Duration printDuration;
 
   @override
@@ -52,15 +56,23 @@ class MEReceiptLine {
 
 class _MEReceiptState extends State<MEReceipt>
     with SingleTickerProviderStateMixin {
-  late final AnimationController _print = AnimationController(
+  late final AnimationController _print = AnimationController.unbounded(
     vsync: this,
-    duration: widget.printDuration,
+    value: 0,
   );
+  bool _started = false;
 
   @override
-  void initState() {
-    super.initState();
-    _print.forward();
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    if (_started) return;
+    _started = true;
+    final motion = METheme.of(context).motion;
+    if (widget.printDuration == Duration.zero || motion.slowSpatial.instant) {
+      _print.value = 1;
+    } else {
+      springTo(_print, 1, motion.slowSpatial);
+    }
   }
 
   @override
@@ -81,11 +93,11 @@ class _MEReceiptState extends State<MEReceipt>
     return AnimatedBuilder(
       animation: _print,
       builder: (context, child) {
-        final t = Curves.easeInOut.transform(_print.value);
+        final t = _print.value;
         return ClipRect(
           child: Align(
             alignment: Alignment.topCenter,
-            heightFactor: t.clamp(0.02, 1.0),
+            heightFactor: t < 0.02 ? 0.02 : t,
             child: child,
           ),
         );

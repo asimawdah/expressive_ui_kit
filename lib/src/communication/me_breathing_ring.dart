@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import '../theme/me_motion.dart';
 import '../theme/me_theme.dart';
 
 /// A guided-breathing ring that expands and contracts on a breath cycle.
@@ -135,16 +136,17 @@ class _MEBreathingRingState extends State<MEBreathingRing>
                   ),
                 ),
                 // Phase label cross-fades between changes.
-                AnimatedSwitcher(
-                  duration: METheme.of(context)
-                      .motion
-                      .defaultEffects
-                      .approximateDuration,
-                  switchInCurve:
-                      METheme.of(context).motion.defaultEffects.curve,
+                MEMotionBuilder(
+                  key: ValueKey<String>(label),
+                  value: 1,
+                  from: 0,
+                  spec: METheme.of(context).motion.defaultEffects,
+                  builder: (context, t, child) => Opacity(
+                    opacity: t.clamp(0.0, 1.0),
+                    child: child,
+                  ),
                   child: Text(
                     label,
-                    key: ValueKey<String>(label),
                     style: textTheme.titleMedium!.copyWith(
                       color: scheme.onPrimaryContainer,
                     ),

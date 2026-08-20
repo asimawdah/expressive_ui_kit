@@ -70,6 +70,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   (no squash, no `Curves.easeOutCubic`).
 - PIN reject shake, refresh-indicator snap/scale, heatmap/funnel/
   candlestick/bubble enter, and remaining switchers spring with motor.
+- Remaining one-shot ME widgets (`MEReceipt` print, `MESplashScreen` exit,
+  `MEDice` tumble, `MECoinFlip`, `MEVinyl` tonearm, `MELikeButton` burst,
+  breathing-ring labels, chat typing bounce) use `springTo` /
+  `MEMotionBuilder` instead of `Duration`/`Curves`. `springTo` now returns
+  a `TickerFuture` so callers can await settlement.
 - Core surfaces animate with `motor` springs (`MaterialSpringMotion` tokens,
   the same engine as `m3e_core`) via `METheme` — menus use the popup spring.
 - Buttons, icon buttons, FABs, chips and cards morph **corner radius** on

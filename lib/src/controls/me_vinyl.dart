@@ -4,6 +4,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
 import 'package:flutter/services.dart';
 
+import '../theme/me_motion.dart';
+import '../theme/me_theme.dart';
+
 /// A spinning vinyl record with a tonearm, driven by [playing].
 ///
 /// When [playing] becomes true the record spins up to speed with inertia
@@ -36,12 +39,16 @@ class MEVinyl extends StatefulWidget {
   State<MEVinyl> createState() => _MEVinylState();
 }
 
-class _MEVinylState extends State<MEVinyl> with SingleTickerProviderStateMixin {
+class _MEVinylState extends State<MEVinyl> with TickerProviderStateMixin {
   late final Ticker _ticker;
+  late final AnimationController _arm = AnimationController.unbounded(
+    vsync: this,
+    value: 0,
+  );
   Duration _last = Duration.zero;
   double _angle = 0; // record rotation, radians
   double _speed = 0; // radians/second
-  double _arm = 0; // tonearm progress 0 (lifted) -> 1 (on groove)
+  bool _armed = false;
 
   static const double _targetSpeed = 2 * math.pi * (33.3 / 60); // 33 RPM
 
@@ -51,6 +58,28 @@ class _MEVinylState extends State<MEVinyl> with SingleTickerProviderStateMixin {
     _ticker = createTicker(_tick)..start();
   }
 
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    if (_armed) return;
+    _armed = true;
+    if (widget.playing) {
+      springTo(_arm, 1, METheme.of(context).motion.defaultSpatial);
+    }
+  }
+
+  @override
+  void didUpdateWidget(MEVinyl oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget.playing != widget.playing) {
+      springTo(
+        _arm,
+        widget.playing ? 1.0 : 0.0,
+        METheme.of(context).motion.defaultSpatial,
+      );
+    }
+  }
+
   void _tick(Duration now) {
     final dt =
         _last == Duration.zero ? 0.0 : (now - _last).inMicroseconds / 1e6;
@@ -58,18 +87,12 @@ class _MEVinylState extends State<MEVinyl> with SingleTickerProviderStateMixin {
     if (dt <= 0) return;
 
     final targetSpeed = widget.playing ? _targetSpeed : 0.0;
-    final targetArm = widget.playing ? 1.0 : 0.0;
 
     // Inertia: the platter accelerates/decelerates smoothly.
     final speedLerp = 1 - math.exp(-dt * (widget.playing ? 2.5 : 1.2));
     _speed += (targetSpeed - _speed) * speedLerp;
 
-    // Tonearm eases toward its target.
-    final armLerp = 1 - math.exp(-dt * 4);
-    _arm += (targetArm - _arm) * armLerp;
-
-    final moving = _speed.abs() > 0.01 || (targetArm - _arm).abs() > 0.001;
-    if (moving) {
+    if (_speed.abs() > 0.01) {
       setState(() => _angle = (_angle + _speed * dt) % (2 * math.pi));
     }
   }
@@ -77,6 +100,7 @@ class _MEVinylState extends State<MEVinyl> with SingleTickerProviderStateMixin {
   @override
   void dispose() {
     _ticker.dispose();
+    _arm.dispose();
     super.dispose();
   }
 
@@ -170,10 +194,16 @@ class _MEVinylState extends State<MEVinyl> with SingleTickerProviderStateMixin {
               Positioned(
                 right: 0,
                 top: 0,
-                child: Transform.rotate(
-                  // Lifted rest position -> on-groove position.
-                  angle: -0.5 + 0.62 * _arm,
-                  alignment: Alignment.topCenter,
+                child: AnimatedBuilder(
+                  animation: _arm,
+                  builder: (context, child) {
+                    return Transform.rotate(
+                      // Lifted rest position -> on-groove position.
+                      angle: -0.5 + 0.62 * _arm.value,
+                      alignment: Alignment.topCenter,
+                      child: child,
+                    );
+                  },
                   child: SizedBox(
                     width: 20,
                     height: size * 0.62,

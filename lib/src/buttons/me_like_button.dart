@@ -60,9 +60,9 @@ class _MELikeButtonState extends State<MELikeButton>
     vsync: this,
     value: widget.liked ? 1 : 0,
   );
-  late final AnimationController _burst = AnimationController(
+  late final AnimationController _burst = AnimationController.unbounded(
     vsync: this,
-    duration: const Duration(milliseconds: 600),
+    value: 0,
   );
 
   @override
@@ -74,7 +74,8 @@ class _MELikeButtonState extends State<MELikeButton>
         // Start squashed, spring up with overshoot, and fire the burst.
         _pop.value = 0.0;
         springTo(_pop, 1.0, motion.fastSpatial);
-        _burst.forward(from: 0.0);
+        _burst.value = 0.0;
+        springTo(_burst, 1.0, motion.slowEffects);
       } else {
         springTo(_pop, 0.0, motion.defaultEffects);
       }
@@ -195,11 +196,11 @@ class _BurstPainter extends CustomPainter {
     final center = size.center(Offset.zero);
     final maxRadius = size.shortestSide / 2;
 
-    // Ease out: dots decelerate as they fly.
-    final eased = Curves.easeOutCubic.transform(progress);
-    final travel = maxRadius * (0.45 + 0.55 * eased);
-    final double opacity = (1.0 - progress).clamp(0.0, 1.0);
-    final double dotSize = size.shortestSide * 0.045 * (1.0 - 0.5 * eased);
+    // Effects spring already decelerates; no extra duration curve.
+    final t = progress.clamp(0.0, 1.0);
+    final travel = maxRadius * (0.45 + 0.55 * t);
+    final double opacity = (1.0 - t).clamp(0.0, 1.0);
+    final double dotSize = size.shortestSide * 0.045 * (1.0 - 0.5 * t);
 
     final paint = Paint()..color = color.withValues(alpha: opacity);
     final paint2 = Paint()..color = secondary.withValues(alpha: opacity * 0.85);

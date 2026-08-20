@@ -3,6 +3,9 @@ import 'dart:math' as math;
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
+import '../theme/me_motion.dart';
+import '../theme/me_theme.dart';
+
 /// A tappable coin that flips in 3D and lands on heads or tails.
 ///
 /// The coin spins around the X axis in perspective, rising and falling as
@@ -52,9 +55,9 @@ class MECoinFlipController {
 
 class _MECoinFlipState extends State<MECoinFlip>
     with SingleTickerProviderStateMixin {
-  late final AnimationController _spin = AnimationController(
+  late final AnimationController _spin = AnimationController.unbounded(
     vsync: this,
-    duration: const Duration(milliseconds: 1400),
+    value: 0,
   );
   final math.Random _random = math.Random();
 
@@ -69,17 +72,6 @@ class _MECoinFlipState extends State<MECoinFlip>
   void initState() {
     super.initState();
     widget.controller?._state = this;
-    _spin.addStatusListener((status) {
-      if (status == AnimationStatus.completed) {
-        setState(() {
-          // Commit the landing face.
-          if (_halfTurns.isOdd) _restingHeads = !_restingHeads;
-          _flipping = false;
-        });
-        HapticFeedback.mediumImpact();
-        widget.onFlipped?.call(_restingHeads);
-      }
-    });
   }
 
   @override
@@ -98,7 +90,7 @@ class _MECoinFlipState extends State<MECoinFlip>
     super.dispose();
   }
 
-  void _flip({bool? forced}) {
+  Future<void> _flip({bool? forced}) async {
     if (_flipping) return;
     final result = forced ?? _random.nextBool();
     // 8..12 half-turns, parity-adjusted so we land on [result]: the face
@@ -111,9 +103,15 @@ class _MECoinFlipState extends State<MECoinFlip>
       _flipping = true;
     });
     HapticFeedback.lightImpact();
-    _spin
-      ..value = 0
-      ..animateTo(1, curve: Curves.easeOutQuart);
+    _spin.value = 0;
+    await springTo(_spin, 1, METheme.of(context).motion.slowSpatial);
+    if (!mounted) return;
+    setState(() {
+      if (_halfTurns.isOdd) _restingHeads = !_restingHeads;
+      _flipping = false;
+    });
+    HapticFeedback.mediumImpact();
+    widget.onFlipped?.call(_restingHeads);
   }
 
   @override
@@ -143,11 +141,14 @@ class _MECoinFlipState extends State<MECoinFlip>
       value: _flipping ? 'Flipping' : (_restingHeads ? 'Heads' : 'Tails'),
       button: true,
       child: GestureDetector(
-        onTap: _flip,
+        onTap: () {
+          _flip();
+        },
         child: AnimatedBuilder(
           animation: _spin,
           builder: (context, _) {
-            final angle = _flipping ? _spin.value * _halfTurns * math.pi : 0.0;
+            final t = _spin.value.clamp(0.0, 1.0);
+            final angle = _flipping ? t * _halfTurns * math.pi : 0.0;
             // Which face points at the viewer right now: it alternates
             // every half-turn away from the resting face.
             final elapsed = (angle / math.pi).round();
@@ -155,9 +156,8 @@ class _MECoinFlipState extends State<MECoinFlip>
             // Fold the angle so the visible face is always drawn upright.
             final foldedAngle = angle - elapsed * math.pi;
             // The coin lifts mid-flip and comes back down to land.
-            final lift = _flipping
-                ? -math.sin(_spin.value * math.pi) * widget.size * 0.35
-                : 0.0;
+            final lift =
+                _flipping ? -math.sin(t * math.pi) * widget.size * 0.35 : 0.0;
 
             final face = headsUp
                 ? _CoinFace(
