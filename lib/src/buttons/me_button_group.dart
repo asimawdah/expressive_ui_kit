@@ -4,6 +4,7 @@ import '../internal/me_pressable.dart';
 import '../theme/me_motion.dart';
 import '../theme/me_shapes.dart';
 import '../theme/me_theme.dart';
+import 'me_button.dart';
 
 /// Layout styles for [MEButtonGroup].
 enum MEButtonGroupStyle {
@@ -45,7 +46,7 @@ class MEButtonGroup extends StatefulWidget {
     this.selectedIndices = const {},
     this.onSelectionChanged,
     this.multiSelect = false,
-    this.height = 48,
+    this.size = MEButtonSize.small,
   });
 
   final List<MEButtonGroupItem> items;
@@ -55,7 +56,9 @@ class MEButtonGroup extends StatefulWidget {
   final Set<int> selectedIndices;
   final ValueChanged<Set<int>>? onSelectionChanged;
   final bool multiSelect;
-  final double height;
+
+  /// Container height. Defaults to the small (40dp) M3E button size.
+  final MEButtonSize size;
 
   @override
   State<MEButtonGroup> createState() => _MEButtonGroupState();
@@ -136,11 +139,12 @@ class _MEButtonGroupState extends State<MEButtonGroup>
             : 1;
 
     final last = widget.items.length - 1;
+    final height = widget.size.height;
     final ShapeBorder shape;
     if (!connected) {
       shape = const StadiumBorder();
     } else {
-      final r = widget.height / 2;
+      final r = height / 2;
       const inner = MECorners.small;
       shape = RoundedRectangleBorder(
         borderRadius: BorderRadiusDirectional.horizontal(
@@ -170,11 +174,11 @@ class _MEButtonGroupState extends State<MEButtonGroup>
         child: MEPressable(
           onPressed: () => _handleTap(i),
           shape: shape,
-          pressedShape: connected ? const StadiumBorder() : null,
+          pressedShape: widget.size.pressedContainerShape,
           color: bg,
           overlayColor: fg.withValues(alpha: 0.1),
           child: Container(
-            height: widget.height,
+            height: height,
             padding: const EdgeInsets.symmetric(horizontal: 20),
             child: Row(
               mainAxisSize: MainAxisSize.min,

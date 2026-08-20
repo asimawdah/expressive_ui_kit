@@ -8,17 +8,21 @@ import '../theme/me_theme.dart';
 ///
 /// Replaces [Checkbox]. The container springs between an outlined square
 /// and a filled rounded square, with a bouncy check-mark draw-on.
+/// Set [tristate] to allow a mixed (indeterminate) state.
 class MECheckbox extends StatefulWidget {
   const MECheckbox({
     super.key,
     required this.value,
     required this.onChanged,
+    this.tristate = false,
     this.semanticsLabel,
     this.label,
-  });
+  }) : assert(tristate || value != null);
 
-  final bool value;
-  final ValueChanged<bool>? onChanged;
+  /// `true` checked, `false` unchecked, `null` mixed when [tristate] is true.
+  final bool? value;
+  final ValueChanged<bool?>? onChanged;
+  final bool tristate;
   final String? semanticsLabel;
 
   /// Optional label that is part of the tap target.
@@ -32,8 +36,10 @@ class _MECheckboxState extends State<MECheckbox>
     with SingleTickerProviderStateMixin {
   late final AnimationController _controller = AnimationController.unbounded(
     vsync: this,
-    value: widget.value ? 1 : 0,
+    value: widget.value == true ? 1 : 0,
   );
+
+  bool get _mixed => widget.tristate && widget.value == null;
 
   @override
   void didUpdateWidget(MECheckbox oldWidget) {
@@ -41,7 +47,7 @@ class _MECheckboxState extends State<MECheckbox>
     if (widget.value != oldWidget.value) {
       springTo(
         _controller,
-        widget.value ? 1 : 0,
+        widget.value == true || widget.value == null ? 1 : 0,
         METheme.of(context).motion.defaultSpatial,
       );
     }
@@ -53,17 +59,35 @@ class _MECheckboxState extends State<MECheckbox>
     super.dispose();
   }
 
+  void _cycle() {
+    final onChanged = widget.onChanged;
+    if (onChanged == null) return;
+    if (!widget.tristate) {
+      onChanged(!(widget.value ?? false));
+      return;
+    }
+    // Flutter Checkbox order: false → true → null → false.
+    if (widget.value == false) {
+      onChanged(true);
+    } else if (widget.value == true) {
+      onChanged(null);
+    } else {
+      onChanged(false);
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final colors = Theme.of(context).colorScheme;
     final enabled = widget.onChanged != null;
 
     return Semantics(
-      checked: widget.value,
+      checked: widget.value == true,
+      mixed: _mixed,
       label: widget.semanticsLabel,
       child: GestureDetector(
         behavior: HitTestBehavior.opaque,
-        onTap: enabled ? () => widget.onChanged!(!widget.value) : null,
+        onTap: enabled ? _cycle : null,
         child: Row(
           mainAxisSize: MainAxisSize.min,
           children: [
@@ -105,10 +129,15 @@ class _MECheckboxState extends State<MECheckbox>
                           ),
                         ),
                         child: CustomPaint(
-                          painter: _CheckPainter(
-                            progress: t,
-                            color: colors.onPrimary,
-                          ),
+                          painter: _mixed
+                              ? _DashPainter(
+                                  progress: t,
+                                  color: colors.onPrimary,
+                                )
+                              : _CheckPainter(
+                                  progress: t,
+                                  color: colors.onPrimary,
+                                ),
                         ),
                       ),
                     );
@@ -164,5 +193,30 @@ class _CheckPainter extends CustomPainter {
 
   @override
   bool shouldRepaint(_CheckPainter oldDelegate) =>
+      oldDelegate.progress != progress;
+}
+
+class _DashPainter extends CustomPainter {
+  _DashPainter({required this.progress, required this.color});
+
+  final double progress;
+  final Color color;
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    if (progress < 0.2) return;
+    final paint = Paint()
+      ..color = color
+      ..strokeWidth = 2.2
+      ..strokeCap = StrokeCap.round;
+    canvas.drawLine(
+      Offset(size.width * 0.22, size.height * 0.5),
+      Offset(size.width * 0.78, size.height * 0.5),
+      paint,
+    );
+  }
+
+  @override
+  bool shouldRepaint(_DashPainter oldDelegate) =>
       oldDelegate.progress != progress;
 }

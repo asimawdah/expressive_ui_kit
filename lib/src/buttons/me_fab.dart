@@ -25,12 +25,15 @@ class MEFab extends StatelessWidget {
   }) : label = null;
 
   /// An extended FAB with an icon and a text label.
+  ///
+  /// Defaults to [MEFabSize.small] (56dp), matching the M3 Expressive
+  /// extended FAB spec.
   const MEFab.extended({
     super.key,
     required this.icon,
     required Widget this.label,
     this.onPressed,
-    this.size = MEFabSize.medium,
+    this.size = MEFabSize.small,
     this.variant = MEFabVariant.primary,
     this.tooltip,
   });
@@ -96,7 +99,9 @@ class MEFab extends StatelessWidget {
                 DefaultTextStyle.merge(
                   style: (size == MEFabSize.small
                           ? textTheme.titleMedium
-                          : textTheme.titleLarge)!
+                          : size == MEFabSize.medium
+                              ? textTheme.titleLarge
+                              : textTheme.headlineSmall)!
                       .copyWith(color: fg),
                   child: label!,
                 ),

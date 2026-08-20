@@ -277,7 +277,7 @@ void main() {
               return MECheckbox(
                 value: checked,
                 label: const Text('Accept'),
-                onChanged: (v) => setState(() => checked = v),
+                onChanged: (v) => setState(() => checked = v ?? false),
               );
             },
           ),

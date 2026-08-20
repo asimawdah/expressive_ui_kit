@@ -1,12 +1,13 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 
 import '../theme/me_motion.dart';
 import '../theme/me_theme.dart';
 
 /// A Material 3 Expressive switch.
 ///
-/// Replaces [Switch]. The thumb morphs shape with state: a small circle
-/// when off, a large circle when on, and a squashed pill while pressed —
+/// Replaces [Switch]. Track is 52×32. The thumb is a 16dp circle when off,
+/// 24dp when on, and stretches toward the track height while pressed —
 /// driven by spatial springs so the thumb overshoots playfully.
 class MESwitch extends StatefulWidget {
   const MESwitch({
@@ -42,8 +43,13 @@ class _MESwitchState extends State<MESwitch> with TickerProviderStateMixin {
     value: 0,
   );
 
-  static const double _trackWidth = 60;
-  static const double _trackHeight = 34;
+  /// Official M3 Expressive switch tokens.
+  static const double _trackWidth = 52;
+  static const double _trackHeight = 32;
+  static const double _thumbOff = 16;
+  static const double _thumbOn = 24;
+  static const double _pad = 4;
+  static const double _stateLayer = 40;
 
   @override
   void didUpdateWidget(MESwitch oldWidget) {
@@ -74,6 +80,27 @@ class _MESwitchState extends State<MESwitch> with TickerProviderStateMixin {
     );
   }
 
+  void _commit(bool next) {
+    if (widget.onChanged == null || next == widget.value) return;
+    HapticFeedback.selectionClick();
+    widget.onChanged!(next);
+  }
+
+  void _handleDragUpdate(DragUpdateDetails details) {
+    if (widget.onChanged == null) return;
+    final dx = Directionality.of(context) == TextDirection.rtl
+        ? -details.delta.dx
+        : details.delta.dx;
+    final next =
+        (_position.value + dx / (_trackWidth - _pad * 2)).clamp(0.0, 1.0);
+    _position.value = next;
+  }
+
+  void _handleDragEnd(DragEndDetails details) {
+    _setPressed(false);
+    _commit(_position.value >= 0.5);
+  }
+
   @override
   Widget build(BuildContext context) {
     final colors = Theme.of(context).colorScheme;
@@ -87,12 +114,17 @@ class _MESwitchState extends State<MESwitch> with TickerProviderStateMixin {
         onTapDown: enabled ? (_) => _setPressed(true) : null,
         onTapUp: enabled ? (_) => _setPressed(false) : null,
         onTapCancel: enabled ? () => _setPressed(false) : null,
-        onTap: enabled ? () => widget.onChanged!(!widget.value) : null,
+        onTap: enabled ? () => _commit(!widget.value) : null,
+        onHorizontalDragStart: enabled ? (_) => _setPressed(true) : null,
+        onHorizontalDragUpdate: enabled ? _handleDragUpdate : null,
+        onHorizontalDragEnd: enabled ? _handleDragEnd : null,
+        onHorizontalDragCancel: enabled ? () => _setPressed(false) : null,
         child: AnimatedBuilder(
           animation: Listenable.merge([_position, _press]),
           builder: (context, _) {
             final t = _position.value.clamp(-0.2, 1.2);
             final press = _press.value.clamp(0.0, 1.0);
+            final selectedT = t.clamp(0.0, 1.0);
 
             final trackColor = Color.lerp(
               enabled
@@ -101,30 +133,29 @@ class _MESwitchState extends State<MESwitch> with TickerProviderStateMixin {
               enabled
                   ? colors.primary
                   : colors.onSurface.withValues(alpha: 0.12),
-              t.clamp(0.0, 1.0),
+              selectedT,
             )!;
             final borderColor = Color.lerp(
               colors.outline,
               Colors.transparent,
-              t.clamp(0.0, 1.0),
+              selectedT,
             )!;
 
-            // Thumb geometry: off = 16dp dot, on = 24dp; pressed squashes
-            // into a wider pill.
-            final baseSize = 16.0 + 8.0 * t.clamp(0.0, 1.0);
-            final thumbW = baseSize + press * 8;
-            final thumbH = baseSize - press * 2;
+            final baseSize = _thumbOff + (_thumbOn - _thumbOff) * selectedT;
+            // Pressed thumb stretches toward the track height.
+            final thumbH = (baseSize - press * (baseSize - _trackHeight + 8))
+                .clamp(14.0, _trackHeight - 4);
+            final thumbW = baseSize + press * (_trackHeight - baseSize);
             final thumbColor = Color.lerp(
               enabled
                   ? colors.outline
                   : colors.onSurface.withValues(alpha: 0.38),
               enabled ? colors.onPrimary : colors.surface,
-              t.clamp(0.0, 1.0),
+              selectedT,
             )!;
 
-            const pad = 5.0;
-            final travel = _trackWidth - pad * 2 - thumbW;
-            final thumbX = pad + travel * t.clamp(-0.05, 1.05);
+            final travel = _trackWidth - _pad * 2 - thumbW;
+            final thumbX = _pad + travel * t.clamp(-0.05, 1.05);
 
             final iconWidget = widget.value ? widget.selectedIcon : widget.icon;
 
@@ -132,8 +163,8 @@ class _MESwitchState extends State<MESwitch> with TickerProviderStateMixin {
               width: _trackWidth,
               height: _trackHeight,
               child: Stack(
+                clipBehavior: Clip.none,
                 children: [
-                  // Track.
                   Positioned.fill(
                     child: DecoratedBox(
                       decoration: BoxDecoration(
@@ -143,7 +174,23 @@ class _MESwitchState extends State<MESwitch> with TickerProviderStateMixin {
                       ),
                     ),
                   ),
-                  // Thumb.
+                  Positioned(
+                    left: thumbX + thumbW / 2 - _stateLayer / 2,
+                    top: (_trackHeight - _stateLayer) / 2,
+                    child: IgnorePointer(
+                      child: Opacity(
+                        opacity: press * 0.12,
+                        child: Container(
+                          width: _stateLayer,
+                          height: _stateLayer,
+                          decoration: BoxDecoration(
+                            color: thumbColor,
+                            shape: BoxShape.circle,
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
                   Positioned(
                     left: thumbX,
                     top: (_trackHeight - thumbH) / 2,

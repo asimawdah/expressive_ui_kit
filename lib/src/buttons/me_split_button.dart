@@ -1,46 +1,51 @@
 import 'package:flutter/material.dart';
 
 import '../internal/me_pressable.dart';
+import '../lists/me_menu.dart';
 import '../theme/me_shapes.dart';
 import 'me_button.dart';
 
 /// A Material 3 Expressive split button.
 ///
-/// A new M3E component: a connected pair made of a leading primary-action
-/// button and a trailing menu toggle. The trailing segment morphs to a
-/// fully-round shape while its menu is open.
+/// A connected pair: a leading primary action and a trailing menu toggle.
+/// The trailing segment morphs fully round while its [MEMenu] is open.
 class MESplitButton extends StatefulWidget {
   const MESplitButton({
     super.key,
     required this.child,
-    required this.menuItems,
+    required this.menu,
     this.icon,
     this.onPressed,
+    this.onSelected,
     this.variant = MEButtonVariant.filled,
-    this.height = 48,
+    this.size = MEButtonSize.small,
   });
 
   final Widget child;
   final Widget? icon;
   final VoidCallback? onPressed;
-  final MEButtonVariant variant;
-  final double height;
 
-  /// Items shown in the trailing menu.
-  final List<MenuItemButton> menuItems;
+  /// Menu tree shown from the trailing chevron. Typically [MEMenuEntry]s.
+  final List<MEMenuNode> menu;
+
+  /// Called with the selected [MEMenuEntry.value].
+  final ValueChanged<Object?>? onSelected;
+
+  final MEButtonVariant variant;
+  final MEButtonSize size;
 
   @override
   State<MESplitButton> createState() => _MESplitButtonState();
 }
 
 class _MESplitButtonState extends State<MESplitButton> {
-  final MenuController _menuController = MenuController();
   bool _menuOpen = false;
 
   @override
   Widget build(BuildContext context) {
     final colors = Theme.of(context).colorScheme;
     final textTheme = Theme.of(context).textTheme;
+    final height = widget.size.height;
 
     final (Color bg, Color fg) = switch (widget.variant) {
       MEButtonVariant.filled => (colors.primary, colors.onPrimary),
@@ -48,27 +53,37 @@ class _MESplitButtonState extends State<MESplitButton> {
           colors.secondaryContainer,
           colors.onSecondaryContainer
         ),
-      _ => (colors.primary, colors.onPrimary),
+      MEButtonVariant.elevated => (colors.surfaceContainerLow, colors.primary),
+      MEButtonVariant.outlined => (Colors.transparent, colors.onSurfaceVariant),
+      MEButtonVariant.text => (
+          colors.surfaceContainerHighest,
+          colors.onSurface
+        ),
     };
 
-    final r = widget.height / 2;
+    final r = height / 2;
+    const inner = Radius.circular(MECorners.extraSmall);
+    final side = widget.variant == MEButtonVariant.outlined
+        ? BorderSide(color: colors.outlineVariant)
+        : null;
 
     return Row(
       mainAxisSize: MainAxisSize.min,
       children: [
-        // Leading: primary action.
         MEPressable(
           onPressed: widget.onPressed,
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadiusDirectional.horizontal(
               start: Radius.circular(r),
-              end: const Radius.circular(MECorners.extraSmall),
+              end: inner,
             ),
           ),
+          pressedShape: widget.size.pressedContainerShape,
           color: bg,
+          side: side,
           overlayColor: fg.withValues(alpha: 0.1),
           child: Container(
-            height: widget.height,
+            height: height,
             padding: const EdgeInsets.symmetric(horizontal: 20),
             child: Row(
               mainAxisSize: MainAxisSize.min,
@@ -89,40 +104,39 @@ class _MESplitButtonState extends State<MESplitButton> {
           ),
         ),
         const SizedBox(width: 2),
-        // Trailing: menu toggle. Morphs fully round while the menu is open.
-        MenuAnchor(
-          controller: _menuController,
-          menuChildren: widget.menuItems,
-          onOpen: () => setState(() => _menuOpen = true),
-          onClose: () => setState(() => _menuOpen = false),
-          builder: (context, controller, _) {
+        MEMenu(
+          position: MEMenuAnchorPosition.bottomEnd,
+          children: widget.menu,
+          onSelected: widget.onSelected,
+          onOpenChanged: (open) {
+            if (mounted) setState(() => _menuOpen = open);
+          },
+          anchorBuilder: (context, open) {
             return MEPressable(
-              onPressed: () =>
-                  controller.isOpen ? controller.close() : controller.open(),
+              onPressed: open,
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadiusDirectional.horizontal(
-                  start: const Radius.circular(MECorners.extraSmall),
+                  start: inner,
                   end: Radius.circular(r),
                 ),
               ),
               selectedShape: const StadiumBorder(),
               selected: _menuOpen,
+              pressedShape: const StadiumBorder(),
               color: bg,
+              side: side,
               overlayColor: fg.withValues(alpha: 0.1),
               semanticLabel: 'More options',
               child: SizedBox(
-                width: widget.height,
-                height: widget.height,
+                width: height,
+                height: height,
                 child: Center(
-                  child: AnimatedRotation(
-                    turns: _menuOpen ? 0.5 : 0,
-                    duration: const Duration(milliseconds: 350),
-                    curve: Curves.easeOutBack,
-                    child: Icon(
-                      Icons.keyboard_arrow_down,
-                      size: 22,
-                      color: fg,
-                    ),
+                  child: Icon(
+                    _menuOpen
+                        ? Icons.keyboard_arrow_up
+                        : Icons.keyboard_arrow_down,
+                    size: 22,
+                    color: fg,
                   ),
                 ),
               ),

@@ -69,7 +69,7 @@
 /// | (new)                          | [MESkeleton]/[MESkeletonizer]|
 /// | (new)                          | [MENumberTicker]             |
 /// | (new)                          | [METimeline]                 |
-/// | (new)                          | [MEMorphingShape]            |
+/// | (new)                          | [MEShapeContainer]           |
 /// | (new)                          | [MESelection]                |
 /// | (new)                          | [MEExpandableList]           |
 /// | (new)                          | [MEDismissibleColumn] / [MEDismissibleList] |
@@ -238,6 +238,7 @@ export 'src/containers/me_morphing_shape.dart';
 export 'src/containers/me_polaroid.dart';
 export 'src/containers/me_receipt.dart';
 export 'src/containers/me_scratch_card.dart';
+export 'src/containers/me_shape_container.dart';
 export 'src/containers/me_side_sheet.dart';
 export 'src/containers/me_splash_screen.dart';
 export 'src/containers/me_stamp_card.dart';
@@ -324,3 +325,5 @@ export 'src/slivers/me_slivers.dart';
 export 'src/theme/me_motion.dart';
 export 'src/theme/me_shapes.dart';
 export 'src/theme/me_theme.dart';
+export 'package:material_new_shapes/material_new_shapes.dart'
+    show MaterialShapes, Morph, RoundedPolygon;

@@ -15,6 +15,8 @@ import 'package:flutter/physics.dart';
 import 'package:flutter/semantics.dart';
 import 'package:material_new_shapes/material_new_shapes.dart';
 
+import '../theme/me_theme.dart';
+
 /// A Material Design loading indicator.
 ///
 /// This version of the loading indicator morphs between its [polygons] shapes.
@@ -23,6 +25,7 @@ import 'package:material_new_shapes/material_new_shapes.dart';
 class MELoadingIndicator extends ProgressIndicator {
   const MELoadingIndicator({
     super.key,
+    super.value,
     super.color,
     this.polygons,
     this.constraints,
@@ -65,6 +68,7 @@ class MELoadingIndicator extends ProgressIndicator {
 class ExpressiveLoadingIndicator extends MELoadingIndicator {
   const ExpressiveLoadingIndicator({
     super.key,
+    super.value,
     super.color,
     super.polygons,
     super.constraints,
@@ -112,16 +116,9 @@ class _MELoadingIndicatorState extends State<MELoadingIndicator>
   static const double _activeSize = 38;
   static const double _containerSize = 48.0;
 
-  final _morphAnimationSpec = SpringSimulation(
-    SpringDescription.withDampingRatio(ratio: 0.6, stiffness: 200.0, mass: 1.0),
-    0.0,
-    1.0,
-    5.0,
-    snapToEnd: true,
-  );
-
   late BoxConstraints _constraints;
   late Color _color;
+  bool _looping = false;
 
   @override
   void initState() {
@@ -134,8 +131,25 @@ class _MELoadingIndicatorState extends State<MELoadingIndicator>
       duration: const Duration(milliseconds: _globalRotationDurationMs),
       vsync: this,
     );
+  }
 
-    _startAnimations();
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    _syncLoop();
+  }
+
+  @override
+  void didUpdateWidget(MELoadingIndicator oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (widget.polygons != oldWidget.polygons) {
+      _polygons = widget.polygons ?? _defaultPolygons;
+      _morphSequence = _createMorphSequence(_polygons, circularSequence: true);
+      _currentMorphIndex = 0;
+    }
+    if (widget.value != oldWidget.value) {
+      _syncLoop();
+    }
   }
 
   @override
@@ -265,8 +279,51 @@ class _MELoadingIndicatorState extends State<MELoadingIndicator>
     return scaleFactor;
   }
 
+  void _syncLoop() {
+    final determinate = widget.value != null;
+    final reduced = METheme.of(context).motion.defaultSpatial.instant;
+
+    if (determinate || reduced) {
+      _morphTimer?.cancel();
+      _morphTimer = null;
+      _globalRotationController.stop();
+      _globalRotationController.value = 0;
+      _looping = false;
+      if (determinate) {
+        _applyDeterminate(widget.value!);
+      } else {
+        _morphController.value = 1;
+      }
+      return;
+    }
+
+    if (!_looping) {
+      _looping = true;
+      _startAnimations();
+    }
+  }
+
+  void _applyDeterminate(double value) {
+    final v = value.clamp(0.0, 1.0);
+    final n = _morphSequence.length;
+    if (n == 0) return;
+    final scaled = v * n;
+    final index = scaled.floor().clamp(0, n - 1);
+    void apply() {
+      _currentMorphIndex = index;
+      _morphController.value = (scaled - index).clamp(0.0, 1.0);
+    }
+
+    if (mounted) {
+      setState(apply);
+    } else {
+      apply();
+    }
+  }
+
   void _startAnimations() {
     _globalRotationController.repeat();
+    _morphTimer?.cancel();
     _morphTimer = Timer.periodic(
       const Duration(milliseconds: _morphIntervalMs),
       (_) => _startMorphCycle(),
@@ -275,15 +332,26 @@ class _MELoadingIndicatorState extends State<MELoadingIndicator>
   }
 
   void _startMorphCycle() {
-    if (!mounted) return;
+    if (!mounted || widget.value != null) return;
 
     _currentMorphIndex = (_currentMorphIndex + 1) % _morphSequence.length;
     _morphRotationTargetAngle =
         (_morphRotationTargetAngle + _quarterRotation) % _fullRotation;
 
+    final spec = METheme.of(context).motion.slowSpatial;
+    if (spec.instant) {
+      _morphController.value = 1;
+      return;
+    }
     _morphController
       ..value = 0.0
-      ..animateWith(_morphAnimationSpec);
+      ..animateWith(SpringSimulation(
+        spec.toSpringDescription(),
+        0,
+        1,
+        5,
+        snapToEnd: true,
+      ));
   }
 }
 

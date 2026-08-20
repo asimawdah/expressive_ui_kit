@@ -18,24 +18,33 @@ class MEFabMenuItem {
   final VoidCallback? onPressed;
 }
 
+/// Which corner the [MEFabMenu] trigger sits in.
+enum MEFabMenuPosition { start, end }
+
 /// A Material 3 Expressive FAB menu.
 ///
-/// A new M3E component: a FAB that expands into a vertical stack of
-/// labeled action buttons with a staggered spring entrance. Replaces
-/// speed-dial patterns built on [FloatingActionButton].
+/// A FAB that expands into a vertical stack of labeled actions. When open
+/// the trigger morphs from the medium 80dp FAB to the small 56dp size and
+/// a rounder shape, matching the M3 Expressive FAB menu spec.
 class MEFabMenu extends StatefulWidget {
   const MEFabMenu({
     super.key,
     required this.items,
     this.icon = const Icon(Icons.add),
     this.closeIcon = const Icon(Icons.close),
-    this.alignment = AlignmentDirectional.bottomEnd,
+    this.position = MEFabMenuPosition.end,
+    this.alignment,
   });
 
   final List<MEFabMenuItem> items;
   final Widget icon;
   final Widget closeIcon;
-  final AlignmentDirectional alignment;
+
+  /// Start = lower-leading, end = lower-trailing (the spec default).
+  final MEFabMenuPosition position;
+
+  /// Overrides [position] when set.
+  final AlignmentDirectional? alignment;
 
   @override
   State<MEFabMenu> createState() => _MEFabMenuState();
@@ -49,11 +58,20 @@ class _MEFabMenuState extends State<MEFabMenu>
   );
   bool _open = false;
 
+  static const double _closedSize = 80;
+  static const double _openSize = 56;
+
   @override
   void dispose() {
     _controller.dispose();
     super.dispose();
   }
+
+  AlignmentDirectional get _align =>
+      widget.alignment ??
+      (widget.position == MEFabMenuPosition.end
+          ? AlignmentDirectional.bottomEnd
+          : AlignmentDirectional.bottomStart);
 
   void _toggle() {
     setState(() => _open = !_open);
@@ -74,6 +92,9 @@ class _MEFabMenuState extends State<MEFabMenu>
     final colors = Theme.of(context).colorScheme;
     final textTheme = Theme.of(context).textTheme;
     final count = widget.items.length;
+    final end = _align == AlignmentDirectional.bottomEnd ||
+        _align == AlignmentDirectional.topEnd ||
+        _align == AlignmentDirectional.centerEnd;
 
     return AnimatedBuilder(
       animation: _controller,
@@ -81,12 +102,12 @@ class _MEFabMenuState extends State<MEFabMenu>
         final t = _controller.value;
         return Column(
           mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.end,
+          crossAxisAlignment:
+              end ? CrossAxisAlignment.end : CrossAxisAlignment.start,
           children: [
             for (var i = 0; i < count; i++) ...[
               _buildItem(
                 widget.items[i],
-                // Stagger: later items (closer to the FAB) appear first.
                 _staggered(t, count - 1 - i, count),
                 colors,
                 textTheme,
@@ -155,34 +176,31 @@ class _MEFabMenuState extends State<MEFabMenu>
   }
 
   Widget _buildToggle(ColorScheme colors, double t) {
+    final clamped = t.clamp(0.0, 1.0);
+    final size = _closedSize + (_openSize - _closedSize) * clamped;
+    final radius =
+        MECorners.extraLarge + (size / 2 - MECorners.extraLarge) * clamped;
     return MEPressable(
       onPressed: _toggle,
       shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(
-          MECorners.extraLarge + (28 - MECorners.extraLarge) * t.clamp(0, 1),
-        ),
+        borderRadius: BorderRadius.circular(radius),
       ),
-      color: Color.lerp(
-          colors.primaryContainer, colors.primary, t.clamp(0.0, 1.0))!,
+      pressedShape: const StadiumBorder(),
+      color: Color.lerp(colors.primaryContainer, colors.primary, clamped)!,
       elevation: 3,
       overlayColor: colors.onPrimary.withValues(alpha: 0.1),
       semanticLabel: _open ? 'Close menu' : 'Open menu',
       child: SizedBox(
-        width: 80,
-        height: 80,
+        width: size,
+        height: size,
         child: Center(
-          child: Transform.rotate(
-            // The open icon rotates 45deg as it cross-fades into the
-            // close icon (which arrives already upright).
-            angle: t.clamp(0.0, 1.0) * (t > 0.5 ? 0.0 : 0.785398),
-            child: IconTheme.merge(
-              data: IconThemeData(
-                size: 28,
-                color: Color.lerp(colors.onPrimaryContainer, colors.onPrimary,
-                    t.clamp(0.0, 1.0)),
-              ),
-              child: t > 0.5 ? widget.closeIcon : widget.icon,
+          child: IconTheme.merge(
+            data: IconThemeData(
+              size: 24 + 4 * (1 - clamped),
+              color: Color.lerp(
+                  colors.onPrimaryContainer, colors.onPrimary, clamped),
             ),
+            child: clamped > 0.5 ? widget.closeIcon : widget.icon,
           ),
         ),
       ),

@@ -53,6 +53,17 @@ MEFab.extended(
   label: const Text('Compose'),
   onPressed: () {},
 );
+
+MESplitButton(
+  icon: const Icon(Icons.check),
+  onPressed: () {},
+  menu: const [
+    MEMenuEntry(label: 'Save as draft', value: 'draft'),
+    MEMenuEntry(label: 'Save a copy', value: 'copy'),
+  ],
+  onSelected: (value) {},
+  child: const Text('Save'),
+);
 ```
 
 ## App bar (sliver — not Scaffold.appBar)
@@ -180,6 +191,11 @@ MEListGroup(
 ```dart
 MESwitch(value: on, onChanged: (v) => setState(() => on = v));
 MECheckbox(value: checked, label: const Text('Agree'), onChanged: (v) {});
+MECheckbox(
+  tristate: true,
+  value: mixed,
+  onChanged: (v) => setState(() => mixed = v),
+);
 MESlider(value: value, onChanged: (v) => setState(() => value = v));
 MESlider.wavy(value: value, onChanged: (v) {});
 MESlider.vertical(value: value, onChanged: (v) {});

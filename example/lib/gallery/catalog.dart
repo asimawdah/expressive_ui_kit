@@ -455,6 +455,33 @@ final List<CatalogEntry> kCatalog = [
             ),
           )),
   CatalogEntry(
+      name: 'MEShapeContainer',
+      replaces: 'MaterialShapes clip',
+      category: 'Containers',
+      demo: (context) => Wrap(
+            spacing: 16,
+            children: [
+              MEShapeContainer(
+                size: 72,
+                polygon: MaterialShapes.cookie9Sided,
+                child: Icon(Icons.star,
+                    color: Theme.of(context).colorScheme.onPrimaryContainer),
+              ),
+              MEShapeContainer(
+                size: 72,
+                polygon: MaterialShapes.pill,
+                child: Icon(Icons.favorite,
+                    color: Theme.of(context).colorScheme.onPrimaryContainer),
+              ),
+              MEShapeContainer(
+                size: 72,
+                polygon: MaterialShapes.softBurst,
+                child: Icon(Icons.bolt,
+                    color: Theme.of(context).colorScheme.onPrimaryContainer),
+              ),
+            ],
+          )),
+  CatalogEntry(
       name: 'MEPolaroid',
       replaces: '—',
       category: 'Containers',

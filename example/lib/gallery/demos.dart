@@ -202,16 +202,11 @@ class DemoMESplitButton extends StatelessWidget {
   Widget build(BuildContext context) {
     return MESplitButton(
       onPressed: () {},
-      menuItems: [
-        MenuItemButton(
-          onPressed: () {},
-          child: const Text('Save as draft'),
-        ),
-        MenuItemButton(
-          onPressed: () {},
-          child: const Text('Save a copy'),
-        ),
+      menu: const [
+        MEMenuEntry(label: 'Save as draft', value: 'draft'),
+        MEMenuEntry(label: 'Save a copy', value: 'copy'),
       ],
+      onSelected: (_) {},
       child: const Text('Save'),
     );
   }
@@ -1350,7 +1345,7 @@ class _DemoMECheckboxState extends State<DemoMECheckbox> {
     return MECheckbox(
       value: _value,
       label: Text(_value ? 'Checked' : 'Unchecked'),
-      onChanged: (v) => setState(() => _value = v),
+      onChanged: (v) => setState(() => _value = v ?? false),
     );
   }
 }

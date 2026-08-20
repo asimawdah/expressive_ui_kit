@@ -41,7 +41,7 @@ class MEIconButton extends StatelessWidget {
   static const Map<MEButtonSize, (double, double, double)> _dims = {
     // (container, icon, squareRadius)
     MEButtonSize.extraSmall: (32, 20, MECorners.medium),
-    MEButtonSize.small: (40, 24, MECorners.medium),
+    MEButtonSize.small: (40, 20, MECorners.medium),
     MEButtonSize.medium: (56, 24, MECorners.large),
     MEButtonSize.large: (96, 32, MECorners.extraLarge),
     MEButtonSize.extraLarge: (136, 40, MECorners.extraLargeIncreased),
@@ -52,6 +52,7 @@ class MEIconButton extends StatelessWidget {
     final colors = Theme.of(context).colorScheme;
     final (container, iconSize, squareRadius) = _dims[size]!;
     final enabled = onPressed != null;
+    final isToggle = selected != null;
     final isSelected = selected ?? false;
 
     final double widthFactor = switch (width) {
@@ -61,42 +62,50 @@ class MEIconButton extends StatelessWidget {
     };
 
     final (Color bg, Color fg) = switch (variant) {
-      MEButtonVariant.filled => (colors.primary, colors.onPrimary),
-      MEButtonVariant.tonal => (
-          colors.secondaryContainer,
-          colors.onSecondaryContainer
+      MEButtonVariant.filled => (
+          isToggle && !isSelected
+              ? colors.surfaceContainerHighest
+              : colors.primary,
+          isToggle && !isSelected ? colors.onSurface : colors.onPrimary
         ),
-      MEButtonVariant.outlined => (Colors.transparent, colors.onSurfaceVariant),
-      MEButtonVariant.elevated => (colors.surfaceContainerLow, colors.primary),
-      MEButtonVariant.text => (Colors.transparent, colors.onSurfaceVariant),
+      MEButtonVariant.tonal => (
+          isToggle && isSelected ? colors.secondary : colors.secondaryContainer,
+          isToggle && isSelected
+              ? colors.onSecondary
+              : colors.onSecondaryContainer
+        ),
+      MEButtonVariant.outlined => (
+          isToggle && isSelected ? colors.inverseSurface : Colors.transparent,
+          isToggle && isSelected
+              ? colors.onInverseSurface
+              : colors.onSurfaceVariant
+        ),
+      MEButtonVariant.elevated => (
+          isToggle && isSelected ? colors.primary : colors.surfaceContainerLow,
+          isToggle && isSelected ? colors.onPrimary : colors.primary
+        ),
+      MEButtonVariant.text => (
+          Colors.transparent,
+          isToggle && isSelected ? colors.primary : colors.onSurfaceVariant
+        ),
     };
 
-    final effectiveBg = !enabled
-        ? colors.onSurface.withValues(alpha: 0.12)
-        : isSelected
-            ? colors.primary
-            : bg;
-    final effectiveFg = !enabled
-        ? colors.onSurface.withValues(alpha: 0.38)
-        : isSelected
-            ? colors.onPrimary
-            : fg;
+    final effectiveBg = enabled ? bg : colors.onSurface.withValues(alpha: 0.12);
+    final effectiveFg = enabled ? fg : colors.onSurface.withValues(alpha: 0.38);
 
-    final restingShape = shape == MEButtonShape.round
+    final restingShape = (isToggle ? !isSelected : shape == MEButtonShape.round)
         ? const StadiumBorder()
         : RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(squareRadius));
-    final morphTarget = shape == MEButtonShape.round
-        ? RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(squareRadius))
-        : const StadiumBorder();
+    final selectedShape = RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(squareRadius));
 
     Widget result = MEPressable(
       onPressed: onPressed,
       enabled: enabled,
       shape: restingShape,
-      pressedShape: morphTarget,
-      selectedShape: selected == null ? null : morphTarget,
+      pressedShape: size.pressedContainerShape,
+      selectedShape: selected == null ? null : selectedShape,
       selected: isSelected,
       color: effectiveBg,
       side: variant == MEButtonVariant.outlined && enabled

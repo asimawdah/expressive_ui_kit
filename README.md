@@ -99,6 +99,7 @@ into that project's `.cursor/` directory.
 | —                               | `MENumberTicker` (new)          |
 | —                               | `METimeline` (new)              |
 | —                               | `MEMorphingShape` (new)         |
+| —                               | `MEShapeContainer` (new)        |
 | `CalendarDatePicker`            | `MECalendar`                    |
 | —                               | `METagInput` (new)              |
 | —                               | `METreeView` (new)              |
@@ -875,6 +876,11 @@ const MECircularProgressIndicator(); // indeterminate
 
 // Shape-morphing loading indicator for short waits.
 const MELoadingIndicator(contained: true);
+const MELoadingIndicator(value: 0.4); // determinate shape morph
+MEShapeContainer(
+  polygon: MaterialShapes.cookie9Sided,
+  child: const Icon(Icons.star),
+);
 
 // Navigation bar: liquid pill indicator that stretches between
 // destinations, icon bounce, badges, and label behavior control.

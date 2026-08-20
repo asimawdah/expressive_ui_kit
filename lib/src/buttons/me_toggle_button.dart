@@ -1,14 +1,12 @@
 import 'package:flutter/material.dart';
 
 import '../internal/me_pressable.dart';
-import '../theme/me_shapes.dart';
 import 'me_button.dart';
 
 /// A Material 3 Expressive toggle button.
 ///
-/// Round-to-square shape morphing when checked. Use [METoggleButton.filled],
-/// [METoggleButton.tonal], [METoggleButton.outlined] or [METoggleButton.text]
-/// for color variants. Distinct from [MEIconButton] (icon-only) and
+/// Round when unchecked, square when checked, with the per-size pressed
+/// corner radius while held. Distinct from [MEIconButton] (icon-only) and
 /// [MESegmentedButton] (grouped exclusive/multi select).
 class METoggleButton extends StatelessWidget {
   const METoggleButton({
@@ -80,43 +78,51 @@ class METoggleButton extends StatelessWidget {
   final MEButtonSize size;
   final String? tooltip;
 
-  static const Map<MEButtonSize, (double, double, double, double)> _dims = {
-    // (height, icon, pad, squareRadius)
-    MEButtonSize.extraSmall: (32, 18, 10, MECorners.medium),
-    MEButtonSize.small: (40, 20, 12, MECorners.medium),
-    MEButtonSize.medium: (56, 24, 16, MECorners.large),
-    MEButtonSize.large: (72, 28, 20, MECorners.extraLarge),
-    MEButtonSize.extraLarge: (96, 32, 24, MECorners.extraLargeIncreased),
-  };
-
   @override
   Widget build(BuildContext context) {
     final colors = Theme.of(context).colorScheme;
     final textTheme = Theme.of(context).textTheme;
-    final (height, iconSize, pad, squareRadius) = _dims[size]!;
+    final height = size.height;
+    final iconSize = switch (size) {
+      MEButtonSize.extraSmall || MEButtonSize.small => 20.0,
+      MEButtonSize.medium => 24.0,
+      MEButtonSize.large => 32.0,
+      MEButtonSize.extraLarge => 40.0,
+    };
+    final pad = switch (size) {
+      MEButtonSize.extraSmall => 12.0,
+      MEButtonSize.small => 16.0,
+      MEButtonSize.medium => 24.0,
+      MEButtonSize.large => 48.0,
+      MEButtonSize.extraLarge => 64.0,
+    };
     final enabled = onCheckedChange != null;
 
     final (Color bg, Color fg) = switch (variant) {
-      MEButtonVariant.filled => (colors.primary, colors.onPrimary),
-      MEButtonVariant.tonal => (
-          colors.secondaryContainer,
-          colors.onSecondaryContainer
+      MEButtonVariant.filled => (
+          checked ? colors.primary : colors.surfaceContainerHighest,
+          checked ? colors.onPrimary : colors.onSurface
         ),
-      MEButtonVariant.outlined => (Colors.transparent, colors.onSurfaceVariant),
-      MEButtonVariant.elevated => (colors.surfaceContainerLow, colors.primary),
-      MEButtonVariant.text => (Colors.transparent, colors.onSurfaceVariant),
+      MEButtonVariant.tonal => (
+          checked ? colors.secondary : colors.secondaryContainer,
+          checked ? colors.onSecondary : colors.onSecondaryContainer
+        ),
+      MEButtonVariant.outlined => (
+          checked ? colors.inverseSurface : Colors.transparent,
+          checked ? colors.onInverseSurface : colors.onSurfaceVariant
+        ),
+      MEButtonVariant.elevated => (
+          checked ? colors.primary : colors.surfaceContainerLow,
+          checked ? colors.onPrimary : colors.primary
+        ),
+      MEButtonVariant.text => (
+          Colors.transparent,
+          checked ? colors.primary : colors.onSurfaceVariant
+        ),
     };
 
-    final effectiveBg = !enabled
-        ? colors.onSurface.withValues(alpha: 0.12)
-        : checked
-            ? colors.primary
-            : bg;
-    final effectiveFg = !enabled
-        ? colors.onSurface.withValues(alpha: 0.38)
-        : checked
-            ? colors.onPrimary
-            : fg;
+    final effectiveBg = enabled ? bg : colors.onSurface.withValues(alpha: 0.12);
+    final effectiveFg = enabled ? fg : colors.onSurface.withValues(alpha: 0.38);
 
     final Widget? shownIcon =
         checked && checkedIcon != null ? checkedIcon : icon;
@@ -127,11 +133,9 @@ class METoggleButton extends StatelessWidget {
       selected: checked,
       shape: const StadiumBorder(),
       selectedShape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(squareRadius),
+        borderRadius: BorderRadius.circular(size.squareCornerRadius),
       ),
-      pressedShape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(squareRadius),
-      ),
+      pressedShape: size.pressedContainerShape,
       color: effectiveBg,
       side: variant == MEButtonVariant.outlined && enabled && !checked
           ? BorderSide(color: colors.outlineVariant)

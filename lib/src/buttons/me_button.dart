@@ -12,6 +12,39 @@ enum MEButtonSize { extraSmall, small, medium, large, extraLarge }
 /// Resting shape family for [MEButton].
 enum MEButtonShape { round, square }
 
+/// M3 Expressive size tokens shared by buttons, icon buttons, toggles,
+/// split buttons and button groups.
+extension MEButtonSizeTokens on MEButtonSize {
+  /// Container height: 32 / 40 / 56 / 96 / 136.
+  double get height => switch (this) {
+        MEButtonSize.extraSmall => 32,
+        MEButtonSize.small => 40,
+        MEButtonSize.medium => 56,
+        MEButtonSize.large => 96,
+        MEButtonSize.extraLarge => 136,
+      };
+
+  /// Resting square-family corner radius.
+  double get squareCornerRadius => switch (this) {
+        MEButtonSize.extraSmall || MEButtonSize.small => MECorners.medium,
+        MEButtonSize.medium => MECorners.large,
+        MEButtonSize.large => MECorners.extraLarge,
+        MEButtonSize.extraLarge => MECorners.extraLargeIncreased,
+      };
+
+  /// Pressed-container corner radius (8 / 8 / 12 / 16 / 16).
+  double get pressedCornerRadius => switch (this) {
+        MEButtonSize.extraSmall || MEButtonSize.small => MECorners.small,
+        MEButtonSize.medium => MECorners.medium,
+        MEButtonSize.large || MEButtonSize.extraLarge => MECorners.large,
+      };
+
+  /// Shape both round and square buttons morph toward while pressed.
+  ShapeBorder get pressedContainerShape => RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(pressedCornerRadius),
+      );
+}
+
 class _MEButtonSizeSpec {
   const _MEButtonSizeSpec({
     required this.height,
@@ -82,7 +115,9 @@ TextStyle _headlineLarge(TextTheme t) => t.headlineLarge!;
 ///
 /// Replaces [ElevatedButton], [FilledButton], [FilledButton.tonal],
 /// [OutlinedButton] and [TextButton]. Adds the M3 Expressive five-size
-/// scale and spring-driven round-to-square shape morphing on press.
+/// scale. Press morphs to the per-size pressed corner radius; a non-null
+/// [selected] turns the button into a toggle (unselected round, selected
+/// square).
 ///
 /// ```dart
 /// MEButton.filled(
@@ -180,57 +215,64 @@ class MEButton extends StatelessWidget {
     final enabled = onPressed != null || onLongPress != null;
     final isSelected = selected ?? false;
 
+    final isToggle = selected != null;
     final (Color bg, Color fg, double elevation, BorderSide? side) =
         switch (variant) {
       MEButtonVariant.elevated => (
-          colors.surfaceContainerLow,
-          colors.primary,
+          isToggle && isSelected ? colors.primary : colors.surfaceContainerLow,
+          isToggle && isSelected ? colors.onPrimary : colors.primary,
           1.0,
           null
         ),
-      MEButtonVariant.filled => (colors.primary, colors.onPrimary, 0.0, null),
+      MEButtonVariant.filled => (
+          isToggle && !isSelected
+              ? colors.surfaceContainerHighest
+              : colors.primary,
+          isToggle && !isSelected ? colors.onSurface : colors.onPrimary,
+          0.0,
+          null
+        ),
       MEButtonVariant.tonal => (
-          colors.secondaryContainer,
-          colors.onSecondaryContainer,
+          isToggle && isSelected ? colors.secondary : colors.secondaryContainer,
+          isToggle && isSelected
+              ? colors.onSecondary
+              : colors.onSecondaryContainer,
           0.0,
           null
         ),
       MEButtonVariant.outlined => (
-          Colors.transparent,
-          colors.onSurfaceVariant,
+          isToggle && isSelected ? colors.inverseSurface : Colors.transparent,
+          isToggle && isSelected
+              ? colors.onInverseSurface
+              : colors.onSurfaceVariant,
           0.0,
           BorderSide(color: colors.outlineVariant)
         ),
-      MEButtonVariant.text => (Colors.transparent, colors.primary, 0.0, null),
+      MEButtonVariant.text => (
+          Colors.transparent,
+          isToggle && isSelected ? colors.primary : colors.primary,
+          0.0,
+          null
+        ),
     };
 
-    final effectiveBg = !enabled
-        ? colors.onSurface.withValues(alpha: 0.12)
-        : isSelected && variant != MEButtonVariant.filled
-            ? colors.primary
-            : bg;
-    final effectiveFg = !enabled
-        ? colors.onSurface.withValues(alpha: 0.38)
-        : isSelected && variant != MEButtonVariant.filled
-            ? colors.onPrimary
-            : fg;
+    final effectiveBg = enabled ? bg : colors.onSurface.withValues(alpha: 0.12);
+    final effectiveFg = enabled ? fg : colors.onSurface.withValues(alpha: 0.38);
 
-    final restingShape = shape == MEButtonShape.round
+    final restingShape = (isToggle ? !isSelected : shape == MEButtonShape.round)
         ? const StadiumBorder()
         : RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(spec.squareRadius));
-    final morphTarget = shape == MEButtonShape.round
-        ? RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(spec.squareRadius))
-        : const StadiumBorder();
+    final selectedShape = RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(spec.squareRadius));
 
     return MEPressable(
       onPressed: onPressed,
       onLongPress: onLongPress,
       enabled: enabled,
       shape: restingShape,
-      pressedShape: morphTarget,
-      selectedShape: selected == null ? null : morphTarget,
+      pressedShape: size.pressedContainerShape,
+      selectedShape: isToggle ? selectedShape : null,
       selected: isSelected,
       color: effectiveBg,
       elevation: variant == MEButtonVariant.elevated ? elevation : 0,

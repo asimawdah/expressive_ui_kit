@@ -8,6 +8,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ### Added
+- `MEShapeContainer` — clip a child to an official `MaterialShapes` polygon.
+- Determinate `MELoadingIndicator` (`value:`) that morphs through the shape sequence as progress advances.
+- Tristate `MECheckbox` (mixed / indeterminate).
+- `MEButtonSizeTokens` — shared 32/40/56/96/136 heights and pressed corner radii (8/8/12/16/16).
+- `MEMenu.onOpenChanged` so split buttons can morph the trailing chevron while open.
+- `MEFabMenuPosition` and 80→56 trigger morph when the FAB menu opens.
+- Re-export of `MaterialShapes` / `RoundedPolygon` / `Morph`.
 - `MESplashScreen` — branded launch screen with staged reveal animation.
 - `MEPinPad` — numeric PIN entry with spring feedback and shake-on-reject.
 - `MEReceipt` — receipt-style container with print-out animation.
@@ -33,6 +40,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   arm64-v8a, x86_64).
 
 ### Changed
+- Buttons, icon buttons and toggles morph on press to the M3E **pressed
+  corner radii** (not all the way to square/stadium).
+- Toggle unselected/selected colors follow M3E tokens (filled unselected
+  uses `surfaceContainerHighest`, not primary).
+- `MESwitch` track is 52×32 with 16/24dp thumbs, press stretch, and drag.
+- `MESplitButton` uses `MEMenu` instead of Flutter `MenuAnchor`.
+- `MEFab.extended` defaults to small (56dp) per the extended FAB spec.
+- Loading and progress indicators honor reduced motion; loading morph
+  springs come from `METheme`.
+- `MEButtonGroup` height follows `MEButtonSize` (default small / 40dp).
 - Example gallery widget catalog now indexes all 150+ exported widgets.
 - Analyzer excludes generated `build/` and platform directories.
 - `ExpressiveButton` is deprecated in favor of `MEButton`.

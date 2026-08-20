@@ -124,18 +124,19 @@ class _ButtonsPageState extends State<ButtonsPage> {
         const _SectionLabel('Split button'),
         MESplitButton(
           onPressed: () {},
-          menuItems: <MenuItemButton>[
-            MenuItemButton(
-              leadingIcon: const Icon(Icons.drafts_outlined),
-              onPressed: () {},
-              child: const Text('Save as draft'),
+          menu: const [
+            MEMenuEntry(
+              label: 'Save as draft',
+              value: 'draft',
+              leading: Icon(Icons.drafts_outlined),
             ),
-            MenuItemButton(
-              leadingIcon: const Icon(Icons.copy_outlined),
-              onPressed: () {},
-              child: const Text('Save a copy'),
+            MEMenuEntry(
+              label: 'Save a copy',
+              value: 'copy',
+              leading: Icon(Icons.copy_outlined),
             ),
           ],
+          onSelected: (_) {},
           child: const Text('Save'),
         ),
         const SizedBox(height: 32),

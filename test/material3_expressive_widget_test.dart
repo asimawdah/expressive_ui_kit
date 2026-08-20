@@ -139,7 +139,7 @@ void main() {
             return MECheckbox(
               value: checked,
               semanticsLabel: 'Accept terms',
-              onChanged: (value) => setState(() => checked = value),
+              onChanged: (value) => setState(() => checked = value ?? false),
             );
           },
         ),

@@ -122,6 +122,7 @@ class MEMenu extends StatefulWidget {
     this.selectedValue,
     this.closeOnSelect = true,
     this.preferredWidth,
+    this.onOpenChanged,
   }) : assert(
           children != null || entries != null,
           'Provide children or entries.',
@@ -137,6 +138,7 @@ class MEMenu extends StatefulWidget {
     Object? selectedValue,
     bool closeOnSelect = true,
     double? preferredWidth,
+    ValueChanged<bool>? onOpenChanged,
   }) {
     return MEMenu(
       key: key,
@@ -147,6 +149,7 @@ class MEMenu extends StatefulWidget {
       selectedValue: selectedValue,
       closeOnSelect: closeOnSelect,
       preferredWidth: preferredWidth,
+      onOpenChanged: onOpenChanged,
     );
   }
 
@@ -158,6 +161,7 @@ class MEMenu extends StatefulWidget {
   final Object? selectedValue;
   final bool closeOnSelect;
   final double? preferredWidth;
+  final ValueChanged<bool>? onOpenChanged;
 
   List<MEMenuNode> get _nodes => children ?? entries!;
 
@@ -177,6 +181,7 @@ class _MEMenuState extends State<MEMenu> {
     if (anchor == null) return;
 
     setState(() => _open = true);
+    widget.onOpenChanged?.call(true);
     final result = await showMEMenu<Object?>(
       context: context,
       anchor: anchor,
@@ -186,7 +191,10 @@ class _MEMenuState extends State<MEMenu> {
       closeOnSelect: widget.closeOnSelect,
       preferredWidth: widget.preferredWidth,
     );
-    if (mounted) setState(() => _open = false);
+    if (mounted) {
+      setState(() => _open = false);
+      widget.onOpenChanged?.call(false);
+    }
     if (result != null) widget.onSelected?.call(result);
   }
 

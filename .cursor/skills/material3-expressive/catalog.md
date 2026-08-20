@@ -28,7 +28,7 @@ before generating code.
 | `MEIconButton` | `lib/src/buttons/me_icon_button.dart` | `IconButton` | Icon-only; `selected:` for icon toggle. |
 | `MEButtonGroup` | `lib/src/buttons/me_button_group.dart` | connected toggle rows | Neighbor-squish tool cluster. |
 | `MESegmentedButton` | `lib/src/buttons/me_segmented_button.dart` | `SegmentedButton` | Exclusive or multi select in one pill. |
-| `MESplitButton` | `lib/src/buttons/me_split_button.dart` | — | Primary action + overflow chevron. |
+| `MESplitButton` | `lib/src/buttons/me_split_button.dart` | — | Primary action + overflow chevron. Menu is `List<MEMenuNode>`. |
 | `MEFab` / `.extended` | `lib/src/buttons/me_fab.dart` | `FloatingActionButton` | Page primary action. |
 | `MEFabMenu` | `lib/src/buttons/me_fab_menu.dart` | speed dial | FAB that fans out actions. |
 | `MEProgressButton` | `lib/src/buttons/me_progress_button.dart` | — | Button that shows progress in-place. |
@@ -100,6 +100,7 @@ before generating code.
 | `MECarousel` | `lib/src/containers/me_carousel.dart` | `CarouselView` | Peeking horizontal cards. |
 | `MEAvatar` / `MEAvatarGroup` | `lib/src/containers/me_avatar.dart` | `CircleAvatar` | Face or initials. |
 | `ExpressiveIconContainer` | `lib/src/containers/expressive_icon_container.dart` | — | Cookie-shaped icon well. |
+| `MEShapeContainer` | `lib/src/containers/me_shape_container.dart` | — | Clip a child to a `MaterialShapes` polygon. |
 | `MEDialog` / `showMEDialog` | `lib/src/containers/me_dialog.dart` | `AlertDialog` / `showDialog` | Modal confirm/info. |
 | `showMEFullScreenDialog` | `lib/src/containers/me_dialog.dart` | fullscreen dialog | Editor covering the screen. |
 | `showMESelectionDialog` | `lib/src/containers/me_dialog.dart` | — | Pick one/many from a list. |

@@ -2,6 +2,8 @@ import 'dart:math' as math;
 
 import 'package:flutter/material.dart';
 
+import '../theme/me_theme.dart';
+
 /// A Material 3 Expressive circular progress indicator.
 ///
 /// Replaces [CircularProgressIndicator]. Renders the M3E wavy circular
@@ -45,7 +47,19 @@ class _MECircularProgressIndicatorState
   late final AnimationController _controller = AnimationController(
     vsync: this,
     duration: const Duration(milliseconds: 1800),
-  )..repeat();
+  );
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    final reduced = METheme.of(context).motion.defaultSpatial.instant;
+    if (reduced) {
+      _controller.stop();
+      _controller.value = 0;
+    } else if (!_controller.isAnimating) {
+      _controller.repeat();
+    }
+  }
 
   @override
   void dispose() {
@@ -56,6 +70,7 @@ class _MECircularProgressIndicatorState
   @override
   Widget build(BuildContext context) {
     final colors = Theme.of(context).colorScheme;
+    final reduced = METheme.of(context).motion.defaultSpatial.instant;
     return Semantics(
       label: widget.semanticsLabel ?? 'Progress indicator',
       value: widget.value == null
@@ -69,8 +84,8 @@ class _MECircularProgressIndicatorState
           builder: (context, _) => CustomPaint(
             painter: _WavyCircularPainter(
               value: widget.value,
-              phase: _controller.value,
-              amplitude: widget.wavy ? widget.amplitude : 0,
+              phase: reduced ? 0 : _controller.value,
+              amplitude: widget.wavy && !reduced ? widget.amplitude : 0,
               waves: widget.waves,
               strokeWidth: widget.strokeWidth,
               color: widget.color ?? colors.primary,

@@ -29,6 +29,11 @@ doc/api/
 .flutter-plugins
 .flutter-plugins-dependencies
 
+# Golden test failure dumps
+test/golden/failures/
+
+# Platform folders generated at the package root (the library itself is Dart-only).
+
 # Platform folders generated at the package root (the library itself is Dart-only).
 # The example app's hosts live under example/ and should be committed.
 /android/

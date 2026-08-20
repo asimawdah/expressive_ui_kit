@@ -91,7 +91,7 @@ Live playgrounds for every public widget: `example/lib/gallery/catalog.dart`.
 | Filter / assist / input / suggestion chip | `MEChip` (`type:` / `selected:` / `onDeleted:`) | `FilterChip` |
 | Card / carousel | `MECard` / `MECarousel` | `Card` / `CarouselView` |
 | Avatar / stacked avatars | `MEAvatar` / `MEAvatarGroup` | `CircleAvatar` |
-| Cookie-shaped icon well | `ExpressiveIconContainer` | `CircleAvatar` for a decorative icon |
+| Cookie / pill / burst shape well | `MEShapeContainer` (`MaterialShapes.*`) | Homemade `ClipPath` |
 | Dialog | `MEDialog` + `showMEDialog` | `AlertDialog` |
 | Full-screen editor dialog | `showMEFullScreenDialog` | `Dialog.fullscreen` |
 | Pick one/many from a list in a dialog | `showMESelectionDialog` | Homemade `ListView` in a dialog |
