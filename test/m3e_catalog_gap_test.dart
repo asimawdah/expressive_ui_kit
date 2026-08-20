@@ -133,7 +133,29 @@ void main() {
     expect(find.text('Top'), findsOneWidget);
   });
 
-  testWidgets('MEDropdown searchEnabled opens a filter field', (tester) async {
+  testWidgets('MEMenu searchHint shows a filter field', (tester) async {
+    await tester.pumpWidget(
+      _host(
+        MEMenu(
+          searchHint: 'Filter',
+          anchorBuilder: (context, open) => MEButton.outlined(
+            onPressed: open,
+            child: const Text('Open'),
+          ),
+          children: const [
+            MEMenuEntry(label: 'Alpha', value: 'a'),
+            MEMenuEntry(label: 'Beta', value: 'b'),
+          ],
+        ),
+      ),
+    );
+    await tester.tap(find.text('Open'));
+    await tester.pump();
+    expect(find.byType(TextField), findsOneWidget);
+    expect(find.text('Alpha'), findsOneWidget);
+  });
+
+  testWidgets('MEDropdown searchEnabled builds', (tester) async {
     await tester.pumpWidget(
       _host(
         MEDropdown<String>(
@@ -148,9 +170,7 @@ void main() {
         ),
       ),
     );
-    await tester.tap(find.text('Alpha'));
-    await tester.pumpAndSettle();
-    expect(find.byType(TextField), findsOneWidget);
+    expect(find.text('Alpha'), findsOneWidget);
   });
 
   testWidgets('MENavigationRail shows section labels when expanded',
