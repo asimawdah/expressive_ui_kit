@@ -152,8 +152,8 @@ class _StepIndicator extends StatelessWidget {
     };
 
     return AnimatedContainer(
-      duration: const Duration(milliseconds: 250),
-      curve: Curves.easeOutBack,
+      duration: METheme.of(context).motion.fastSpatial.approximateDuration,
+      curve: METheme.of(context).motion.fastSpatial.curve,
       width: 36,
       height: 36,
       decoration: BoxDecoration(

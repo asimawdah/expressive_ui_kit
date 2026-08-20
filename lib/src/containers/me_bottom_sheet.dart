@@ -33,8 +33,8 @@ Future<T?> showMEBottomSheet<T>({
     sheetAnimationStyle: AnimationStyle(
       duration: motion.defaultSpatial.approximateDuration,
       curve: motion.defaultSpatial.curve,
-      reverseDuration: const Duration(milliseconds: 200),
-      reverseCurve: Curves.easeInCubic,
+      reverseDuration: motion.fastSpatial.approximateDuration,
+      reverseCurve: motion.fastSpatial.curve,
     ),
     // ClipRRect + rectangular Material avoids an intermediate DecoratedBox
     // between Material and ListTiles (which triggers ink-splash asserts).

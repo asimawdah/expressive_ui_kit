@@ -12,18 +12,26 @@ class METab {
   final IconData? icon;
 }
 
+/// Layout of an [METabBar].
+enum METabBarVariant {
+  /// Filled pill container with a sliding selection indicator (primary).
+  primary,
+
+  /// Flat bar with a short underline under the selected tab (secondary).
+  secondary,
+}
+
 /// A Material 3 Expressive tab bar.
 ///
-/// Replaces [TabBar]. Instead of an underline indicator, the selected tab
-/// is wrapped in a pill container that slides between tabs with a spatial
-/// spring, overshooting slightly — the expressive "selection follows
-/// focus" pattern. Supports arrow-key navigation (including RTL).
+/// Replaces [TabBar]. Primary tabs wrap the selection in a pill that slides
+/// with a spatial spring. Secondary tabs use an underline indicator.
 class METabBar extends StatefulWidget {
   const METabBar({
     super.key,
     required this.tabs,
     required this.selectedIndex,
     required this.onSelected,
+    this.variant = METabBarVariant.primary,
     this.focusNode,
     this.autofocus = false,
   });
@@ -31,6 +39,7 @@ class METabBar extends StatefulWidget {
   final List<METab> tabs;
   final int selectedIndex;
   final ValueChanged<int> onSelected;
+  final METabBarVariant variant;
 
   /// Optional focus node for keyboard navigation.
   final FocusNode? focusNode;
@@ -83,13 +92,16 @@ class _METabBarState extends State<METabBar>
         onSelected: widget.onSelected,
       ),
       child: Container(
-        height: 56,
-        decoration: BoxDecoration(
-          color: scheme.surfaceContainerLow,
-          // Fully rounded container (height 56 -> radius 28).
-          borderRadius: BorderRadius.circular(28),
+        height: widget.variant == METabBarVariant.secondary ? 48 : 56,
+        decoration: widget.variant == METabBarVariant.secondary
+            ? null
+            : BoxDecoration(
+                color: scheme.surfaceContainerLow,
+                borderRadius: BorderRadius.circular(28),
+              ),
+        padding: EdgeInsets.all(
+          widget.variant == METabBarVariant.secondary ? 0 : 4,
         ),
-        padding: const EdgeInsets.all(4),
         child: LayoutBuilder(
           builder: (context, constraints) {
             final tabWidth = constraints.maxWidth / count;
@@ -103,15 +115,32 @@ class _METabBarState extends State<METabBar>
                     final x = _anim.value.clamp(-0.25, count - 0.75);
                     return PositionedDirectional(
                       start: x * tabWidth,
-                      top: 0,
+                      top: widget.variant == METabBarVariant.secondary
+                          ? null
+                          : 0,
                       bottom: 0,
                       width: tabWidth,
-                      child: Container(
-                        decoration: BoxDecoration(
-                          color: scheme.secondaryContainer,
-                          borderRadius: BorderRadius.circular(24),
-                        ),
-                      ),
+                      child: widget.variant == METabBarVariant.secondary
+                          ? Align(
+                              alignment: Alignment.bottomCenter,
+                              child: Container(
+                                height: 3,
+                                margin: const EdgeInsets.symmetric(
+                                  horizontal: 16,
+                                  vertical: 2,
+                                ),
+                                decoration: BoxDecoration(
+                                  color: scheme.primary,
+                                  borderRadius: BorderRadius.circular(2),
+                                ),
+                              ),
+                            )
+                          : Container(
+                              decoration: BoxDecoration(
+                                color: scheme.secondaryContainer,
+                                borderRadius: BorderRadius.circular(24),
+                              ),
+                            ),
                     );
                   },
                 ),
@@ -129,9 +158,12 @@ class _METabBarState extends State<METabBar>
                                 if (widget.tabs[i].icon != null) ...[
                                   Icon(
                                     widget.tabs[i].icon,
-                                    size: 18,
+                                    size: 20,
                                     color: i == widget.selectedIndex
-                                        ? scheme.onSecondaryContainer
+                                        ? (widget.variant ==
+                                                METabBarVariant.secondary
+                                            ? scheme.primary
+                                            : scheme.onSecondaryContainer)
                                         : scheme.onSurfaceVariant,
                                   ),
                                   const SizedBox(width: 8),
@@ -143,7 +175,10 @@ class _METabBarState extends State<METabBar>
                                       .labelLarge!
                                       .copyWith(
                                         color: i == widget.selectedIndex
-                                            ? scheme.onSecondaryContainer
+                                            ? (widget.variant ==
+                                                    METabBarVariant.secondary
+                                                ? scheme.primary
+                                                : scheme.onSecondaryContainer)
                                             : scheme.onSurfaceVariant,
                                       ),
                                 ),

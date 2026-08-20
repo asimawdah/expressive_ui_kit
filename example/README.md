@@ -11,24 +11,38 @@ flutter pub get
 flutter run
 ```
 
-Or from the package root:
+## Android release APKs
+
+Fat APK (all ABIs in one file):
 
 ```bash
-cd example && flutter run
+flutter build apk --release --target-platform android-arm,android-arm64,android-x64
 ```
 
-## Gallery sections
+`build/app/outputs/flutter-apk/app-release.apk`
 
-| Page | What it demonstrates |
-| ---- | ---------------------- |
-| **Buttons** | `MEButton`, FABs, segmented controls, split buttons, orbit menus |
-| **Progress** | Linear/circular indicators, skeletons, loading states |
-| **Controls** | Switches, sliders, ratings, pickers, novelty widgets |
-| **Navigation** | App bar, navigation bar/rail, tabs, drawer, dock |
-| **Inputs** | Text fields, search, OTP, autocomplete, tag input |
-| **Containers** | Cards, dialogs, chips, carousels, splash screen, receipt |
-| **Content** | Markdown, chat bubbles, charts, games, and playful widgets |
-| **Slivers** | `MESliverList`, `MESliverGrid`, pinned headers, sliver scaffold |
-| **Widget catalog** | Searchable index of all expressive widgets and their Material equivalents |
+One APK per ABI (smaller downloads):
 
-Use the drawer to toggle **light/dark theme** and switch between **expressive** and **reduced** motion.
+```bash
+flutter build apk --release --split-per-abi --target-platform android-arm,android-arm64,android-x64
+```
+
+| ABI | File | Typical devices |
+| --- | --- | --- |
+| `armeabi-v7a` | `app-armeabi-v7a-release.apk` | 32-bit ARM phones |
+| `arm64-v8a` | `app-arm64-v8a-release.apk` | Most current phones |
+| `x86_64` | `app-x86_64-release.apk` | Emulators, ChromeOS, some tablets |
+
+Flutter 3.47 does not ship 32-bit `x86`.
+
+
+## How to try every widget
+
+The home screen is a **searchable gallery of every public widget**. Tap a row
+to open that component's live playground.
+
+Use the drawer for:
+
+- **Tours** — the original grouped pages (buttons, progress, controls, …)
+- **Appearance** — system / light / dark
+- **Motion** — expressive (bouncy) vs standard (subtle)

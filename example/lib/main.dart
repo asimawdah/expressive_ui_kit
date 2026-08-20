@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:material3_expressive/material3_expressive.dart';
 
-import 'pages/widget_catalog_page.dart';
+import 'gallery/catalog.dart';
+import 'gallery/playground_page.dart';
 import 'pages/buttons_page.dart';
 import 'pages/containers_page.dart';
 import 'pages/content_page.dart';
@@ -73,158 +74,277 @@ class GalleryHome extends StatefulWidget {
 }
 
 class _GalleryHomeState extends State<GalleryHome> {
-  int _index = 0;
+  String _query = '';
 
-  static const List<Widget> _pages = <Widget>[
-    ButtonsPage(),
-    ProgressPage(),
-    ControlsPage(),
-    NavigationPage(),
-    ContainersPage(),
-    InputsPage(),
-    ContentPage(),
-    SliversPage(),
-  ];
-
-  static const List<String> _titles = <String>[
-    'Buttons & FABs',
-    'Progress & Loading',
-    'Sliders & Controls',
-    'Navigation',
-    'Cards, Chips & Dialogs',
-    'Inputs, Lists & More',
-    'Markdown, Chat & Content',
-    'Slivers',
-  ];
-
-  static const int _sliversIndex = 7;
+  List<CatalogEntry> get _filtered {
+    final q = _query.trim().toLowerCase();
+    if (q.isEmpty) return kCatalog;
+    return kCatalog
+        .where(
+          (e) =>
+              e.name.toLowerCase().contains(q) ||
+              e.replaces.toLowerCase().contains(q) ||
+              e.category.toLowerCase().contains(q),
+        )
+        .toList();
+  }
 
   @override
   Widget build(BuildContext context) {
-    // SliversPage brings its own CustomScrollView (including MEAppBar), so
-    // it is rendered directly; every other page nests below a shared
-    // MEAppBar sliver.
-    final Widget body = _index == _sliversIndex
-        ? _pages[_index]
-        : CustomScrollView(
-            slivers: <Widget>[
-              MEAppBar(title: Text(_titles[_index])),
-              SliverFillRemaining(child: _pages[_index]),
-            ],
-          );
+    final grouped = <String, List<CatalogEntry>>{};
+    for (final entry in _filtered) {
+      grouped.putIfAbsent(entry.category, () => <CatalogEntry>[]).add(entry);
+    }
 
     return Scaffold(
-      drawer: Drawer(
-        child: SafeArea(
-          child: ListView(
-            padding: const EdgeInsets.symmetric(vertical: 8),
-            children: <Widget>[
-              Padding(
-                padding: const EdgeInsets.fromLTRB(16, 8, 16, 16),
-                child: Text(
-                  'M3 Expressive',
-                  style: Theme.of(context).textTheme.titleLarge,
-                ),
-              ),
-              const Divider(height: 1),
-              for (var i = 0; i < _titles.length; i++)
-                ListTile(
-                  selected: _index == i,
-                  title: Text(_titles[i]),
-                  onTap: () {
-                    setState(() => _index = i);
-                    Navigator.of(context).pop();
-                  },
-                ),
-              ListTile(
-                leading: const Icon(Icons.widgets_outlined),
-                title: const Text('Widget catalog'),
-                onTap: () {
-                  Navigator.of(context).pop();
-                  Navigator.of(context).push(
-                    MaterialPageRoute<void>(
-                      builder: (context) => const WidgetCatalogPage(),
-                    ),
-                  );
-                },
-              ),
-              const Divider(height: 1),
-              Padding(
-                padding: const EdgeInsets.fromLTRB(16, 16, 16, 8),
-                child: Text(
-                  'Appearance',
-                  style: Theme.of(context).textTheme.labelLarge,
-                ),
-              ),
-              ListTile(
-                selected: widget.themeMode == ThemeMode.system,
-                title: const Text('System theme'),
-                onTap: () => widget.onThemeModeChanged(ThemeMode.system),
-              ),
-              ListTile(
-                selected: widget.themeMode == ThemeMode.light,
-                title: const Text('Light'),
-                onTap: () => widget.onThemeModeChanged(ThemeMode.light),
-              ),
-              ListTile(
-                selected: widget.themeMode == ThemeMode.dark,
-                title: const Text('Dark'),
-                onTap: () => widget.onThemeModeChanged(ThemeMode.dark),
-              ),
-              const Divider(height: 1),
-              Padding(
-                padding: const EdgeInsets.fromLTRB(16, 16, 16, 8),
-                child: Text(
-                  'Motion',
-                  style: Theme.of(context).textTheme.labelLarge,
-                ),
-              ),
-              ListTile(
-                selected: widget.meTheme.motion == MEMotionScheme.expressive,
-                title: const Text('Expressive (bouncy)'),
-                onTap: () => widget.onMeThemeChanged(METhemeData.expressive),
-              ),
-              ListTile(
-                selected: widget.meTheme.motion == MEMotionScheme.standard,
-                title: const Text('Standard (subtle)'),
-                onTap: () => widget.onMeThemeChanged(METhemeData.standard),
-              ),
-            ],
-          ),
-        ),
+      drawer: _GalleryDrawer(
+        themeMode: widget.themeMode,
+        meTheme: widget.meTheme,
+        onThemeModeChanged: widget.onThemeModeChanged,
+        onMeThemeChanged: widget.onMeThemeChanged,
       ),
-      body: body,
-      bottomNavigationBar: MENavigationBar(
-        selectedIndex: _index.clamp(0, 4),
-        onDestinationSelected: (i) => setState(() => _index = i),
-        destinations: const <MENavigationDestination>[
-          MENavigationDestination(
-            icon: Icon(Icons.smart_button_outlined),
-            selectedIcon: Icon(Icons.smart_button),
-            label: 'Buttons',
+      body: CustomScrollView(
+        slivers: [
+          MEAppBar(
+            title: const Text('Widget gallery'),
+            subtitle: Text('${kCatalog.length} components'),
+            size: MEAppBarSize.medium,
           ),
-          MENavigationDestination(
-            icon: Icon(Icons.downloading_outlined),
-            selectedIcon: Icon(Icons.downloading),
-            label: 'Progress',
+          SliverToBoxAdapter(
+            child: Padding(
+              padding: const EdgeInsets.fromLTRB(16, 8, 16, 8),
+              child: MESearchBar(
+                hintText: 'Search every widget…',
+                onChanged: (value) => setState(() => _query = value),
+              ),
+            ),
           ),
-          MENavigationDestination(
-            icon: Icon(Icons.tune_outlined),
-            selectedIcon: Icon(Icons.tune),
-            label: 'Controls',
-          ),
-          MENavigationDestination(
-            icon: Icon(Icons.navigation_outlined),
-            selectedIcon: Icon(Icons.navigation),
-            label: 'Navigation',
-          ),
-          MENavigationDestination(
-            icon: Icon(Icons.dashboard_outlined),
-            selectedIcon: Icon(Icons.dashboard),
-            label: 'Containers',
-          ),
+          if (_filtered.isEmpty)
+            const SliverFillRemaining(
+              hasScrollBody: false,
+              child: MEEmptyState(
+                icon: Icons.search_off,
+                title: Text('No widgets match your search'),
+              ),
+            )
+          else
+            SliverPadding(
+              padding: const EdgeInsets.fromLTRB(16, 0, 16, 32),
+              sliver: SliverList.list(
+                children: [
+                  for (final category in grouped.keys) ...[
+                    Padding(
+                      padding: const EdgeInsets.fromLTRB(4, 16, 4, 8),
+                      child: Text(
+                        '${category.toUpperCase()} · ${grouped[category]!.length}',
+                        style: Theme.of(context).textTheme.labelLarge,
+                      ),
+                    ),
+                    MECardList(
+                      itemCount: grouped[category]!.length,
+                      onTap: (i) {
+                        Navigator.of(context).push(
+                          MaterialPageRoute<void>(
+                            builder: (_) => PlaygroundPage(
+                              entry: grouped[category]![i],
+                            ),
+                          ),
+                        );
+                      },
+                      itemBuilder: (context, i) {
+                        final entry = grouped[category]![i];
+                        return Padding(
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 16,
+                            vertical: 12,
+                          ),
+                          child: Row(
+                            children: [
+                              Expanded(
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Text(
+                                      entry.name,
+                                      style: Theme.of(context)
+                                          .textTheme
+                                          .titleMedium,
+                                    ),
+                                    Text(
+                                      entry.replaces,
+                                      style: Theme.of(context)
+                                          .textTheme
+                                          .bodySmall!
+                                          .copyWith(
+                                            color: Theme.of(context)
+                                                .colorScheme
+                                                .onSurfaceVariant,
+                                          ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                              Icon(
+                                Icons.chevron_right,
+                                color: Theme.of(context)
+                                    .colorScheme
+                                    .onSurfaceVariant,
+                              ),
+                            ],
+                          ),
+                        );
+                      },
+                    ),
+                  ],
+                ],
+              ),
+            ),
         ],
       ),
+    );
+  }
+}
+
+class _GalleryDrawer extends StatelessWidget {
+  const _GalleryDrawer({
+    required this.themeMode,
+    required this.meTheme,
+    required this.onThemeModeChanged,
+    required this.onMeThemeChanged,
+  });
+
+  final ThemeMode themeMode;
+  final METhemeData meTheme;
+  final ValueChanged<ThemeMode> onThemeModeChanged;
+  final ValueChanged<METhemeData> onMeThemeChanged;
+
+  @override
+  Widget build(BuildContext context) {
+    return Drawer(
+      child: SafeArea(
+        child: ListView(
+          padding: const EdgeInsets.symmetric(vertical: 8),
+          children: [
+            Padding(
+              padding: const EdgeInsets.fromLTRB(16, 8, 16, 16),
+              child: Text(
+                'M3 Expressive',
+                style: Theme.of(context).textTheme.titleLarge,
+              ),
+            ),
+            const Divider(height: 1),
+            const _DrawerLabel('Tours'),
+            const _TourTile(
+              title: 'Buttons & FABs',
+              page: ButtonsPage(),
+            ),
+            const _TourTile(
+              title: 'Progress & Loading',
+              page: ProgressPage(),
+            ),
+            const _TourTile(
+              title: 'Sliders & Controls',
+              page: ControlsPage(),
+            ),
+            const _TourTile(
+              title: 'Navigation',
+              page: NavigationPage(),
+            ),
+            const _TourTile(
+              title: 'Cards, Chips & Dialogs',
+              page: ContainersPage(),
+            ),
+            const _TourTile(
+              title: 'Inputs, Lists & More',
+              page: InputsPage(),
+            ),
+            const _TourTile(
+              title: 'Markdown, Chat & Content',
+              page: ContentPage(),
+            ),
+            const _TourTile(
+              title: 'Slivers',
+              page: SliversPage(),
+              sliver: true,
+            ),
+            const Divider(height: 1),
+            const _DrawerLabel('Appearance'),
+            ListTile(
+              selected: themeMode == ThemeMode.system,
+              title: const Text('System theme'),
+              onTap: () => onThemeModeChanged(ThemeMode.system),
+            ),
+            ListTile(
+              selected: themeMode == ThemeMode.light,
+              title: const Text('Light'),
+              onTap: () => onThemeModeChanged(ThemeMode.light),
+            ),
+            ListTile(
+              selected: themeMode == ThemeMode.dark,
+              title: const Text('Dark'),
+              onTap: () => onThemeModeChanged(ThemeMode.dark),
+            ),
+            const Divider(height: 1),
+            const _DrawerLabel('Motion'),
+            ListTile(
+              selected: meTheme.motion == MEMotionScheme.expressive,
+              title: const Text('Expressive (bouncy)'),
+              onTap: () => onMeThemeChanged(METhemeData.expressive),
+            ),
+            ListTile(
+              selected: meTheme.motion == MEMotionScheme.standard,
+              title: const Text('Standard (subtle)'),
+              onTap: () => onMeThemeChanged(METhemeData.standard),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class _DrawerLabel extends StatelessWidget {
+  const _DrawerLabel(this.text);
+
+  final String text;
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(16, 16, 16, 8),
+      child: Text(text, style: Theme.of(context).textTheme.labelLarge),
+    );
+  }
+}
+
+class _TourTile extends StatelessWidget {
+  const _TourTile({
+    required this.title,
+    required this.page,
+    this.sliver = false,
+  });
+
+  final String title;
+  final Widget page;
+  final bool sliver;
+
+  @override
+  Widget build(BuildContext context) {
+    return ListTile(
+      title: Text(title),
+      onTap: () {
+        Navigator.of(context).pop();
+        Navigator.of(context).push(
+          MaterialPageRoute<void>(
+            builder: (_) => sliver
+                ? Scaffold(body: page)
+                : Scaffold(
+                    appBar: AppBar(title: Text(title)),
+                    body: page,
+                  ),
+          ),
+        );
+      },
     );
   }
 }

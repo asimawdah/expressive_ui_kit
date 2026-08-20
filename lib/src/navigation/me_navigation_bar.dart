@@ -24,6 +24,7 @@ class MENavigationDestination {
     this.selectedIcon,
     this.badge,
     this.tooltip,
+    this.sectionLabel,
   });
 
   final Widget icon;
@@ -35,6 +36,10 @@ class MENavigationDestination {
 
   /// Tooltip; defaults to [label].
   final String? tooltip;
+
+  /// Optional section caption drawn above this destination on
+  /// [MENavigationRail]. Ignored by [MENavigationBar].
+  final String? sectionLabel;
 }
 
 /// A Material 3 Expressive navigation bar.
@@ -178,7 +183,7 @@ class _MENavigationBarState extends State<MENavigationBar>
 
                         const indicatorHeight = 32.0;
                         final indicatorWidth =
-                            (itemWidth - 24).clamp(40.0, 64.0);
+                            (itemWidth - 8).clamp(40.0, 64.0);
                         // The pill squashes vertically as it stretches, like a
                         // liquid blob.
                         final squash = 1.0 - (stretch - 1.0) * 0.25;
@@ -289,7 +294,11 @@ class _MENavigationBarState extends State<MENavigationBar>
               if (showLabel) ...[
                 const SizedBox(height: 2),
                 AnimatedDefaultTextStyle(
-                  duration: const Duration(milliseconds: 150),
+                  duration: METheme.of(context)
+                      .motion
+                      .fastEffects
+                      .approximateDuration,
+                  curve: METheme.of(context).motion.fastEffects.curve,
                   style: textTheme.labelMedium!.copyWith(
                     color:
                         selected ? colors.onSurface : colors.onSurfaceVariant,

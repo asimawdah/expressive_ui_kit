@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
 
+import '../inputs/me_search_anchor.dart';
+import '../inputs/me_search_bar.dart';
+
 /// Size variants for [MEAppBar], per the M3 Expressive app bar spec.
 enum MEAppBarSize {
   /// 64dp toolbar row only.
@@ -218,6 +221,151 @@ class MEAppBar extends StatelessWidget {
             ),
           );
         },
+      ),
+    );
+  }
+}
+
+/// A docked search app bar for [Scaffold.appBar].
+///
+/// Tapping the pill opens [MESearchAnchor] when [suggestionsBuilder] is set.
+class MESearchAppBar extends StatelessWidget implements PreferredSizeWidget {
+  const MESearchAppBar({
+    super.key,
+    this.searchController,
+    this.hintText = 'Search',
+    this.suggestionsBuilder,
+    this.leading,
+    this.actions = const [],
+    this.backgroundColor,
+  });
+
+  final MESearchController? searchController;
+  final String hintText;
+  final MESearchSuggestionsBuilder? suggestionsBuilder;
+  final Widget? leading;
+  final List<Widget> actions;
+  final Color? backgroundColor;
+
+  @override
+  Size get preferredSize => const Size.fromHeight(72);
+
+  @override
+  Widget build(BuildContext context) {
+    final scheme = Theme.of(context).colorScheme;
+    final bar = suggestionsBuilder == null
+        ? MESearchBar(
+            hintText: hintText,
+            leading: leading ?? const Icon(Icons.search),
+            trailing: actions,
+          )
+        : MESearchAnchor.bar(
+            searchController: searchController,
+            barHintText: hintText,
+            viewHintText: hintText,
+            leading: leading ?? const Icon(Icons.search),
+            trailing: actions,
+            suggestionsBuilder: suggestionsBuilder!,
+          );
+
+    return Material(
+      color: backgroundColor ?? scheme.surface,
+      child: SafeArea(
+        bottom: false,
+        child: Padding(
+          padding: const EdgeInsets.fromLTRB(12, 8, 12, 8),
+          child: bar,
+        ),
+      ),
+    );
+  }
+}
+
+/// A Material 3 Expressive top app bar for [Scaffold.appBar].
+///
+/// 64dp toolbar row (plus [bottom]). Medium/large collapsing bars remain
+/// [MEAppBar] slivers inside a [CustomScrollView].
+class METopAppBar extends StatelessWidget implements PreferredSizeWidget {
+  const METopAppBar({
+    super.key,
+    required this.title,
+    this.subtitle,
+    this.leading,
+    this.actions = const [],
+    this.backgroundColor,
+    this.centerTitle = false,
+    this.bottom,
+  });
+
+  final Widget title;
+  final Widget? subtitle;
+  final Widget? leading;
+  final List<Widget> actions;
+  final Color? backgroundColor;
+  final bool centerTitle;
+  final PreferredSizeWidget? bottom;
+
+  static const double _toolbarHeight = 64;
+
+  @override
+  Size get preferredSize => Size.fromHeight(
+        _toolbarHeight + (bottom?.preferredSize.height ?? 0),
+      );
+
+  @override
+  Widget build(BuildContext context) {
+    final colors = Theme.of(context).colorScheme;
+    final textTheme = Theme.of(context).textTheme;
+    final align = centerTitle ? TextAlign.center : TextAlign.start;
+
+    return Material(
+      color: backgroundColor ?? colors.surface,
+      child: SafeArea(
+        bottom: false,
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            SizedBox(
+              height: _toolbarHeight,
+              child: NavigationToolbar(
+                leading: leading,
+                middle: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  crossAxisAlignment: centerTitle
+                      ? CrossAxisAlignment.center
+                      : CrossAxisAlignment.start,
+                  children: [
+                    DefaultTextStyle.merge(
+                      style: textTheme.titleLarge!.copyWith(
+                        color: colors.onSurface,
+                        fontWeight: FontWeight.w600,
+                      ),
+                      textAlign: align,
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      child: title,
+                    ),
+                    if (subtitle != null)
+                      DefaultTextStyle.merge(
+                        style: textTheme.labelMedium!
+                            .copyWith(color: colors.onSurfaceVariant),
+                        textAlign: align,
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                        child: subtitle!,
+                      ),
+                  ],
+                ),
+                trailing: actions.isEmpty
+                    ? null
+                    : Row(mainAxisSize: MainAxisSize.min, children: actions),
+                centerMiddle: centerTitle,
+                middleSpacing: 16,
+              ),
+            ),
+            if (bottom != null) bottom!,
+          ],
+        ),
       ),
     );
   }

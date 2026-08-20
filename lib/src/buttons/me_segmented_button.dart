@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../internal/me_keyboard.dart';
+import '../theme/me_theme.dart';
 
 /// A segment within an [MESegmentedButton].
 @immutable
@@ -35,8 +36,8 @@ class MESegmentedButton<T> extends StatefulWidget {
     this.showCheckmark = true,
     this.expanded = true,
     this.height = 40,
-    this.animationDuration = const Duration(milliseconds: 350),
-    this.animationCurve = Curves.easeInOutCubicEmphasized,
+    this.animationDuration,
+    this.animationCurve,
     this.focusNode,
     this.autofocus = false,
   }) : assert(segments.length >= 2, 'Provide at least two segments.');
@@ -54,8 +55,12 @@ class MESegmentedButton<T> extends StatefulWidget {
   /// expands equally with centered content.
   final bool expanded;
   final double height;
-  final Duration animationDuration;
-  final Curve animationCurve;
+
+  /// Thumb / checkmark duration. Null uses the theme spatial spring.
+  final Duration? animationDuration;
+
+  /// Thumb / checkmark curve. Null uses the theme spatial spring.
+  final Curve? animationCurve;
 
   /// Optional focus node for keyboard navigation (single-selection mode).
   final FocusNode? focusNode;
@@ -98,6 +103,13 @@ class _MESegmentedButtonState<T> extends State<MESegmentedButton<T>> {
   }
 
   bool get _useSlidingThumb => !widget.multiSelectionEnabled;
+
+  Duration _duration(BuildContext context) =>
+      widget.animationDuration ??
+      METheme.of(context).motion.defaultSpatial.approximateDuration;
+
+  Curve _curve(BuildContext context) =>
+      widget.animationCurve ?? METheme.of(context).motion.defaultSpatial.curve;
 
   void _selectIndex(int index) {
     if (index < 0 || index >= widget.segments.length) return;
@@ -154,8 +166,8 @@ class _MESegmentedButtonState<T> extends State<MESegmentedButton<T>> {
             child: Padding(
               padding: const EdgeInsets.all(_thumbInset),
               child: AnimatedAlign(
-                duration: widget.animationDuration,
-                curve: widget.animationCurve,
+                duration: _duration(context),
+                curve: _curve(context),
                 alignment: _thumbAlignment,
                 child: FractionallySizedBox(
                   widthFactor: 1 / widget.segments.length,
@@ -221,11 +233,11 @@ class _MESegmentedButtonState<T> extends State<MESegmentedButton<T>> {
             children: [
               if (widget.showCheckmark)
                 AnimatedSize(
-                  duration: widget.animationDuration,
-                  curve: Curves.easeOutBack,
+                  duration: _duration(context),
+                  curve: _curve(context),
                   child: isSelected
                       ? Padding(
-                          padding: const EdgeInsetsDirectional.only(end: 6),
+                          padding: const EdgeInsetsDirectional.only(end: 8),
                           child: Icon(Icons.check, size: 18, color: fg),
                         )
                       : const SizedBox.shrink(),
@@ -236,13 +248,13 @@ class _MESegmentedButtonState<T> extends State<MESegmentedButton<T>> {
                   data: IconThemeData(size: 18, color: fg),
                   child: segment.icon!,
                 ),
-                const SizedBox(width: 6),
+                const SizedBox(width: 8),
               ],
               if (widget.expanded)
                 Flexible(
                   child: AnimatedDefaultTextStyle(
-                    duration: widget.animationDuration,
-                    curve: widget.animationCurve,
+                    duration: _duration(context),
+                    curve: _curve(context),
                     style: textTheme.labelLarge!.copyWith(
                       color: fg,
                       fontWeight:
@@ -256,8 +268,8 @@ class _MESegmentedButtonState<T> extends State<MESegmentedButton<T>> {
                 )
               else
                 AnimatedDefaultTextStyle(
-                  duration: widget.animationDuration,
-                  curve: widget.animationCurve,
+                  duration: _duration(context),
+                  curve: _curve(context),
                   style: textTheme.labelLarge!.copyWith(
                     color: fg,
                     fontWeight: isSelected ? FontWeight.w700 : FontWeight.w500,
@@ -288,8 +300,8 @@ class _MESegmentedButtonState<T> extends State<MESegmentedButton<T>> {
       behavior: HitTestBehavior.opaque,
       onTap: enabled ? () => _handleTap(segment.value) : null,
       child: AnimatedContainer(
-        duration: widget.animationDuration,
-        curve: widget.animationCurve,
+        duration: _duration(context),
+        curve: _curve(context),
         height: widget.height,
         width: widget.expanded ? double.infinity : null,
         decoration: ShapeDecoration(
@@ -304,11 +316,11 @@ class _MESegmentedButtonState<T> extends State<MESegmentedButton<T>> {
           children: [
             if (widget.showCheckmark)
               AnimatedSize(
-                duration: widget.animationDuration,
-                curve: Curves.easeOutBack,
+                duration: _duration(context),
+                curve: _curve(context),
                 child: isSelected
                     ? Padding(
-                        padding: const EdgeInsetsDirectional.only(end: 6),
+                        padding: const EdgeInsetsDirectional.only(end: 8),
                         child: Icon(Icons.check, size: 18, color: fg),
                       )
                     : const SizedBox.shrink(),
@@ -319,7 +331,7 @@ class _MESegmentedButtonState<T> extends State<MESegmentedButton<T>> {
                 data: IconThemeData(size: 18, color: fg),
                 child: segment.icon!,
               ),
-              const SizedBox(width: 6),
+              const SizedBox(width: 8),
             ],
             if (widget.expanded)
               Flexible(

@@ -54,7 +54,7 @@ class _ControlsPageState extends State<ControlsPage> {
           children: <Widget>[
             MECheckbox(
               value: _checkbox,
-              onChanged: (v) => setState(() => _checkbox = v),
+              onChanged: (v) => setState(() => _checkbox = v ?? false),
             ),
             const SizedBox(width: 16),
             Text(_checkbox ? 'Checked' : 'Unchecked'),

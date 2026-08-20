@@ -64,11 +64,11 @@ class MECard extends StatelessWidget {
       onPressed: onPressed,
       onLongPress: onLongPress,
       shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(MECorners.largeIncreased),
+        borderRadius: BorderRadius.circular(MECorners.extraLarge),
         side: side ?? BorderSide.none,
       ),
       pressedShape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(MECorners.extraLarge),
+        borderRadius: BorderRadius.circular(MECorners.large),
         side: side ?? BorderSide.none,
       ),
       color: color ?? bg,

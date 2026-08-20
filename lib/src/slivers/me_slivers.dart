@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../theme/me_shapes.dart';
+import '../theme/me_theme.dart';
 
 /// A Material 3 Expressive sliver list.
 ///
@@ -164,8 +165,8 @@ class _MEPinnedHeaderDelegate extends SliverPersistentHeaderDelegate {
     final scheme = Theme.of(context).colorScheme;
 
     return AnimatedContainer(
-      duration: const Duration(milliseconds: 200),
-      curve: Curves.easeOut,
+      duration: METheme.of(context).motion.fastEffects.approximateDuration,
+      curve: METheme.of(context).motion.fastEffects.curve,
       height: height,
       padding: const EdgeInsets.symmetric(horizontal: 16),
       decoration: BoxDecoration(

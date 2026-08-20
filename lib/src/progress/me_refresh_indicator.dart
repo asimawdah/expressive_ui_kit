@@ -144,6 +144,27 @@ class MERefreshIndicator extends StatefulWidget {
     this.triggerMode = MERefreshIndicatorTriggerMode.onEdge,
     this.elevation = 2.0,
   })  : _indicatorType = _IndicatorType.material,
+        contained = true,
+        onStatusChange = null,
+        assert(elevation >= 0.0);
+
+  /// Contained morphing loading indicator — the M3E refresh treatment.
+  const MERefreshIndicator.contained({
+    super.key,
+    required this.child,
+    this.displacement = 40.0,
+    this.edgeOffset = 0.0,
+    required this.onRefresh,
+    this.color,
+    this.backgroundColor,
+    this.notificationPredicate = defaultScrollNotificationPredicate,
+    this.semanticsLabel,
+    this.semanticsValue,
+    this.strokeWidth = RefreshProgressIndicator.defaultStrokeWidth,
+    this.triggerMode = MERefreshIndicatorTriggerMode.onEdge,
+    this.elevation = 2.0,
+  })  : _indicatorType = _IndicatorType.material,
+        contained = true,
         onStatusChange = null,
         assert(elevation >= 0.0);
 
@@ -178,6 +199,7 @@ class MERefreshIndicator extends StatefulWidget {
     this.triggerMode = MERefreshIndicatorTriggerMode.onEdge,
     this.elevation = 2.0,
   })  : _indicatorType = _IndicatorType.adaptive,
+        contained = true,
         onStatusChange = null,
         assert(elevation >= 0.0);
 
@@ -204,6 +226,7 @@ class MERefreshIndicator extends StatefulWidget {
         color = null,
         backgroundColor = null,
         strokeWidth = 0.0,
+        contained = false,
         assert(elevation >= 0.0);
 
   /// The widget below this widget in the tree.
@@ -211,8 +234,11 @@ class MERefreshIndicator extends StatefulWidget {
   /// The refresh indicator will be stacked on top of this child. The indicator
   /// will appear when child's Scrollable descendant is over-scrolled.
   ///
-  /// Typically a [ListView] or [CustomScrollView].
+  /// Typical a [ListView] or [CustomScrollView].
   final Widget child;
+
+  /// Whether this indicator uses the contained morphing M3E spinner.
+  final bool contained;
 
   /// The distance from the child's top or bottom [edgeOffset] where
   /// the refresh indicator will settle. During the drag that exposes the refresh

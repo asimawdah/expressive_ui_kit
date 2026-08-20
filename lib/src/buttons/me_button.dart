@@ -12,77 +12,79 @@ enum MEButtonSize { extraSmall, small, medium, large, extraLarge }
 /// Resting shape family for [MEButton].
 enum MEButtonShape { round, square }
 
-class _MEButtonSizeSpec {
-  const _MEButtonSizeSpec({
-    required this.height,
-    required this.horizontalPadding,
-    required this.iconSize,
-    required this.textStyle,
-    required this.squareRadius,
-    required this.gap,
-  });
+/// M3 Expressive size tokens shared by buttons, icon buttons, toggles,
+/// split buttons and button groups.
+extension MEButtonSizeTokens on MEButtonSize {
+  /// Container height: 32 / 40 / 56 / 96 / 136.
+  double get height => switch (this) {
+        MEButtonSize.extraSmall => 32,
+        MEButtonSize.small => 40,
+        MEButtonSize.medium => 56,
+        MEButtonSize.large => 96,
+        MEButtonSize.extraLarge => 136,
+      };
 
-  final double height;
-  final double horizontalPadding;
-  final double iconSize;
-  final TextStyle Function(TextTheme) textStyle;
-  final double squareRadius;
-  final double gap;
+  /// Resting square-family corner radius.
+  double get squareCornerRadius => switch (this) {
+        MEButtonSize.extraSmall || MEButtonSize.small => MECorners.medium,
+        MEButtonSize.medium => MECorners.large,
+        MEButtonSize.large => MECorners.extraLarge,
+        MEButtonSize.extraLarge => MECorners.extraLargeIncreased,
+      };
+
+  /// Pressed-container corner radius (8 / 8 / 12 / 16 / 16).
+  double get pressedCornerRadius => switch (this) {
+        MEButtonSize.extraSmall || MEButtonSize.small => MECorners.small,
+        MEButtonSize.medium => MECorners.medium,
+        MEButtonSize.large || MEButtonSize.extraLarge => MECorners.large,
+      };
+
+  /// Shape both round and square buttons morph toward while pressed.
+  ShapeBorder get pressedContainerShape => RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(pressedCornerRadius),
+      );
+
+  /// Leading/trailing padding: 12 / 16 / 24 / 48 / 64.
+  double get horizontalPadding => switch (this) {
+        MEButtonSize.extraSmall => 12,
+        MEButtonSize.small => 16,
+        MEButtonSize.medium => 24,
+        MEButtonSize.large => 48,
+        MEButtonSize.extraLarge => 64,
+      };
+
+  /// Icon size: 20 / 20 / 24 / 32 / 40.
+  double get iconSize => switch (this) {
+        MEButtonSize.extraSmall || MEButtonSize.small => 20,
+        MEButtonSize.medium => 24,
+        MEButtonSize.large => 32,
+        MEButtonSize.extraLarge => 40,
+      };
+
+  /// Gap between icon and label: 4 / 8 / 8 / 12 / 16.
+  double get iconGap => switch (this) {
+        MEButtonSize.extraSmall => 4,
+        MEButtonSize.small || MEButtonSize.medium => 8,
+        MEButtonSize.large => 12,
+        MEButtonSize.extraLarge => 16,
+      };
+
+  /// Label style for this size on [theme].
+  TextStyle labelStyle(TextTheme theme) => switch (this) {
+        MEButtonSize.extraSmall || MEButtonSize.small => theme.labelLarge!,
+        MEButtonSize.medium => theme.titleMedium!,
+        MEButtonSize.large => theme.headlineSmall!,
+        MEButtonSize.extraLarge => theme.headlineLarge!,
+      };
 }
-
-const Map<MEButtonSize, _MEButtonSizeSpec> _sizeSpecs = {
-  MEButtonSize.extraSmall: _MEButtonSizeSpec(
-    height: 32,
-    horizontalPadding: 12,
-    iconSize: 20,
-    textStyle: _labelLarge,
-    squareRadius: MECorners.medium,
-    gap: 4,
-  ),
-  MEButtonSize.small: _MEButtonSizeSpec(
-    height: 40,
-    horizontalPadding: 16,
-    iconSize: 20,
-    textStyle: _labelLarge,
-    squareRadius: MECorners.medium,
-    gap: 8,
-  ),
-  MEButtonSize.medium: _MEButtonSizeSpec(
-    height: 56,
-    horizontalPadding: 24,
-    iconSize: 24,
-    textStyle: _titleMedium,
-    squareRadius: MECorners.large,
-    gap: 8,
-  ),
-  MEButtonSize.large: _MEButtonSizeSpec(
-    height: 96,
-    horizontalPadding: 48,
-    iconSize: 32,
-    textStyle: _headlineSmall,
-    squareRadius: MECorners.extraLarge,
-    gap: 12,
-  ),
-  MEButtonSize.extraLarge: _MEButtonSizeSpec(
-    height: 136,
-    horizontalPadding: 64,
-    iconSize: 40,
-    textStyle: _headlineLarge,
-    squareRadius: MECorners.extraLargeIncreased,
-    gap: 16,
-  ),
-};
-
-TextStyle _labelLarge(TextTheme t) => t.labelLarge!;
-TextStyle _titleMedium(TextTheme t) => t.titleMedium!;
-TextStyle _headlineSmall(TextTheme t) => t.headlineSmall!;
-TextStyle _headlineLarge(TextTheme t) => t.headlineLarge!;
 
 /// A Material 3 Expressive button.
 ///
 /// Replaces [ElevatedButton], [FilledButton], [FilledButton.tonal],
 /// [OutlinedButton] and [TextButton]. Adds the M3 Expressive five-size
-/// scale and spring-driven round-to-square shape morphing on press.
+/// scale. Press morphs to the per-size pressed corner radius; a non-null
+/// [selected] turns the button into a toggle (unselected round, selected
+/// square).
 ///
 /// ```dart
 /// MEButton.filled(
@@ -176,61 +178,67 @@ class MEButton extends StatelessWidget {
   Widget build(BuildContext context) {
     final colors = Theme.of(context).colorScheme;
     final textTheme = Theme.of(context).textTheme;
-    final spec = _sizeSpecs[size]!;
     final enabled = onPressed != null || onLongPress != null;
     final isSelected = selected ?? false;
 
+    final isToggle = selected != null;
     final (Color bg, Color fg, double elevation, BorderSide? side) =
         switch (variant) {
       MEButtonVariant.elevated => (
-          colors.surfaceContainerLow,
-          colors.primary,
+          isToggle && isSelected ? colors.primary : colors.surfaceContainerLow,
+          isToggle && isSelected ? colors.onPrimary : colors.primary,
           1.0,
           null
         ),
-      MEButtonVariant.filled => (colors.primary, colors.onPrimary, 0.0, null),
+      MEButtonVariant.filled => (
+          isToggle && !isSelected
+              ? colors.surfaceContainerHighest
+              : colors.primary,
+          isToggle && !isSelected ? colors.onSurface : colors.onPrimary,
+          0.0,
+          null
+        ),
       MEButtonVariant.tonal => (
-          colors.secondaryContainer,
-          colors.onSecondaryContainer,
+          isToggle && isSelected ? colors.secondary : colors.secondaryContainer,
+          isToggle && isSelected
+              ? colors.onSecondary
+              : colors.onSecondaryContainer,
           0.0,
           null
         ),
       MEButtonVariant.outlined => (
-          Colors.transparent,
-          colors.onSurfaceVariant,
+          isToggle && isSelected ? colors.inverseSurface : Colors.transparent,
+          isToggle && isSelected
+              ? colors.onInverseSurface
+              : colors.onSurfaceVariant,
           0.0,
           BorderSide(color: colors.outlineVariant)
         ),
-      MEButtonVariant.text => (Colors.transparent, colors.primary, 0.0, null),
+      MEButtonVariant.text => (
+          Colors.transparent,
+          isToggle && isSelected ? colors.primary : colors.primary,
+          0.0,
+          null
+        ),
     };
 
-    final effectiveBg = !enabled
-        ? colors.onSurface.withValues(alpha: 0.12)
-        : isSelected && variant != MEButtonVariant.filled
-            ? colors.primary
-            : bg;
-    final effectiveFg = !enabled
-        ? colors.onSurface.withValues(alpha: 0.38)
-        : isSelected && variant != MEButtonVariant.filled
-            ? colors.onPrimary
-            : fg;
+    final effectiveBg = enabled ? bg : colors.onSurface.withValues(alpha: 0.12);
+    final effectiveFg = enabled ? fg : colors.onSurface.withValues(alpha: 0.38);
 
-    final restingShape = shape == MEButtonShape.round
+    final restingShape = (isToggle ? !isSelected : shape == MEButtonShape.round)
         ? const StadiumBorder()
         : RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(spec.squareRadius));
-    final morphTarget = shape == MEButtonShape.round
-        ? RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(spec.squareRadius))
-        : const StadiumBorder();
+            borderRadius: BorderRadius.circular(size.squareCornerRadius));
+    final selectedShape = RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(size.squareCornerRadius));
 
     return MEPressable(
       onPressed: onPressed,
       onLongPress: onLongPress,
       enabled: enabled,
       shape: restingShape,
-      pressedShape: morphTarget,
-      selectedShape: selected == null ? null : morphTarget,
+      pressedShape: size.pressedContainerShape,
+      selectedShape: isToggle ? selectedShape : null,
       selected: isSelected,
       color: effectiveBg,
       elevation: variant == MEButtonVariant.elevated ? elevation : 0,
@@ -239,8 +247,8 @@ class MEButton extends StatelessWidget {
       overlayColor: effectiveFg.withValues(alpha: 0.1),
       haptics: true,
       child: Container(
-        height: spec.height,
-        padding: EdgeInsets.symmetric(horizontal: spec.horizontalPadding),
+        height: size.height,
+        padding: EdgeInsets.symmetric(horizontal: size.horizontalPadding),
         alignment: Alignment.center,
         child: FittedBox(
           fit: BoxFit.scaleDown,
@@ -250,13 +258,13 @@ class MEButton extends StatelessWidget {
             children: [
               if (icon != null) ...[
                 IconTheme.merge(
-                  data: IconThemeData(size: spec.iconSize, color: effectiveFg),
+                  data: IconThemeData(size: size.iconSize, color: effectiveFg),
                   child: icon!,
                 ),
-                SizedBox(width: spec.gap),
+                SizedBox(width: size.iconGap),
               ],
               DefaultTextStyle.merge(
-                style: spec.textStyle(textTheme).copyWith(color: effectiveFg),
+                style: size.labelStyle(textTheme).copyWith(color: effectiveFg),
                 child: child,
               ),
             ],

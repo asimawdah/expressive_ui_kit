@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import 'item_position.dart';
+import '../theme/me_theme.dart';
 
 /// Material 3 Expressive list item with segmented style, spring-based
 /// press animation, large rounded corners, and emphasized typography.
@@ -186,8 +187,12 @@ class _ActionItemState extends State<ActionItem> {
           onPointerCancel: isInteractive ? (_) => _setPressed(false) : null,
           child: AnimatedScale(
             scale: _pressed ? 0.97 : 1.0,
-            duration: Duration(milliseconds: _pressed ? 100 : 350),
-            curve: _pressed ? Curves.easeOutCubic : Curves.easeOutBack,
+            duration: _pressed
+                ? METheme.of(context).motion.fastSpatial.approximateDuration
+                : METheme.of(context).motion.defaultSpatial.approximateDuration,
+            curve: _pressed
+                ? METheme.of(context).motion.fastSpatial.curve
+                : METheme.of(context).motion.defaultSpatial.curve,
             child: ClipRRect(
               borderRadius: borderRadius,
               child: Material(

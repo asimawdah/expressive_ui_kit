@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../theme/me_shapes.dart';
+import '../theme/me_theme.dart';
 
 /// A Material 3 Expressive swipe-to-dismiss wrapper.
 ///
@@ -73,8 +74,8 @@ class _MEDismissibleState extends State<MEDismissible> {
       secondaryBackground:
           _buildBackground(context, AlignmentDirectional.centerEnd),
       child: AnimatedContainer(
-        duration: const Duration(milliseconds: 200),
-        curve: Curves.easeOut,
+        duration: METheme.of(context).motion.fastSpatial.approximateDuration,
+        curve: METheme.of(context).motion.fastSpatial.curve,
         clipBehavior: Clip.antiAlias,
         decoration: BoxDecoration(
           // While dragging, the row lifts and rounds its corners.

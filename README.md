@@ -7,6 +7,20 @@ Material 3 Expressive widgets for Flutter — drop-in expressive replacements
 for standard Material widgets, built around spring physics, shape morphing,
 and the M3 Expressive motion scheme.
 
+## For AI assistants
+
+A Cursor skill at [`.cursor/skills/material3-expressive/SKILL.md`](.cursor/skills/material3-expressive/SKILL.md)
+is the **picker**: it maps product intent → the correct `ME*` widget
+(prefix is `ME`, not `M3E`), with a full inventory in
+[`catalog.md`](.cursor/skills/material3-expressive/catalog.md) and copy-paste
+constructors in [`constructors.md`](.cursor/skills/material3-expressive/constructors.md).
+`AGENTS.md` and [`.cursor/rules/material3-expressive.mdc`](.cursor/rules/material3-expressive.mdc)
+point agents at that skill.
+
+To reuse the picker in another app, copy the whole
+`.cursor/skills/material3-expressive/` folder (and optionally the rule file)
+into that project's `.cursor/` directory.
+
 ## Widget mapping
 
 | Standard Material               | Material 3 Expressive           |
@@ -15,6 +29,7 @@ and the M3 Expressive motion scheme.
 | `IconButton`                    | `MEIconButton`                  |
 | `SegmentedButton`               | `MESegmentedButton`             |
 | toggle button rows              | `MEButtonGroup` (connected)     |
+| —                               | `METoggleButton` (new)          |
 | `FloatingActionButton`          | `MEFab`                         |
 | speed dial patterns             | `MEFabMenu` (new)               |
 | —                               | `MESplitButton` (new)           |
@@ -40,16 +55,19 @@ and the M3 Expressive motion scheme.
 | `showModalBottomSheet`          | `showMEBottomSheet`             |
 | `SnackBar`                      | `showMESnackBar`                |
 | `TextField`/`TextFormField`     | `METextField`                   |
-| `SearchBar`                     | `MESearchBar`                   |
-| `ListTile`                      | `MEListTile` + `MEListGroup`    |
+| `SearchBar`                     | `MESearchBar` + `MESearchAnchor` |
+| `SearchAnchor`                  | `MESearchAnchor` + `MESearchAppBar` |
+| `ListTile`                      | `MEListTile` + `MEListGroup` + `MECardList` |
 | `ExpansionTile`                 | `MEExpansionTile`               |
-| `PopupMenuButton`/`MenuAnchor`  | `MEMenuAnchor`                  |
+| `PopupMenuButton`/`MenuAnchor`  | `MEMenu` / `MEMenuAnchor`       |
 | `DropdownButton`/`DropdownMenu` | `MEDropdown`                    |
 | `Badge`                         | `MEBadge`                       |
 | `Tooltip`                       | `METooltip`                     |
 | `Divider`                       | `MEDivider`                     |
 | `showDatePicker`                | `showMEDatePicker`              |
+| `showDateRangePicker`           | `showMEDateRangePicker`         |
 | `showTimePicker`                | `showMETimePicker`              |
+| —                               | `MEDialTimePicker` (new)        |
 | `SliverList`                    | `MESliverList`                  |
 | `SliverGrid`                    | `MESliverGrid`                  |
 | `SliverPersistentHeader`        | `MESliverPinnedHeader`          |
@@ -62,6 +80,11 @@ and the M3 Expressive motion scheme.
 | `ReorderableListView`           | `MEReorderableList`             |
 | `CircleAvatar`                  | `MEAvatar` + `MEAvatarGroup`    |
 | `Dismissible`                   | `MEDismissible`                 |
+| —                               | `MEDismissibleColumn` / `MEDismissibleList` (new) |
+| —                               | `MEExpandableList` (new)        |
+| —                               | `MESelection` (new)             |
+| —                               | `showMEFullScreenDialog` (new)  |
+| —                               | `showMESelectionDialog` (new)   |
 | `Autocomplete`                  | `MEAutocomplete`                |
 | —                               | `MEPageIndicator` (new)         |
 | —                               | `showMESideSheet` (new)         |
@@ -76,6 +99,7 @@ and the M3 Expressive motion scheme.
 | —                               | `MENumberTicker` (new)          |
 | —                               | `METimeline` (new)              |
 | —                               | `MEMorphingShape` (new)         |
+| —                               | `MEShapeContainer` (new)        |
 | `CalendarDatePicker`            | `MECalendar`                    |
 | —                               | `METagInput` (new)              |
 | —                               | `METreeView` (new)              |
@@ -852,6 +876,11 @@ const MECircularProgressIndicator(); // indeterminate
 
 // Shape-morphing loading indicator for short waits.
 const MELoadingIndicator(contained: true);
+const MELoadingIndicator(value: 0.4); // determinate shape morph
+MEShapeContainer(
+  polygon: MaterialShapes.cookie9Sided,
+  child: const Icon(Icons.star),
+);
 
 // Navigation bar: liquid pill indicator that stretches between
 // destinations, icon bounce, badges, and label behavior control.
@@ -907,10 +936,31 @@ MEListGroup(
 );
 
 // Menus, sheets, snackbars and pickers.
-MEMenuAnchor<String>(
-  items: const [MEMenuItem(value: 'a', label: 'Option A')],
+MEMenu(
+  anchorBuilder: (context, open) => MEButton.outlined(
+    icon: const Icon(Icons.arrow_drop_down),
+    onPressed: open,
+    child: const Text('Open menu'),
+  ),
+  children: [
+    MEMenuGroup.entries(
+      entries: [
+        MEMenuEntry(
+          label: 'Edit',
+          leading: const Icon(Icons.edit_outlined),
+          value: 'edit',
+        ),
+        const MEMenuEntry(label: 'Disabled', enabled: false),
+      ],
+    ),
+    MEMenuGroup.entries(
+      label: 'More',
+      entries: [
+        MEMenuEntry(label: 'Copy', trailingText: '⌘C', value: 'copy'),
+      ],
+    ),
+  ],
   onSelected: (v) {},
-  child: const Icon(Icons.more_vert),
 );
 showMEBottomSheet(context: context, builder: (context) => const SheetBody());
 showMESnackBar(context, message: 'Saved', actionLabel: 'Undo');

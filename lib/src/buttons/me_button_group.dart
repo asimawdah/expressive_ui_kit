@@ -4,6 +4,7 @@ import '../internal/me_pressable.dart';
 import '../theme/me_motion.dart';
 import '../theme/me_shapes.dart';
 import '../theme/me_theme.dart';
+import 'me_button.dart';
 
 /// Layout styles for [MEButtonGroup].
 enum MEButtonGroupStyle {
@@ -45,7 +46,8 @@ class MEButtonGroup extends StatefulWidget {
     this.selectedIndices = const {},
     this.onSelectionChanged,
     this.multiSelect = false,
-    this.height = 48,
+    this.size = MEButtonSize.small,
+    this.direction = Axis.horizontal,
   });
 
   final List<MEButtonGroupItem> items;
@@ -55,7 +57,12 @@ class MEButtonGroup extends StatefulWidget {
   final Set<int> selectedIndices;
   final ValueChanged<Set<int>>? onSelectionChanged;
   final bool multiSelect;
-  final double height;
+
+  /// Container height. Defaults to the small (40dp) M3E button size.
+  final MEButtonSize size;
+
+  /// Layout axis. Vertical groups still neighbor-squish along that axis.
+  final Axis direction;
 
   @override
   State<MEButtonGroup> createState() => _MEButtonGroupState();
@@ -107,15 +114,25 @@ class _MEButtonGroupState extends State<MEButtonGroup>
       animation: _press,
       builder: (context, _) {
         final t = _press.value.clamp(0.0, 1.2);
-        return Row(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            for (var i = 0; i < widget.items.length; i++) ...[
-              if (i > 0) SizedBox(width: connected ? 2 : 8),
-              _buildChild(context, i, t, connected),
-            ],
-          ],
-        );
+        return widget.direction == Axis.vertical
+            ? Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  for (var i = 0; i < widget.items.length; i++) ...[
+                    if (i > 0) SizedBox(height: connected ? 2 : 8),
+                    _buildChild(context, i, t, connected),
+                  ],
+                ],
+              )
+            : Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  for (var i = 0; i < widget.items.length; i++) ...[
+                    if (i > 0) SizedBox(width: connected ? 2 : 8),
+                    _buildChild(context, i, t, connected),
+                  ],
+                ],
+              );
       },
     );
   }
@@ -128,24 +145,26 @@ class _MEButtonGroupState extends State<MEButtonGroup>
     final isPressed = _pressedIndex == i;
     final isNeighbor = (_pressedIndex - i).abs() == 1;
 
-    // Signature group motion: pressed grows, direct neighbors compress.
-    final double scaleX = isPressed
+    // Signature group motion: pressed grows, direct neighbors compress
+    // along the layout axis.
+    final double scale = isPressed
         ? 1 + 0.08 * t
         : isNeighbor
             ? 1 - 0.06 * t
             : 1;
 
     final last = widget.items.length - 1;
+    final height = widget.size.height;
     final ShapeBorder shape;
     if (!connected) {
       shape = const StadiumBorder();
     } else {
-      final r = widget.height / 2;
-      const inner = MECorners.small;
       shape = RoundedRectangleBorder(
-        borderRadius: BorderRadiusDirectional.horizontal(
-          start: Radius.circular(i == 0 ? r : inner),
-          end: Radius.circular(i == last ? r : inner),
+        borderRadius: _connectedRadius(
+          index: i,
+          last: last,
+          radius: height / 2,
+          vertical: widget.direction == Axis.vertical,
         ),
       );
     }
@@ -162,7 +181,8 @@ class _MEButtonGroupState extends State<MEButtonGroup>
             : colors.onSecondaryContainer;
 
     return Transform.scale(
-      scaleX: scaleX,
+      scaleX: widget.direction == Axis.horizontal ? scale : 1,
+      scaleY: widget.direction == Axis.vertical ? scale : 1,
       child: Listener(
         onPointerDown: (_) => _setPressed(i, true),
         onPointerUp: (_) => _setPressed(i, false),
@@ -170,11 +190,11 @@ class _MEButtonGroupState extends State<MEButtonGroup>
         child: MEPressable(
           onPressed: () => _handleTap(i),
           shape: shape,
-          pressedShape: connected ? const StadiumBorder() : null,
+          pressedShape: widget.size.pressedContainerShape,
           color: bg,
           overlayColor: fg.withValues(alpha: 0.1),
           child: Container(
-            height: widget.height,
+            height: height,
             padding: const EdgeInsets.symmetric(horizontal: 20),
             child: Row(
               mainAxisSize: MainAxisSize.min,
@@ -197,4 +217,23 @@ class _MEButtonGroupState extends State<MEButtonGroup>
       ),
     );
   }
+}
+
+BorderRadiusDirectional _connectedRadius({
+  required int index,
+  required int last,
+  required double radius,
+  required bool vertical,
+}) {
+  const inner = MECorners.small;
+  if (vertical) {
+    return BorderRadiusDirectional.vertical(
+      top: Radius.circular(index == 0 ? radius : inner),
+      bottom: Radius.circular(index == last ? radius : inner),
+    );
+  }
+  return BorderRadiusDirectional.horizontal(
+    start: Radius.circular(index == 0 ? radius : inner),
+    end: Radius.circular(index == last ? radius : inner),
+  );
 }

@@ -5,6 +5,9 @@ import '../theme/me_motion.dart';
 import '../theme/me_shapes.dart';
 import '../theme/me_theme.dart';
 
+/// Visual variant for [METextField].
+enum METextFieldVariant { filled, outlined }
+
 /// A Material 3 Expressive text field.
 ///
 /// Replaces [TextField] / [TextFormField]. The container morphs shape and
@@ -37,6 +40,7 @@ class METextField extends StatefulWidget {
     this.onTap,
     this.textCapitalization = TextCapitalization.none,
     this.autofocus = false,
+    this.variant = METextFieldVariant.filled,
   });
 
   final TextEditingController? controller;
@@ -64,6 +68,7 @@ class METextField extends StatefulWidget {
   final VoidCallback? onTap;
   final TextCapitalization textCapitalization;
   final bool autofocus;
+  final METextFieldVariant variant;
 
   @override
   State<METextField> createState() => _METextFieldState();
@@ -159,10 +164,12 @@ class _METextFieldState extends State<METextField>
                             icon: widget.trailingIcon!,
                             onPressed: widget.onTrailingIconPressed,
                           )),
-                filled: true,
-                fillColor: scheme.surfaceContainerHigh,
+                filled: widget.variant == METextFieldVariant.filled,
+                fillColor: widget.variant == METextFieldVariant.filled
+                    ? scheme.surfaceContainerHigh
+                    : Colors.transparent,
                 contentPadding: const EdgeInsets.symmetric(
-                  horizontal: 20,
+                  horizontal: 16,
                   vertical: 16,
                 ),
                 border: OutlineInputBorder(

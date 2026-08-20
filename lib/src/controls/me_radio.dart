@@ -14,12 +14,16 @@ class MERadio<T> extends StatefulWidget {
     required this.groupValue,
     required this.onChanged,
     this.semanticsLabel,
+    this.label,
   });
 
   final T value;
   final T? groupValue;
   final ValueChanged<T>? onChanged;
   final String? semanticsLabel;
+
+  /// Optional label that is part of the tap target.
+  final Widget? label;
 
   bool get selected => value == groupValue;
 
@@ -64,44 +68,56 @@ class _MERadioState<T> extends State<MERadio<T>>
       child: GestureDetector(
         behavior: HitTestBehavior.opaque,
         onTap: enabled ? () => widget.onChanged!(widget.value) : null,
-        child: SizedBox(
-          width: 48,
-          height: 48,
-          child: Center(
-            child: AnimatedBuilder(
-              animation: _controller,
-              builder: (context, _) {
-                final t = _controller.value.clamp(0.0, 1.4);
-                final ringColor = widget.selected
-                    ? (enabled
-                        ? colors.primary
-                        : colors.onSurface.withValues(alpha: 0.38))
-                    : (enabled
-                        ? colors.onSurfaceVariant
-                        : colors.onSurface.withValues(alpha: 0.38));
-                return Container(
-                  width: 22,
-                  height: 22,
-                  decoration: BoxDecoration(
-                    shape: BoxShape.circle,
-                    border: Border.all(color: ringColor, width: 2),
-                  ),
-                  child: Center(
-                    child: Container(
-                      width: 11 * t.clamp(0.0, 1.3),
-                      height: 11 * t.clamp(0.0, 1.3),
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            SizedBox(
+              width: 48,
+              height: 48,
+              child: Center(
+                child: AnimatedBuilder(
+                  animation: _controller,
+                  builder: (context, _) {
+                    final t = _controller.value.clamp(0.0, 1.4);
+                    final ringColor = widget.selected
+                        ? (enabled
+                            ? colors.primary
+                            : colors.onSurface.withValues(alpha: 0.38))
+                        : (enabled
+                            ? colors.onSurfaceVariant
+                            : colors.onSurface.withValues(alpha: 0.38));
+                    return Container(
+                      width: 22,
+                      height: 22,
                       decoration: BoxDecoration(
                         shape: BoxShape.circle,
-                        color: enabled
-                            ? colors.primary
-                            : colors.onSurface.withValues(alpha: 0.38),
+                        border: Border.all(color: ringColor, width: 2),
                       ),
-                    ),
-                  ),
-                );
-              },
+                      child: Center(
+                        child: Container(
+                          width: 11 * t.clamp(0.0, 1.3),
+                          height: 11 * t.clamp(0.0, 1.3),
+                          decoration: BoxDecoration(
+                            shape: BoxShape.circle,
+                            color: enabled
+                                ? colors.primary
+                                : colors.onSurface.withValues(alpha: 0.38),
+                          ),
+                        ),
+                      ),
+                    );
+                  },
+                ),
+              ),
             ),
-          ),
+            if (widget.label != null) ...[
+              const SizedBox(width: 4),
+              DefaultTextStyle.merge(
+                style: Theme.of(context).textTheme.bodyLarge!,
+                child: widget.label!,
+              ),
+            ],
+          ],
         ),
       ),
     );

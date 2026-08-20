@@ -44,7 +44,7 @@ class MEDialog extends StatelessWidget {
             children: [
               if (icon != null) ...[
                 IconTheme.merge(
-                  data: IconThemeData(size: 28, color: colors.secondary),
+                  data: IconThemeData(size: 24, color: colors.secondary),
                   child: icon!,
                 ),
                 const SizedBox(height: 16),
@@ -68,17 +68,176 @@ class MEDialog extends StatelessWidget {
                 ),
               if (actions.isNotEmpty) ...[
                 const SizedBox(height: 24),
-                Wrap(
-                  alignment: WrapAlignment.end,
-                  spacing: 8,
-                  runSpacing: 8,
-                  children: actions,
+                Align(
+                  alignment: AlignmentDirectional.centerEnd,
+                  child: Wrap(
+                    alignment: WrapAlignment.end,
+                    spacing: 8,
+                    runSpacing: 8,
+                    children: actions,
+                  ),
                 ),
               ],
             ],
           ),
         ),
       ),
+    );
+  }
+}
+
+/// Shows a full-screen dialog with a spring slide-up entrance.
+Future<T?> showMEFullScreenDialog<T>({
+  required BuildContext context,
+  required Widget title,
+  required Widget body,
+  List<Widget> actions = const [],
+  Widget? leading,
+}) {
+  final motion = METheme.of(context).motion;
+  return showGeneralDialog<T>(
+    context: context,
+    barrierDismissible: false,
+    barrierColor: Colors.black.withValues(alpha: 0.4),
+    transitionDuration: motion.defaultSpatial.approximateDuration,
+    pageBuilder: (context, animation, secondaryAnimation) {
+      final scheme = Theme.of(context).colorScheme;
+      return Material(
+        color: scheme.surface,
+        child: SafeArea(
+          child: Column(
+            children: [
+              SizedBox(
+                height: 64,
+                child: Row(
+                  children: [
+                    leading ??
+                        IconButton(
+                          icon: const Icon(Icons.close),
+                          onPressed: () => Navigator.of(context).pop(),
+                        ),
+                    Expanded(
+                      child: DefaultTextStyle.merge(
+                        style: Theme.of(context).textTheme.titleLarge!,
+                        child: title,
+                      ),
+                    ),
+                    ...actions,
+                  ],
+                ),
+              ),
+              Expanded(child: body),
+            ],
+          ),
+        ),
+      );
+    },
+    transitionBuilder: (context, animation, secondaryAnimation, child) {
+      final curved = CurvedAnimation(
+        parent: animation,
+        curve: motion.defaultSpatial.curve,
+        reverseCurve: motion.fastSpatial.curve,
+      );
+      return FadeTransition(
+        opacity: curved,
+        child: SlideTransition(
+          position: Tween<Offset>(
+            begin: const Offset(0, 0.08),
+            end: Offset.zero,
+          ).animate(curved),
+          child: child,
+        ),
+      );
+    },
+  );
+}
+
+/// Selection list dialog; confirm is disabled until a choice is made.
+Future<List<T>?> showMESelectionDialog<T>({
+  required BuildContext context,
+  required String title,
+  required List<T> options,
+  String Function(T value)? labelBuilder,
+  bool multiSelect = false,
+  Set<T>? initialSelection,
+}) {
+  return showMEDialog<List<T>>(
+    context: context,
+    builder: (context) => _MESelectionDialog<T>(
+      title: title,
+      options: options,
+      labelBuilder: labelBuilder ?? (v) => '$v',
+      multiSelect: multiSelect,
+      initialSelection: initialSelection ?? <T>{},
+    ),
+  );
+}
+
+class _MESelectionDialog<T> extends StatefulWidget {
+  const _MESelectionDialog({
+    required this.title,
+    required this.options,
+    required this.labelBuilder,
+    required this.multiSelect,
+    required this.initialSelection,
+  });
+
+  final String title;
+  final List<T> options;
+  final String Function(T value) labelBuilder;
+  final bool multiSelect;
+  final Set<T> initialSelection;
+
+  @override
+  State<_MESelectionDialog<T>> createState() => _MESelectionDialogState<T>();
+}
+
+class _MESelectionDialogState<T> extends State<_MESelectionDialog<T>> {
+  late Set<T> _selected = Set<T>.from(widget.initialSelection);
+
+  @override
+  Widget build(BuildContext context) {
+    final scheme = Theme.of(context).colorScheme;
+    return MEDialog(
+      title: Text(widget.title),
+      content: ConstrainedBox(
+        constraints: const BoxConstraints(maxHeight: 360),
+        child: SingleChildScrollView(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              for (final option in widget.options)
+                ListTile(
+                  title: Text(widget.labelBuilder(option)),
+                  selected: _selected.contains(option),
+                  selectedTileColor: scheme.secondaryContainer,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(MECorners.large),
+                  ),
+                  onTap: () => setState(() {
+                    if (widget.multiSelect) {
+                      if (!_selected.remove(option)) _selected.add(option);
+                    } else {
+                      _selected = {option};
+                    }
+                  }),
+                ),
+            ],
+          ),
+        ),
+      ),
+      actions: [
+        TextButton(
+          onPressed: () => Navigator.of(context).pop(),
+          child: const Text('Cancel'),
+        ),
+        FilledButton(
+          onPressed: _selected.isEmpty
+              ? null
+              : () => Navigator.of(context).pop(_selected.toList()),
+          child: const Text('Confirm'),
+        ),
+      ],
     );
   }
 }
@@ -102,12 +261,12 @@ Future<T?> showMEDialog<T>({
       final scale = CurvedAnimation(
         parent: animation,
         curve: motion.defaultSpatial.curve,
-        reverseCurve: Curves.easeIn,
+        reverseCurve: motion.fastSpatial.curve,
       );
       final fade = CurvedAnimation(
         parent: animation,
         curve: motion.defaultEffects.curve,
-        reverseCurve: Curves.easeIn,
+        reverseCurve: motion.fastSpatial.curve,
       );
       return FadeTransition(
         opacity: fade,
