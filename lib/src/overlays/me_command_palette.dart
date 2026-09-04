@@ -42,16 +42,24 @@ Future<void> showMECommandPalette(
   BuildContext context, {
   required List<MECommand> commands,
   String hintText = 'Type a command...',
+  ThemeData? theme,
 }) {
   final motion = METheme.of(context).motion;
+  final overlayTheme = theme ?? Theme.of(context);
+  final overlayMeTheme = METheme.of(context);
   return showGeneralDialog<void>(
     context: context,
     barrierDismissible: true,
     barrierLabel: 'Dismiss command palette',
     barrierColor: Colors.black38,
     transitionDuration: motion.defaultSpatial.approximateDuration,
-    pageBuilder: (context, _, __) =>
-        _MECommandPalette(commands: commands, hintText: hintText),
+    pageBuilder: (context, _, __) => Theme(
+      data: overlayTheme,
+      child: METheme(
+        data: overlayMeTheme,
+        child: _MECommandPalette(commands: commands, hintText: hintText),
+      ),
+    ),
     transitionBuilder: (context, animation, _, child) {
       final t = CurvedAnimation(
         parent: animation,

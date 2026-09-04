@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 
+import '../buttons/me_button.dart';
+import '../inputs/me_text_field.dart';
 import '../theme/me_shapes.dart';
 import '../theme/me_theme.dart';
 
@@ -25,6 +28,8 @@ class MEDialog extends StatelessWidget {
   Widget build(BuildContext context) {
     final colors = Theme.of(context).colorScheme;
     final textTheme = Theme.of(context).textTheme;
+    final media = MediaQuery.of(context);
+    final maxHeight = (media.size.height - media.viewInsets.bottom) * 0.9;
 
     return Dialog(
       backgroundColor: colors.surfaceContainerHigh,
@@ -33,7 +38,11 @@ class MEDialog extends StatelessWidget {
         borderRadius: BorderRadius.circular(MECorners.extraLarge),
       ),
       child: ConstrainedBox(
-        constraints: const BoxConstraints(minWidth: 280, maxWidth: 400),
+        constraints: BoxConstraints(
+          minWidth: 280,
+          maxWidth: 400,
+          maxHeight: maxHeight,
+        ),
         child: Padding(
           padding: const EdgeInsets.all(24),
           child: Column(
@@ -61,10 +70,14 @@ class MEDialog extends StatelessWidget {
                 const SizedBox(height: 16),
               ],
               if (content != null)
-                DefaultTextStyle.merge(
-                  style: textTheme.bodyMedium!
-                      .copyWith(color: colors.onSurfaceVariant),
-                  child: content!,
+                Flexible(
+                  child: SingleChildScrollView(
+                    child: DefaultTextStyle.merge(
+                      style: textTheme.bodyMedium!
+                          .copyWith(color: colors.onSurfaceVariant),
+                      child: content!,
+                    ),
+                  ),
                 ),
               if (actions.isNotEmpty) ...[
                 const SizedBox(height: 24),
@@ -242,21 +255,142 @@ class _MESelectionDialogState<T> extends State<_MESelectionDialog<T>> {
   }
 }
 
+/// Single-line text prompt. Owns its [TextEditingController] for the
+/// lifetime of the route so the field cannot outlive or be disposed
+/// before the overlay.
+Future<String?> showMEInputDialog({
+  required BuildContext context,
+  required String title,
+  String? label,
+  String? hintText,
+  String initialText = '',
+  Widget? icon,
+  String cancelLabel = 'Cancel',
+  String confirmLabel = 'Confirm',
+  bool autofocus = true,
+  TextInputType? keyboardType,
+  TextInputAction? textInputAction,
+  List<TextInputFormatter>? inputFormatters,
+}) {
+  return showMEDialog<String>(
+    context: context,
+    builder: (context) => _MEInputDialog(
+      title: title,
+      label: label,
+      hintText: hintText,
+      initialText: initialText,
+      icon: icon,
+      cancelLabel: cancelLabel,
+      confirmLabel: confirmLabel,
+      autofocus: autofocus,
+      keyboardType: keyboardType,
+      textInputAction: textInputAction,
+      inputFormatters: inputFormatters,
+    ),
+  );
+}
+
+class _MEInputDialog extends StatefulWidget {
+  const _MEInputDialog({
+    required this.title,
+    required this.cancelLabel,
+    required this.confirmLabel,
+    required this.initialText,
+    required this.autofocus,
+    this.label,
+    this.hintText,
+    this.icon,
+    this.keyboardType,
+    this.textInputAction,
+    this.inputFormatters,
+  });
+
+  final String title;
+  final String? label;
+  final String? hintText;
+  final String initialText;
+  final Widget? icon;
+  final String cancelLabel;
+  final String confirmLabel;
+  final bool autofocus;
+  final TextInputType? keyboardType;
+  final TextInputAction? textInputAction;
+  final List<TextInputFormatter>? inputFormatters;
+
+  @override
+  State<_MEInputDialog> createState() => _MEInputDialogState();
+}
+
+class _MEInputDialogState extends State<_MEInputDialog> {
+  late final TextEditingController _controller =
+      TextEditingController(text: widget.initialText);
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  void _submit() => Navigator.pop(context, _controller.text.trim());
+
+  @override
+  Widget build(BuildContext context) {
+    return MEDialog(
+      icon: widget.icon,
+      title: Text(widget.title),
+      content: METextField(
+        controller: _controller,
+        label: widget.label,
+        hintText: widget.hintText,
+        autofocus: widget.autofocus,
+        keyboardType: widget.keyboardType,
+        textInputAction: widget.textInputAction ?? TextInputAction.done,
+        inputFormatters: widget.inputFormatters,
+        onSubmitted: (_) => _submit(),
+      ),
+      actions: [
+        MEButton.text(
+          onPressed: () => Navigator.pop(context),
+          child: Text(widget.cancelLabel),
+        ),
+        MEButton.filled(
+          onPressed: _submit,
+          child: Text(widget.confirmLabel),
+        ),
+      ],
+    );
+  }
+}
+
 /// Shows an [MEDialog] with the M3 Expressive spring-scale entrance
 /// transition. Replaces [showDialog] for dialogs.
 Future<T?> showMEDialog<T>({
   required BuildContext context,
   required WidgetBuilder builder,
   bool barrierDismissible = true,
+  ThemeData? theme,
 }) {
   final motion = METheme.of(context).motion;
+  final overlayTheme = theme ?? Theme.of(context);
+  final overlayMeTheme = METheme.of(context);
   return showGeneralDialog<T>(
     context: context,
+    useRootNavigator: true,
     barrierDismissible: barrierDismissible,
     barrierLabel: 'Dismiss',
     barrierColor: Colors.black.withValues(alpha: 0.4),
     transitionDuration: motion.defaultSpatial.approximateDuration,
-    pageBuilder: (context, animation, secondaryAnimation) => builder(context),
+    pageBuilder: (context, animation, secondaryAnimation) {
+      return Theme(
+        data: overlayTheme,
+        child: METheme(
+          data: overlayMeTheme,
+          child: SafeArea(
+            child: Center(child: builder(context)),
+          ),
+        ),
+      );
+    },
     transitionBuilder: (context, animation, secondaryAnimation, child) {
       final scale = CurvedAnimation(
         parent: animation,
@@ -266,14 +400,20 @@ Future<T?> showMEDialog<T>({
       final fade = CurvedAnimation(
         parent: animation,
         curve: motion.defaultEffects.curve,
-        reverseCurve: motion.fastSpatial.curve,
+        reverseCurve: motion.fastEffects.curve,
       );
-      return FadeTransition(
-        opacity: fade,
+      return AnimatedBuilder(
+        animation: fade,
         child: ScaleTransition(
           scale: Tween<double>(begin: 0.8, end: 1.0).animate(scale),
           child: child,
         ),
+        builder: (context, child) {
+          return Opacity(
+            opacity: fade.value.clamp(0.0, 1.0),
+            child: child,
+          );
+        },
       );
     },
   );

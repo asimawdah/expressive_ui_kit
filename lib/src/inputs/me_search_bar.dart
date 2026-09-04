@@ -21,6 +21,7 @@ class MESearchBar extends StatefulWidget {
     this.onTap,
     this.enabled = true,
     this.readOnly = false,
+    this.autofocus = false,
   });
 
   final TextEditingController? controller;
@@ -34,6 +35,9 @@ class MESearchBar extends StatefulWidget {
 
   /// When true the field is a tap target only (used by [MESearchAnchor.bar]).
   final bool readOnly;
+
+  /// When true, requests focus after the first frame.
+  final bool autofocus;
 
   @override
   State<MESearchBar> createState() => _MESearchBarState();
@@ -49,6 +53,11 @@ class _MESearchBarState extends State<MESearchBar>
   void initState() {
     super.initState();
     _focusNode.addListener(_handleFocus);
+    if (widget.autofocus) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (mounted) _focusNode.requestFocus();
+      });
+    }
   }
 
   void _handleFocus() {

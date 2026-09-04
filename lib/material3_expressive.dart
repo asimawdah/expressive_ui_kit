@@ -121,6 +121,8 @@
 /// | (new)                          | [MEKnob]                     |
 /// | (new)                          | [MEEqualizer]                |
 /// | (new)                          | [MELiquidProgress]           |
+/// | (new)                          | [MECustomProgressIndicator]  |
+/// | (new)                          | [MEWavedProgressIndicator]   |
 /// | (new)                          | [METypewriter]               |
 /// | (new)                          | [MEHoldButton]               |
 /// | (new)                          | [MEStopwatch]                |
@@ -317,12 +319,14 @@ export 'src/pickers/me_dial_time_picker.dart';
 export 'src/pickers/me_pickers.dart';
 export 'src/pickers/me_wheel_picker.dart';
 export 'src/progress/me_circular_progress.dart';
+export 'src/progress/me_custom_progress.dart';
 export 'src/progress/me_hourglass.dart';
 export 'src/progress/me_linear_progress.dart';
 export 'src/progress/me_liquid_progress.dart';
 export 'src/progress/me_loading_indicator.dart';
 export 'src/progress/me_refresh_indicator.dart';
 export 'src/progress/me_skeleton.dart';
+export 'src/progress/me_waved_progress.dart';
 export 'src/slivers/me_sliver_scaffold.dart';
 export 'src/slivers/me_slivers.dart';
 export 'src/theme/me_motion.dart';

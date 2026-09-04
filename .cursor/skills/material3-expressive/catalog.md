@@ -145,6 +145,8 @@ before generating code.
 | Type | File | Replaces | Use when |
 |---|---|---|---|
 | `MELinearProgressIndicator` | `lib/src/progress/me_linear_progress.dart` | `LinearProgressIndicator` | Determinate/indeterminate bar. |
+| `MECustomProgressIndicator` | `lib/src/progress/me_custom_progress.dart` | — | Split-track bar; `waved:` for stroke waves. |
+| `MEWavedProgressIndicator` | `lib/src/progress/me_waved_progress.dart` | — | `.linear` / `.circular` animated wave stroke. |
 | `MECircularProgressIndicator` | `lib/src/progress/me_circular_progress.dart` | `CircularProgressIndicator` | Spinner. |
 | `MELoadingIndicator` | `lib/src/progress/me_loading_indicator.dart` | short wait | Compact morphing wait. |
 | `MERefreshIndicator` | `lib/src/progress/me_refresh_indicator.dart` | `RefreshIndicator` | Pull to refresh. |

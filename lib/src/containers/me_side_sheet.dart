@@ -23,8 +23,11 @@ Future<T?> showMESideSheet<T>({
   Widget? title,
   double width = 320,
   bool showCloseButton = true,
+  ThemeData? theme,
 }) {
   final motion = METheme.of(context).motion;
+  final overlayTheme = theme ?? Theme.of(context);
+  final overlayMeTheme = METheme.of(context);
 
   return showGeneralDialog<T>(
     context: context,
@@ -33,13 +36,21 @@ Future<T?> showMESideSheet<T>({
     barrierColor: Colors.black54,
     transitionDuration: motion.defaultSpatial.approximateDuration,
     pageBuilder: (context, animation, secondaryAnimation) {
-      return AlignTransition(
-        alignment: const AlwaysStoppedAnimation(AlignmentDirectional.centerEnd),
-        child: _MESideSheet(
-          title: title,
-          width: width,
-          showCloseButton: showCloseButton,
-          child: builder(context),
+      return Theme(
+        data: overlayTheme,
+        child: METheme(
+          data: overlayMeTheme,
+          child: AlignTransition(
+            alignment: const AlwaysStoppedAnimation(
+              AlignmentDirectional.centerEnd,
+            ),
+            child: _MESideSheet(
+              title: title,
+              width: width,
+              showCloseButton: showCloseButton,
+              child: builder(context),
+            ),
+          ),
         ),
       );
     },
