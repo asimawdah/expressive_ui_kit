@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 
 import '../theme/me_shapes.dart';
+import '../theme/me_system_ui.dart';
 import '../theme/me_theme.dart';
 
 /// Shows a Material 3 Expressive modal bottom sheet.
@@ -18,6 +20,7 @@ Future<T?> showMEBottomSheet<T>({
 }) {
   final motion = METheme.of(context).motion;
   final scheme = Theme.of(context).colorScheme;
+  final sheetColor = scheme.surfaceContainerLow;
   const radius = BorderRadius.vertical(
     top: Radius.circular(MECorners.extraLargeIncreased),
   );
@@ -43,32 +46,38 @@ Future<T?> showMEBottomSheet<T>({
       // Cap height so keyboard / short screens can't overflow the Column.
       final maxHeight = media.size.height - media.viewInsets.bottom;
 
-      return Padding(
-        padding: EdgeInsets.only(bottom: media.viewInsets.bottom),
-        child: ClipRRect(
-          borderRadius: radius,
-          child: Material(
-            color: scheme.surfaceContainerLow,
-            child: ConstrainedBox(
-              constraints: BoxConstraints(maxHeight: maxHeight),
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  if (showDragHandle)
-                    Padding(
-                      padding: const EdgeInsets.only(top: 16, bottom: 8),
-                      child: Container(
-                        width: 48,
-                        height: 6,
-                        decoration: BoxDecoration(
-                          color: scheme.outlineVariant,
-                          borderRadius: BorderRadius.circular(3),
+      return AnnotatedRegion<SystemUiOverlayStyle>(
+        value: MESystemUi.overlayFor(
+          scheme,
+          navigationBarColor: sheetColor,
+        ),
+        child: Padding(
+          padding: EdgeInsets.only(bottom: media.viewInsets.bottom),
+          child: ClipRRect(
+            borderRadius: radius,
+            child: Material(
+              color: sheetColor,
+              child: ConstrainedBox(
+                constraints: BoxConstraints(maxHeight: maxHeight),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    if (showDragHandle)
+                      Padding(
+                        padding: const EdgeInsets.only(top: 16, bottom: 8),
+                        child: Container(
+                          width: 48,
+                          height: 6,
+                          decoration: BoxDecoration(
+                            color: scheme.outlineVariant,
+                            borderRadius: BorderRadius.circular(3),
+                          ),
                         ),
                       ),
-                    ),
-                  Flexible(child: builder(context)),
-                  SizedBox(height: media.padding.bottom),
-                ],
+                    Flexible(child: builder(context)),
+                    SizedBox(height: media.padding.bottom),
+                  ],
+                ),
               ),
             ),
           ),
