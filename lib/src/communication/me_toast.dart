@@ -46,7 +46,13 @@ class _METoastController {
 
   OverlayEntry? _entry;
   Timer? _timer;
+  _METoastWidgetState? _ownedState;
   final GlobalKey<_METoastWidgetState> _key = GlobalKey();
+
+  /// Counts every toast the controller has created, and is what a widget
+  /// carries back so its end can be refused if it is no longer the
+  /// generation being cared for.
+  int _epoch = 0;
 
   void show(
     BuildContext context, {
@@ -62,11 +68,17 @@ class _METoastController {
     if (resolved == null) return;
 
     _timer?.cancel();
-    // Replace any visible toast immediately.
+    // Replace any visible toast immediately. The old entry is dropped from
+    // the field before the new one is built, so the unmount that follows
+    // can never reach anything but an end the controller already finished;
+    // the epoch on the widget below closes that ordering in both
+    // directions, since whether a removal unmounts before or after a
+    // replacement mounts is not something the controller gets to schedule.
     _entry?.remove();
     _entry = OverlayEntry(
       builder: (context) => _METoastWidget(
         key: _key,
+        epoch: ++_epoch,
         message: message,
         kind: kind,
         icon: icon,
@@ -74,23 +86,93 @@ class _METoastController {
       ),
     );
     resolved.insert(_entry!);
-    _timer = Timer(duration, () => _key.currentState?.hide());
+    _timer = Timer(duration, () {
+      _timer = null;
+      _key.currentState?.hide();
+    });
+  }
+
+  /// Ends the toast lifecycle: the visible entry is removed and its
+  /// auto-hide timer cancelled.
+  ///
+  /// A toast outlives the screen that showed it — it lives on the root
+  /// overlay while the entry that created it may be long gone — so nothing
+  /// in the widget tree owns its end. Without this, dismissal before the
+  /// timer fires leaves a pending [Timer] pointing at a state that no
+  /// longer exists; with it, a teardown (a test's, or a page's own) can end
+  /// the toast rather than leave it dangling.
+  void dispose() {
+    _timer?.cancel();
+    _timer = null;
+    _entry?.remove();
+    _entry = null;
+    _ownedState = null;
+  }
+
+  /// Claims [state] as the live toast on behalf of the generation [epoch],
+  /// called from the state's [State.initState].
+  ///
+  /// Claiming is how ownership leaves the [GlobalKey]: by the time a state
+  /// is disposed during a tree replacement, the framework has already
+  /// released the key, so nothing answers `currentState` at the moment the
+  /// ownership question is asked again — only the direct reference does.
+  void claim(_METoastWidgetState state, int epoch) {
+    if (epoch != _epoch) return;
+    _ownedState = state;
+  }
+
+  /// Ends the lifecycle when [state]'s own tree dies, which is how the
+  /// toast learns it was replaced at any level above the overlay.
+  ///
+  /// Two guarded comparisons, and the deliberate reason for each: equal
+  /// identity, because a stale toast finishing its exit animation must
+  /// never end a newer one; equal epoch, because the ordering of "old
+  /// entry's state disposes" against "new entry's state init's" inside one
+  /// frame is not deterministic either, and a count is cheaper than a
+  /// race. In an application this fires only when the root tree is torn
+  /// down, which is why visible behaviour never changes; in a test it is
+  /// the difference between a clean end and the framework reporting a
+  /// pending timer.
+  void endWith(_METoastWidgetState expiredState) {
+    if (_ownedState != expiredState) return;
+    if (expiredState.epoch != _epoch) return;
+    dispose();
   }
 
   void _removeEntry() {
+    // The tap-to-dismiss path arrives while the auto-hide timer still runs;
+    // cancelling it here is what keeps a dismissed toast from leaving a
+    // pending timer behind.
+    _timer?.cancel();
+    _timer = null;
     _entry?.remove();
     _entry = null;
+    _ownedState = null;
   }
 }
+
+/// Ends any toast [showMEToast] is still animating, and cancels its timer.
+///
+/// The pair of the module's entry point: `showMEToast` starts a lifecycle
+/// that no widget can own, because the entry lives on the root overlay.
+/// Call it where that lifecycle should end — a test tear-down, or an app
+/// teardown that must not leave timers running.
+void disposeMEToast() => _METoastController.instance.dispose();
 
 class _METoastWidget extends StatefulWidget {
   const _METoastWidget({
     super.key,
+    required this.epoch,
     required this.message,
     required this.kind,
     required this.onDismissed,
     this.icon,
   });
+
+  /// The generation this widget belongs to, matched against the
+  /// controller's counter so a replaced toast can never retire its
+  /// successor's timer.
+  final int epoch;
 
   final String message;
   final METoastKind kind;
@@ -109,9 +191,13 @@ class _METoastWidgetState extends State<_METoastWidget>
   );
   bool _hiding = false;
 
+  /// The generation this state was built for; see [_METoastWidget.epoch].
+  int get epoch => widget.epoch;
+
   @override
   void initState() {
     super.initState();
+    _METoastController.instance.claim(this, widget.epoch);
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (mounted) {
         springTo(_slide, 1, METheme.of(context).motion.defaultSpatial);
@@ -132,6 +218,12 @@ class _METoastWidgetState extends State<_METoastWidget>
 
   @override
   void dispose() {
+    // The tree this state lived in is gone, whatever replaced it. If this
+    // toast is still the current one, its auto-hide timer would otherwise
+    // keep running against a state that no longer exists, which the test
+    // framework reports as a pending timer and a real application would
+    // carry as a dead callback.
+    _METoastController.instance.endWith(this);
     _slide.dispose();
     super.dispose();
   }
