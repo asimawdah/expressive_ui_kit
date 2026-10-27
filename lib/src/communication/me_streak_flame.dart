@@ -2,7 +2,6 @@ import 'dart:math' as math;
 
 import 'package:flutter/material.dart';
 
-import '../theme/me_motion.dart';
 import '../theme/me_theme.dart';
 
 /// A habit-streak flame with a live flicker and a popping day counter.
@@ -107,11 +106,11 @@ class _MEStreakFlameState extends State<MEStreakFlame>
           ),
           const SizedBox(width: 6),
           // Keyed so a count change re-runs the pop-in tween.
-          MEMotionBuilder(
+          TweenAnimationBuilder<double>(
             key: ValueKey<int>(widget.count),
-            value: 1,
-            from: 0,
-            spec: spec,
+            tween: Tween(begin: 0.0, end: 1.0),
+            duration: spec.approximateDuration,
+            curve: spec.curve,
             builder: (context, v, child) {
               return Transform.scale(
                 scale: 0.6 + 0.4 * v,

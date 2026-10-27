@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:material3_expressive/material3_expressive.dart';
+import 'package:expressive_ui_kit/expressive_ui_kit.dart';
 
 /// Demonstrates the sliver suite: flexible app bar, pinned header,
 /// segmented sliver list and rounded sliver grid — all in one

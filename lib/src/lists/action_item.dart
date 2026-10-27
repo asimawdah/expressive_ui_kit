@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 
-import '../internal/me_pressable.dart';
 import 'item_position.dart';
 
 /// Material 3 Expressive list item with segmented style, spring-based
@@ -61,6 +60,7 @@ class ActionItem extends StatefulWidget {
 }
 
 class _ActionItemState extends State<ActionItem> {
+  bool _pressed = false;
   late bool _isTitleExpanded;
 
   @override
@@ -86,6 +86,11 @@ class _ActionItemState extends State<ActionItem> {
     )..layout(maxWidth: maxWidth);
 
     return textPainter.didExceedMaxLines;
+  }
+
+  void _setPressed(bool value) {
+    if (!mounted || _pressed == value) return;
+    setState(() => _pressed = value);
   }
 
   @override
@@ -168,43 +173,59 @@ class _ActionItemState extends State<ActionItem> {
 
     final isInteractive = widget.onTap != null || widget.onLongPress != null;
 
-    return Padding(
-      padding: widget.outerPadding ??
-          (widget.selected == true
-              ? const EdgeInsets.symmetric(vertical: 2)
-              : widget.itemPosition.padding),
-      child: MEPressable(
-        onPressed: widget.onTap,
-        onLongPress: widget.onLongPress,
-        enabled: isInteractive,
-        shape: RoundedRectangleBorder(borderRadius: borderRadius),
-        color: widget.selected == true
-            ? theme.colorScheme.secondaryContainer
-            : widget.tileColor ?? theme.colorScheme.surfaceContainer,
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            // Avoid ListTile ink assertions when an ancestor paints a
-            // colored DecoratedBox (e.g. modal sheets).
-            Material(
-              type: MaterialType.transparency,
-              child: ListTile(
-                leading: widget.icon,
-                title: newTitle,
-                trailing: widget.trailing,
-                subtitle: widget.subtitle,
-                contentPadding: effectiveContentPadding,
-                selected: widget.selected ?? false,
-                minVerticalPadding: effectiveMinVerticalPadding,
+    return Material(
+      type: MaterialType.transparency,
+      child: Padding(
+        padding: widget.outerPadding ??
+            (widget.selected == true
+                ? const EdgeInsets.symmetric(vertical: 2)
+                : widget.itemPosition.padding),
+        child: Listener(
+          onPointerDown: isInteractive ? (_) => _setPressed(true) : null,
+          onPointerUp: isInteractive ? (_) => _setPressed(false) : null,
+          onPointerCancel: isInteractive ? (_) => _setPressed(false) : null,
+          child: AnimatedScale(
+            scale: _pressed ? 0.97 : 1.0,
+            duration: Duration(milliseconds: _pressed ? 100 : 350),
+            curve: _pressed ? Curves.easeOutCubic : Curves.easeOutBack,
+            child: ClipRRect(
+              borderRadius: borderRadius,
+              child: Material(
+                color: widget.selected == true
+                    ? theme.colorScheme.secondaryContainer
+                    : widget.tileColor ?? theme.colorScheme.surfaceContainer,
+                child: InkWell(
+                  onTap: widget.onTap,
+                  onLongPress: widget.onLongPress,
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: [
+                      // Avoid ListTile ink assertions when an ancestor paints a
+                      // colored DecoratedBox (e.g. modal sheets).
+                      Material(
+                        type: MaterialType.transparency,
+                        child: ListTile(
+                          leading: widget.icon,
+                          title: newTitle,
+                          trailing: widget.trailing,
+                          subtitle: widget.subtitle,
+                          contentPadding: effectiveContentPadding,
+                          selected: widget.selected ?? false,
+                          minVerticalPadding: effectiveMinVerticalPadding,
+                        ),
+                      ),
+                      if (widget.below != null)
+                        Padding(
+                          padding: effectiveContentPadding,
+                          child: widget.below!,
+                        ),
+                    ],
+                  ),
+                ),
               ),
             ),
-            if (widget.below != null)
-              Padding(
-                padding: effectiveContentPadding,
-                child: widget.below!,
-              ),
-          ],
+          ),
         ),
       ),
     );

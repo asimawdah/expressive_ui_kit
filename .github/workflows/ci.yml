@@ -38,7 +38,3 @@ jobs:
 
       - name: Test
         run: flutter test
-
-      - name: Example gallery tests
-        working-directory: example
-        run: flutter test

@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
 
 import '../internal/me_keyboard.dart';
-import '../theme/me_motion.dart';
-import '../theme/me_theme.dart';
 
 /// A segment within an [MESegmentedButton].
 @immutable
@@ -37,8 +35,8 @@ class MESegmentedButton<T> extends StatefulWidget {
     this.showCheckmark = true,
     this.expanded = true,
     this.height = 40,
-    this.animationDuration,
-    this.animationCurve,
+    this.animationDuration = const Duration(milliseconds: 350),
+    this.animationCurve = Curves.easeInOutCubicEmphasized,
     this.focusNode,
     this.autofocus = false,
   }) : assert(segments.length >= 2, 'Provide at least two segments.');
@@ -56,12 +54,8 @@ class MESegmentedButton<T> extends StatefulWidget {
   /// expands equally with centered content.
   final bool expanded;
   final double height;
-
-  /// Thumb / checkmark duration. Null uses the theme spatial spring.
-  final Duration? animationDuration;
-
-  /// Thumb / checkmark curve. Null uses the theme spatial spring.
-  final Curve? animationCurve;
+  final Duration animationDuration;
+  final Curve animationCurve;
 
   /// Optional focus node for keyboard navigation (single-selection mode).
   final FocusNode? focusNode;
@@ -95,14 +89,15 @@ class _MESegmentedButtonState<T> extends State<MESegmentedButton<T>> {
     return index < 0 ? 0 : index;
   }
 
+  AlignmentGeometry get _thumbAlignment {
+    final count = widget.segments.length;
+    if (count <= 1) return AlignmentDirectional.center;
+    final t = _selectedIndex / (count - 1);
+    // Directional so the thumb tracks the mirrored Row in RTL.
+    return AlignmentDirectional(-1.0 + 2.0 * t, 0);
+  }
+
   bool get _useSlidingThumb => !widget.multiSelectionEnabled;
-
-  Duration _duration(BuildContext context) =>
-      widget.animationDuration ??
-      METheme.of(context).motion.defaultSpatial.approximateDuration;
-
-  Curve _curve(BuildContext context) =>
-      widget.animationCurve ?? METheme.of(context).motion.defaultSpatial.curve;
 
   void _selectIndex(int index) {
     if (index < 0 || index >= widget.segments.length) return;
@@ -137,31 +132,19 @@ class _MESegmentedButtonState<T> extends State<MESegmentedButton<T>> {
         ),
         clipBehavior: Clip.antiAlias,
         child: _useSlidingThumb
-            ? MEMotionBuilder(
-                value: _selectedIndex.toDouble(),
-                spec: METheme.of(context).motion.defaultSpatial,
-                builder: (context, index, _) =>
-                    _buildSlidingBody(colors, textTheme, index),
-              )
+            ? _buildSlidingBody(colors, textTheme)
             : _buildMultiBody(colors, textTheme),
       ),
     );
   }
 
-  Widget _buildSlidingBody(
-    ColorScheme colors,
-    TextTheme textTheme,
-    double selectedIndex,
-  ) {
+  Widget _buildSlidingBody(ColorScheme colors, TextTheme textTheme) {
     final thumb = DecoratedBox(
       decoration: ShapeDecoration(
         color: colors.secondaryContainer,
         shape: const StadiumBorder(),
       ),
     );
-    final count = widget.segments.length;
-    final t = count <= 1 ? 0.0 : selectedIndex / (count - 1);
-    final alignment = AlignmentDirectional(-1.0 + 2.0 * t, 0);
 
     return Stack(
       alignment: Alignment.center,
@@ -170,8 +153,10 @@ class _MESegmentedButtonState<T> extends State<MESegmentedButton<T>> {
           Positioned.fill(
             child: Padding(
               padding: const EdgeInsets.all(_thumbInset),
-              child: Align(
-                alignment: alignment,
+              child: AnimatedAlign(
+                duration: widget.animationDuration,
+                curve: widget.animationCurve,
+                alignment: _thumbAlignment,
                 child: FractionallySizedBox(
                   widthFactor: 1 / widget.segments.length,
                   heightFactor: 1,
@@ -235,14 +220,15 @@ class _MESegmentedButtonState<T> extends State<MESegmentedButton<T>> {
             mainAxisSize: widget.expanded ? MainAxisSize.max : MainAxisSize.min,
             children: [
               if (widget.showCheckmark)
-                MEMotionReveal(
-                  visible: isSelected,
-                  spec: METheme.of(context).motion.defaultSpatial,
-                  alignment: AlignmentDirectional.centerStart,
-                  child: Padding(
-                    padding: const EdgeInsetsDirectional.only(end: 8),
-                    child: Icon(Icons.check, size: 18, color: fg),
-                  ),
+                AnimatedSize(
+                  duration: widget.animationDuration,
+                  curve: Curves.easeOutBack,
+                  child: isSelected
+                      ? Padding(
+                          padding: const EdgeInsetsDirectional.only(end: 6),
+                          child: Icon(Icons.check, size: 18, color: fg),
+                        )
+                      : const SizedBox.shrink(),
                 ),
               if (segment.icon != null &&
                   !(isSelected && widget.showCheckmark)) ...[
@@ -250,13 +236,13 @@ class _MESegmentedButtonState<T> extends State<MESegmentedButton<T>> {
                   data: IconThemeData(size: 18, color: fg),
                   child: segment.icon!,
                 ),
-                const SizedBox(width: 8),
+                const SizedBox(width: 6),
               ],
               if (widget.expanded)
                 Flexible(
                   child: AnimatedDefaultTextStyle(
-                    duration: _duration(context),
-                    curve: _curve(context),
+                    duration: widget.animationDuration,
+                    curve: widget.animationCurve,
                     style: textTheme.labelLarge!.copyWith(
                       color: fg,
                       fontWeight:
@@ -270,8 +256,8 @@ class _MESegmentedButtonState<T> extends State<MESegmentedButton<T>> {
                 )
               else
                 AnimatedDefaultTextStyle(
-                  duration: _duration(context),
-                  curve: _curve(context),
+                  duration: widget.animationDuration,
+                  curve: widget.animationCurve,
                   style: textTheme.labelLarge!.copyWith(
                     color: fg,
                     fontWeight: isSelected ? FontWeight.w700 : FontWeight.w500,
@@ -301,67 +287,56 @@ class _MESegmentedButtonState<T> extends State<MESegmentedButton<T>> {
     return GestureDetector(
       behavior: HitTestBehavior.opaque,
       onTap: enabled ? () => _handleTap(segment.value) : null,
-      child: MEMotionBuilder(
-        value: isSelected ? 1.0 : 0.0,
-        spec: METheme.of(context).motion.fastEffects,
-        builder: (context, t, child) {
-          return SizedBox(
-            height: widget.height,
-            width: widget.expanded ? double.infinity : null,
-            child: DecoratedBox(
-              decoration: ShapeDecoration(
-                color: Color.lerp(
-                  Colors.transparent,
-                  colors.secondaryContainer,
-                  t.clamp(0.0, 1.0),
-                ),
-                shape: const StadiumBorder(),
+      child: AnimatedContainer(
+        duration: widget.animationDuration,
+        curve: widget.animationCurve,
+        height: widget.height,
+        width: widget.expanded ? double.infinity : null,
+        decoration: ShapeDecoration(
+          color: isSelected ? colors.secondaryContainer : Colors.transparent,
+          shape: const StadiumBorder(),
+        ),
+        padding: const EdgeInsets.symmetric(horizontal: 12),
+        alignment: Alignment.center,
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          mainAxisSize: widget.expanded ? MainAxisSize.max : MainAxisSize.min,
+          children: [
+            if (widget.showCheckmark)
+              AnimatedSize(
+                duration: widget.animationDuration,
+                curve: Curves.easeOutBack,
+                child: isSelected
+                    ? Padding(
+                        padding: const EdgeInsetsDirectional.only(end: 6),
+                        child: Icon(Icons.check, size: 18, color: fg),
+                      )
+                    : const SizedBox.shrink(),
               ),
-              child: child,
-            ),
-          );
-        },
-        child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 12),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            mainAxisSize: widget.expanded ? MainAxisSize.max : MainAxisSize.min,
-            children: [
-              if (widget.showCheckmark)
-                MEMotionReveal(
-                  visible: isSelected,
-                  spec: METheme.of(context).motion.defaultSpatial,
-                  alignment: AlignmentDirectional.centerStart,
-                  child: Padding(
-                    padding: const EdgeInsetsDirectional.only(end: 8),
-                    child: Icon(Icons.check, size: 18, color: fg),
-                  ),
-                ),
-              if (segment.icon != null &&
-                  !(isSelected && widget.showCheckmark)) ...[
-                IconTheme.merge(
-                  data: IconThemeData(size: 18, color: fg),
-                  child: segment.icon!,
-                ),
-                const SizedBox(width: 8),
-              ],
-              if (widget.expanded)
-                Flexible(
-                  child: DefaultTextStyle.merge(
-                    style: textTheme.labelLarge!.copyWith(color: fg),
-                    textAlign: TextAlign.center,
-                    overflow: TextOverflow.ellipsis,
-                    maxLines: 1,
-                    child: segment.label,
-                  ),
-                )
-              else
-                DefaultTextStyle.merge(
+            if (segment.icon != null &&
+                !(isSelected && widget.showCheckmark)) ...[
+              IconTheme.merge(
+                data: IconThemeData(size: 18, color: fg),
+                child: segment.icon!,
+              ),
+              const SizedBox(width: 6),
+            ],
+            if (widget.expanded)
+              Flexible(
+                child: DefaultTextStyle.merge(
                   style: textTheme.labelLarge!.copyWith(color: fg),
+                  textAlign: TextAlign.center,
+                  overflow: TextOverflow.ellipsis,
+                  maxLines: 1,
                   child: segment.label,
                 ),
-            ],
-          ),
+              )
+            else
+              DefaultTextStyle.merge(
+                style: textTheme.labelLarge!.copyWith(color: fg),
+                child: segment.label,
+              ),
+          ],
         ),
       ),
     );

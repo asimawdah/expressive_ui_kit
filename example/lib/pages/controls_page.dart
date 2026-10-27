@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:material3_expressive/material3_expressive.dart';
+import 'package:expressive_ui_kit/expressive_ui_kit.dart';
 
 class ControlsPage extends StatefulWidget {
   const ControlsPage({super.key});
@@ -54,7 +54,7 @@ class _ControlsPageState extends State<ControlsPage> {
           children: <Widget>[
             MECheckbox(
               value: _checkbox,
-              onChanged: (v) => setState(() => _checkbox = v ?? false),
+              onChanged: (v) => setState(() => _checkbox = v),
             ),
             const SizedBox(width: 16),
             Text(_checkbox ? 'Checked' : 'Unchecked'),

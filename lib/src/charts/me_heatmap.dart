@@ -48,18 +48,16 @@ class MEHeatmap extends StatefulWidget {
 
 class _MEHeatmapState extends State<MEHeatmap>
     with SingleTickerProviderStateMixin {
-  late final AnimationController _enter =
-      AnimationController.unbounded(vsync: this, value: 0);
-  bool _entered = false;
+  late final AnimationController _enter;
   int? _selected;
 
   @override
-  void didChangeDependencies() {
-    super.didChangeDependencies();
-    if (!_entered) {
-      _entered = true;
-      springTo(_enter, 1, METheme.of(context).motion.slowSpatial);
-    }
+  void initState() {
+    super.initState();
+    _enter = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 900),
+    )..forward();
   }
 
   @override
@@ -102,20 +100,21 @@ class _MEHeatmapState extends State<MEHeatmap>
           ],
         ),
         // Selected cell details.
-        MEMotionReveal(
-          visible: selectedTooltip != null,
-          spec: motion.defaultEffects,
-          axis: Axis.vertical,
+        AnimatedSize(
+          duration: const Duration(milliseconds: 200),
+          curve: Curves.easeOut,
           alignment: Alignment.topLeft,
-          child: Padding(
-            padding: const EdgeInsets.only(top: 12),
-            child: Text(
-              selectedTooltip ?? '',
-              style: Theme.of(context).textTheme.bodySmall!.copyWith(
-                    color: scheme.onSurfaceVariant,
+          child: selectedTooltip == null
+              ? const SizedBox(width: double.infinity)
+              : Padding(
+                  padding: const EdgeInsets.only(top: 12),
+                  child: Text(
+                    selectedTooltip,
+                    style: Theme.of(context).textTheme.bodySmall!.copyWith(
+                          color: scheme.onSurfaceVariant,
+                        ),
                   ),
-            ),
-          ),
+                ),
         ),
       ],
     );
@@ -142,7 +141,7 @@ class _MEHeatmapState extends State<MEHeatmap>
     return AnimatedBuilder(
       animation: _enter,
       builder: (context, child) {
-        final t = curve.transform(_enter.value.clamp(0.0, 1.0));
+        final t = curve.transform(_enter.value);
         return Transform.scale(scale: t.clamp(0.0, 1.1), child: child);
       },
       child: GestureDetector(
@@ -152,28 +151,22 @@ class _MEHeatmapState extends State<MEHeatmap>
                 setState(() => _selected = selected ? null : index);
                 widget.onCellPressed?.call(index);
               },
-        child: MEMotionBuilder(
-          value: selected ? 1.0 : 0.0,
-          spec: motion.fastSpatial,
-          builder: (context, t, _) {
-            return Container(
-              width: widget.cellSize,
-              height: widget.cellSize,
-              decoration: BoxDecoration(
-                color: intensity == 0
-                    ? scheme.surfaceContainerHigh
-                    : Color.lerp(scheme.primaryContainer, scheme.primary,
-                        intensity * 0.85),
-                borderRadius: BorderRadius.circular(
-                  widget.cellSize * 0.25 +
-                      (widget.cellSize / 2 - widget.cellSize * 0.25) * t,
-                ),
-                border: selected
-                    ? Border.all(color: scheme.onSurface, width: 2)
-                    : null,
-              ),
-            );
-          },
+        child: AnimatedContainer(
+          duration: const Duration(milliseconds: 200),
+          curve: Curves.easeOut,
+          width: widget.cellSize,
+          height: widget.cellSize,
+          decoration: BoxDecoration(
+            color: intensity == 0
+                ? scheme.surfaceContainerHigh
+                : Color.lerp(
+                    scheme.primaryContainer, scheme.primary, intensity * 0.85),
+            // Selected cells morph rounder — the M3E selection signal.
+            borderRadius: BorderRadius.circular(
+                selected ? widget.cellSize / 2 : widget.cellSize * 0.25),
+            border:
+                selected ? Border.all(color: scheme.onSurface, width: 2) : null,
+          ),
         ),
       ),
     );

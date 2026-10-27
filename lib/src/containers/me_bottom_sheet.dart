@@ -3,13 +3,11 @@ import 'package:flutter/services.dart';
 
 import '../theme/me_shapes.dart';
 import '../theme/me_system_ui.dart';
-import '../theme/me_theme.dart';
 
 /// Shows a Material 3 Expressive modal bottom sheet.
 ///
-/// Replaces [showModalBottomSheet]. The sheet slides up with a spatial
-/// spring (subtle overshoot), uses the extra-large top corner radius and a
-/// prominent drag handle per the expressive spec.
+/// Replaces [showModalBottomSheet]. Uses the extra-large top corner radius
+/// and a prominent drag handle per the expressive spec.
 Future<T?> showMEBottomSheet<T>({
   required BuildContext context,
   required WidgetBuilder builder,
@@ -18,9 +16,7 @@ Future<T?> showMEBottomSheet<T>({
   bool showDragHandle = true,
   bool useRootNavigator = true,
 }) {
-  final motion = METheme.of(context).motion;
-  final scheme = Theme.of(context).colorScheme;
-  final sheetColor = scheme.surfaceContainerLow;
+  final reduceMotion = MediaQuery.disableAnimationsOf(context);
   const radius = BorderRadius.vertical(
     top: Radius.circular(MECorners.extraLargeIncreased),
   );
@@ -34,15 +30,19 @@ Future<T?> showMEBottomSheet<T>({
     backgroundColor: Colors.transparent,
     isScrollControlled: true,
     sheetAnimationStyle: AnimationStyle(
-      duration: motion.defaultSpatial.approximateDuration,
-      curve: motion.defaultSpatial.curve,
-      reverseDuration: motion.fastSpatial.approximateDuration,
-      reverseCurve: motion.fastSpatial.curve,
+      duration:
+          reduceMotion ? Duration.zero : const Duration(milliseconds: 300),
+      curve: Curves.easeOutCubic,
+      reverseDuration:
+          reduceMotion ? Duration.zero : const Duration(milliseconds: 200),
+      reverseCurve: Curves.easeInCubic,
     ),
     // ClipRRect + rectangular Material avoids an intermediate DecoratedBox
     // between Material and ListTiles (which triggers ink-splash asserts).
     builder: (context) {
       final media = MediaQuery.of(context);
+      final scheme = Theme.of(context).colorScheme;
+      final sheetColor = scheme.surfaceContainerLow;
       // Cap height so keyboard / short screens can't overflow the Column.
       final maxHeight = media.size.height - media.viewInsets.bottom;
 
@@ -74,8 +74,12 @@ Future<T?> showMEBottomSheet<T>({
                           ),
                         ),
                       ),
-                    Flexible(child: builder(context)),
-                    SizedBox(height: media.padding.bottom),
+                    Flexible(
+                      child: SingleChildScrollView(
+                        padding: EdgeInsets.only(bottom: media.padding.bottom),
+                        child: builder(context),
+                      ),
+                    ),
                   ],
                 ),
               ),

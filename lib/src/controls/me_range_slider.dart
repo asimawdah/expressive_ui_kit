@@ -1,5 +1,3 @@
-import 'dart:math' as math;
-
 import 'package:flutter/material.dart';
 
 import '../theme/me_motion.dart';
@@ -22,22 +20,7 @@ class MERangeSlider extends StatefulWidget {
     this.color,
     this.trackColor,
     this.semanticsLabel,
-    this.wavy = false,
   }) : assert(max > min);
-
-  const MERangeSlider.wavy({
-    super.key,
-    required this.values,
-    required this.onChanged,
-    this.onChangeEnd,
-    this.min = 0.0,
-    this.max = 1.0,
-    this.trackHeight = 16,
-    this.color,
-    this.trackColor,
-    this.semanticsLabel,
-  })  : wavy = true,
-        assert(max > min);
 
   final RangeValues values;
   final ValueChanged<RangeValues>? onChanged;
@@ -48,7 +31,6 @@ class MERangeSlider extends StatefulWidget {
   final Color? color;
   final Color? trackColor;
   final String? semanticsLabel;
-  final bool wavy;
 
   @override
   State<MERangeSlider> createState() => _MERangeSliderState();
@@ -168,7 +150,6 @@ class _MERangeSliderState extends State<MERangeSlider>
                     activeColor: activeColor,
                     inactiveColor: inactiveColor,
                     textDirection: Directionality.of(context),
-                    wavy: widget.wavy,
                   ),
                 ),
               ),
@@ -190,7 +171,6 @@ class _MERangeSliderPainter extends CustomPainter {
     required this.activeColor,
     required this.inactiveColor,
     required this.textDirection,
-    required this.wavy,
   });
 
   final double startFraction;
@@ -201,7 +181,6 @@ class _MERangeSliderPainter extends CustomPainter {
   final Color activeColor;
   final Color inactiveColor;
   final TextDirection textDirection;
-  final bool wavy;
 
   static const double _handleGap = 6;
   static const double _handleWidthRest = 4;
@@ -251,47 +230,19 @@ class _MERangeSliderPainter extends CustomPainter {
     final midStart = startX + _handleGap + wStart / 2;
     final midEnd = endX - _handleGap - wEnd / 2;
     if (midEnd > midStart) {
-      final rect = Rect.fromLTRB(
-        midStart,
-        cy - trackHeight / 2,
-        midEnd,
-        cy + trackHeight / 2,
+      canvas.drawRRect(
+        RRect.fromLTRBAndCorners(
+          midStart,
+          cy - trackHeight / 2,
+          midEnd,
+          cy + trackHeight / 2,
+          topLeft: innerRadius,
+          bottomLeft: innerRadius,
+          topRight: innerRadius,
+          bottomRight: innerRadius,
+        ),
+        Paint()..color = activeColor,
       );
-      if (wavy) {
-        final path = Path();
-        final midY = cy;
-        const wavelength = 18.0;
-        final amplitude = trackHeight * 0.28;
-        path.moveTo(rect.left, midY);
-        for (double x = rect.left; x <= rect.right; x += 1) {
-          final y = midY +
-              math.sin((x - rect.left) / wavelength * 2 * math.pi) * amplitude;
-          path.lineTo(x, y);
-        }
-        canvas.drawPath(
-          path,
-          Paint()
-            ..color = activeColor
-            ..style = PaintingStyle.stroke
-            ..strokeWidth = trackHeight * 0.7
-            ..strokeCap = StrokeCap.round
-            ..strokeJoin = StrokeJoin.round,
-        );
-      } else {
-        canvas.drawRRect(
-          RRect.fromLTRBAndCorners(
-            midStart,
-            cy - trackHeight / 2,
-            midEnd,
-            cy + trackHeight / 2,
-            topLeft: innerRadius,
-            bottomLeft: innerRadius,
-            topRight: innerRadius,
-            bottomRight: innerRadius,
-          ),
-          Paint()..color = activeColor,
-        );
-      }
     }
 
     // Trailing inactive segment.

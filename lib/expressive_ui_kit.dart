@@ -1,4 +1,4 @@
-/// Material 3 Expressive widgets for Flutter.
+/// Expressive UI kit widgets for Flutter.
 ///
 /// Drop-in expressive replacements for standard Material widgets:
 ///
@@ -7,7 +7,6 @@
 /// | ElevatedButton / FilledButton  | [MEButton]                   |
 /// | IconButton                     | [MEIconButton]               |
 /// | SegmentedButton                | [MEButtonGroup]              |
-/// | (new)                          | [METoggleButton]             |
 /// | FloatingActionButton           | [MEFab] / [MEFabMenu]        |
 /// | LinearProgressIndicator        | [MELinearProgressIndicator]  |
 /// | CircularProgressIndicator      | [MECircularProgressIndicator]|
@@ -16,7 +15,7 @@
 /// | Switch                         | [MESwitch]                   |
 /// | Checkbox                       | [MECheckbox]                 |
 /// | Radio                          | [MERadio]                    |
-/// | AppBar / SliverAppBar          | [MEAppBar] / [METopAppBar]   |
+/// | AppBar / SliverAppBar          | [MEAppBar]                   |
 /// | BottomAppBar                   | [METoolbar]                  |
 /// | NavigationBar                  | [MENavigationBar]            |
 /// | NavigationRail                 | [MENavigationRail]           |
@@ -29,10 +28,10 @@
 /// | showModalBottomSheet           | [showMEBottomSheet]          |
 /// | SnackBar                       | [showMESnackBar]             |
 /// | TextField / TextFormField      | [METextField]                |
-/// | SearchBar                      | [MESearchBar] / [MESearchAnchor] |
-/// | ListTile                       | [MEListTile] / [MEListGroup] / [MECardList] |
+/// | SearchBar                      | [MESearchBar]                |
+/// | ListTile                       | [MEListTile] / [MEListGroup] |
 /// | ExpansionTile                  | [MEExpansionTile]            |
-/// | PopupMenuButton / MenuAnchor   | [MEMenu] / [MEMenuAnchor]    |
+/// | PopupMenuButton / MenuAnchor   | [MEMenuAnchor]               |
 /// | DropdownButton / DropdownMenu  | [MEDropdown]                 |
 /// | Badge                          | [MEBadge]                    |
 /// | Tooltip                        | [METooltip]                  |
@@ -44,9 +43,7 @@
 /// | SliverPersistentHeader         | [MESliverPinnedHeader]       |
 /// | Scaffold + CustomScrollView    | [MESliverScaffold]           |
 /// | (new)                          | [MESliverSectionHeader]      |
-/// | (new)                          | [METopAppBar]                |
-/// | (new)                          | [METoggleButtonGroup]        |
-/// | DropdownMenu                   | [MEDropdown] / [MEDropdownMenu] |
+/// | (new)                          | [MESplitButton]              |
 /// | RangeSlider                    | [MERangeSlider]              |
 /// | BottomAppBar                   | [MEBottomAppBar]             |
 /// | MaterialBanner                 | [MEBanner]                   |
@@ -71,15 +68,7 @@
 /// | (new)                          | [MESkeleton]/[MESkeletonizer]|
 /// | (new)                          | [MENumberTicker]             |
 /// | (new)                          | [METimeline]                 |
-/// | (new)                          | [MEShapeContainer]           |
-/// | (new)                          | [MESelection]                |
-/// | (new)                          | [MEExpandableList]           |
-/// | (new)                          | [MEDismissibleColumn] / [MEDismissibleList] |
-/// | (new)                          | [MEDialTimePicker]           |
-/// | showDateRangePicker            | [showMEDateRangePicker]      |
-/// | SearchAnchor                   | [MESearchAnchor] / [MESearchAppBar] |
-/// | (new)                          | [showMEFullScreenDialog]     |
-/// | (new)                          | [showMESelectionDialog]      |
+/// | (new)                          | [MEMorphingShape]            |
 /// | CalendarDatePicker             | [MECalendar]                 |
 /// | (new)                          | [METagInput]                 |
 /// | (new)                          | [METreeView]                 |
@@ -121,8 +110,6 @@
 /// | (new)                          | [MEKnob]                     |
 /// | (new)                          | [MEEqualizer]                |
 /// | (new)                          | [MELiquidProgress]           |
-/// | (new)                          | [MECustomProgressIndicator]  |
-/// | (new)                          | [MEWavedProgressIndicator]   |
 /// | (new)                          | [METypewriter]               |
 /// | (new)                          | [MEHoldButton]               |
 /// | (new)                          | [MEStopwatch]                |
@@ -182,8 +169,6 @@ export 'src/buttons/me_orbit_menu.dart';
 export 'src/buttons/me_progress_button.dart';
 export 'src/buttons/me_segmented_button.dart';
 export 'src/buttons/me_split_button.dart';
-export 'src/buttons/me_toggle_button.dart';
-export 'src/buttons/me_toggle_button_group.dart';
 export 'src/charts/me_activity_rings.dart';
 export 'src/charts/me_bubble_chart.dart';
 export 'src/charts/me_candlestick_chart.dart';
@@ -243,7 +228,6 @@ export 'src/containers/me_morphing_shape.dart';
 export 'src/containers/me_polaroid.dart';
 export 'src/containers/me_receipt.dart';
 export 'src/containers/me_scratch_card.dart';
-export 'src/containers/me_shape_container.dart';
 export 'src/containers/me_side_sheet.dart';
 export 'src/containers/me_splash_screen.dart';
 export 'src/containers/me_stamp_card.dart';
@@ -277,7 +261,6 @@ export 'src/inputs/me_color_picker.dart';
 export 'src/inputs/me_otp_input.dart';
 export 'src/inputs/me_password_field.dart';
 export 'src/inputs/me_pin_pad.dart';
-export 'src/inputs/me_search_anchor.dart';
 export 'src/inputs/me_search_bar.dart';
 export 'src/inputs/me_tag_input.dart';
 export 'src/inputs/me_text_field.dart';
@@ -285,18 +268,14 @@ export 'src/containers/expressive_icon_container.dart';
 export 'src/lists/action_item.dart';
 export 'src/lists/item_position.dart';
 export 'src/lists/me_accordion.dart';
-export 'src/lists/me_card_list.dart';
 export 'src/lists/me_data_table.dart';
 export 'src/lists/me_paginated_data_table.dart';
 export 'src/lists/me_reorderable_list.dart';
-export 'src/lists/me_selection.dart';
 export 'src/markdown/me_markdown.dart';
 export 'src/markdown/me_markdown_editor.dart';
 export 'src/markdown/me_syntax_highlight.dart';
 export 'src/lists/me_dismissible.dart';
-export 'src/lists/me_dismissible_list.dart';
 export 'src/lists/me_dropdown.dart';
-export 'src/lists/me_expandable_list.dart';
 export 'src/lists/me_expansion_tile.dart';
 export 'src/lists/me_list_tile.dart';
 export 'src/lists/me_menu.dart';
@@ -315,23 +294,18 @@ export 'src/navigation/me_toolbar.dart';
 export 'src/overlays/me_command_palette.dart';
 export 'src/pickers/me_calendar.dart';
 export 'src/pickers/me_color_wheel.dart';
-export 'src/pickers/me_dial_time_picker.dart';
 export 'src/pickers/me_pickers.dart';
 export 'src/pickers/me_wheel_picker.dart';
 export 'src/progress/me_circular_progress.dart';
-export 'src/progress/me_custom_progress.dart';
 export 'src/progress/me_hourglass.dart';
 export 'src/progress/me_linear_progress.dart';
 export 'src/progress/me_liquid_progress.dart';
 export 'src/progress/me_loading_indicator.dart';
 export 'src/progress/me_refresh_indicator.dart';
 export 'src/progress/me_skeleton.dart';
-export 'src/progress/me_waved_progress.dart';
 export 'src/slivers/me_sliver_scaffold.dart';
 export 'src/slivers/me_slivers.dart';
 export 'src/theme/me_motion.dart';
 export 'src/theme/me_shapes.dart';
 export 'src/theme/me_system_ui.dart';
 export 'src/theme/me_theme.dart';
-export 'package:material_new_shapes/material_new_shapes.dart'
-    show MaterialShapes, Morph, RoundedPolygon;

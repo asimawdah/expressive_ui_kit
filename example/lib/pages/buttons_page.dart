@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:material3_expressive/material3_expressive.dart';
+import 'package:expressive_ui_kit/expressive_ui_kit.dart';
 
 class ButtonsPage extends StatefulWidget {
   const ButtonsPage({super.key});
@@ -124,19 +124,18 @@ class _ButtonsPageState extends State<ButtonsPage> {
         const _SectionLabel('Split button'),
         MESplitButton(
           onPressed: () {},
-          menu: const [
-            MEMenuEntry(
-              label: 'Save as draft',
-              value: 'draft',
-              leading: Icon(Icons.drafts_outlined),
+          menuItems: <MenuItemButton>[
+            MenuItemButton(
+              leadingIcon: const Icon(Icons.drafts_outlined),
+              onPressed: () {},
+              child: const Text('Save as draft'),
             ),
-            MEMenuEntry(
-              label: 'Save a copy',
-              value: 'copy',
-              leading: Icon(Icons.copy_outlined),
+            MenuItemButton(
+              leadingIcon: const Icon(Icons.copy_outlined),
+              onPressed: () {},
+              child: const Text('Save a copy'),
             ),
           ],
-          onSelected: (_) {},
           child: const Text('Save'),
         ),
         const SizedBox(height: 32),

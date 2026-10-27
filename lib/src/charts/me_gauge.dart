@@ -2,7 +2,6 @@ import 'dart:math' as math;
 
 import 'package:flutter/material.dart';
 
-import '../theme/me_motion.dart';
 import '../theme/me_theme.dart';
 
 /// A Material 3 Expressive radial gauge.
@@ -60,10 +59,10 @@ class MEGauge extends StatelessWidget {
     return Semantics(
       label: semanticLabel ?? 'Gauge',
       value: '${(value * 100).round()}%',
-      child: MEMotionBuilder(
-        value: value.clamp(0.0, 1.0),
-        from: 0,
-        spec: motion.slowSpatial,
+      child: TweenAnimationBuilder<double>(
+        tween: Tween(begin: 0, end: value.clamp(0.0, 1.0)),
+        duration: motion.slowSpatial.approximateDuration,
+        curve: motion.slowSpatial.curve,
         builder: (context, t, child) => SizedBox(
           width: size,
           height: size,

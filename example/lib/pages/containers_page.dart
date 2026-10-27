@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:material3_expressive/material3_expressive.dart';
+import 'package:expressive_ui_kit/expressive_ui_kit.dart';
 
 class ContainersPage extends StatefulWidget {
   const ContainersPage({super.key});

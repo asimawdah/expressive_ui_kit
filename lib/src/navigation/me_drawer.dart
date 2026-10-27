@@ -46,7 +46,7 @@ class MEDrawer extends StatelessWidget {
                 itemBuilder: (context, i) {
                   final selected = i == selectedIndex;
                   final d = destinations[i];
-                  final tile = Material(
+                  return Material(
                     color: selected
                         ? scheme.secondaryContainer
                         : Colors.transparent,
@@ -91,35 +91,6 @@ class MEDrawer extends StatelessWidget {
                       ),
                     ),
                   );
-                  if (d.sectionLabel == null && !d.dividerBefore) return tile;
-                  return Column(
-                    crossAxisAlignment: CrossAxisAlignment.stretch,
-                    children: [
-                      if (d.dividerBefore)
-                        Padding(
-                          padding: const EdgeInsets.symmetric(vertical: 8),
-                          child: Divider(
-                            height: 1,
-                            color: scheme.outlineVariant,
-                          ),
-                        ),
-                      if (d.sectionLabel != null)
-                        Padding(
-                          padding: const EdgeInsets.fromLTRB(20, 8, 20, 8),
-                          child: Text(
-                            d.sectionLabel!,
-                            style: Theme.of(context)
-                                .textTheme
-                                .labelSmall!
-                                .copyWith(
-                                  color: scheme.onSurfaceVariant,
-                                  fontWeight: FontWeight.w700,
-                                ),
-                          ),
-                        ),
-                      tile,
-                    ],
-                  );
                 },
               ),
             ),
@@ -137,18 +108,10 @@ class MEDrawerDestination {
     this.selectedIcon,
     required this.label,
     this.badge,
-    this.sectionLabel,
-    this.dividerBefore = false,
   });
 
   final IconData icon;
   final IconData? selectedIcon;
   final String label;
   final Widget? badge;
-
-  /// Optional section caption drawn above this destination.
-  final String? sectionLabel;
-
-  /// Draws a divider above this destination.
-  final bool dividerBefore;
 }

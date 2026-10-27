@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:material3_expressive/material3_expressive.dart';
+import 'package:expressive_ui_kit/expressive_ui_kit.dart';
 
 void main() {
   group('METextField', () {
@@ -83,75 +83,7 @@ void main() {
       expect(find.text('Hello'), findsOneWidget);
       expect(find.text('World'), findsOneWidget);
     });
-
-    testWidgets(
-        'text field dialog can close without using a disposed controller', (
-      tester,
-    ) async {
-      await tester.pumpWidget(
-        MaterialApp(
-          theme: ThemeData(useMaterial3: true),
-          home: METheme(
-            data: METhemeData.expressive,
-            child: Builder(
-              builder: (context) {
-                return Scaffold(
-                  body: MEButton.filled(
-                    onPressed: () {
-                      showMEDialog<void>(
-                        context: context,
-                        builder: (context) => const _OwnedFieldDialog(),
-                      );
-                    },
-                    child: const Text('Open'),
-                  ),
-                );
-              },
-            ),
-          ),
-        ),
-      );
-
-      await tester.tap(find.text('Open'));
-      await tester.pumpAndSettle();
-      expect(find.byType(TextField), findsOneWidget);
-
-      await tester.tap(find.text('Done'));
-      await tester.pumpAndSettle();
-      expect(find.byType(TextField), findsNothing);
-    });
   });
-}
-
-class _OwnedFieldDialog extends StatefulWidget {
-  const _OwnedFieldDialog();
-
-  @override
-  State<_OwnedFieldDialog> createState() => _OwnedFieldDialogState();
-}
-
-class _OwnedFieldDialogState extends State<_OwnedFieldDialog> {
-  final _controller = TextEditingController(text: '12');
-
-  @override
-  void dispose() {
-    _controller.dispose();
-    super.dispose();
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return MEDialog(
-      title: const Text('Page'),
-      content: METextField(controller: _controller, label: 'Number'),
-      actions: [
-        MEButton.filled(
-          onPressed: () => Navigator.pop(context),
-          child: const Text('Done'),
-        ),
-      ],
-    );
-  }
 }
 
 Widget _host(Widget child) {

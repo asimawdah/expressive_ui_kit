@@ -42,24 +42,16 @@ Future<void> showMECommandPalette(
   BuildContext context, {
   required List<MECommand> commands,
   String hintText = 'Type a command...',
-  ThemeData? theme,
 }) {
   final motion = METheme.of(context).motion;
-  final overlayTheme = theme ?? Theme.of(context);
-  final overlayMeTheme = METheme.of(context);
   return showGeneralDialog<void>(
     context: context,
     barrierDismissible: true,
     barrierLabel: 'Dismiss command palette',
     barrierColor: Colors.black38,
     transitionDuration: motion.defaultSpatial.approximateDuration,
-    pageBuilder: (context, _, __) => Theme(
-      data: overlayTheme,
-      child: METheme(
-        data: overlayMeTheme,
-        child: _MECommandPalette(commands: commands, hintText: hintText),
-      ),
-    ),
+    pageBuilder: (context, _, __) =>
+        _MECommandPalette(commands: commands, hintText: hintText),
     transitionBuilder: (context, animation, _, child) {
       final t = CurvedAnimation(
         parent: animation,
@@ -227,27 +219,18 @@ class _CommandRow extends StatelessWidget {
 
     return MouseRegion(
       onEnter: (_) => onHover(),
-      child: MEMotionBuilder(
-        value: selected ? 1.0 : 0.0,
-        spec: motion.fastSpatial,
-        builder: (context, t, child) {
-          return Container(
-            margin: const EdgeInsets.symmetric(vertical: 2),
-            decoration: ShapeDecoration(
-              color: Color.lerp(
-                Colors.transparent,
-                scheme.secondaryContainer,
-                t.clamp(0.0, 1.0),
-              ),
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(
-                  MECorners.medium + (MECorners.large - MECorners.medium) * t,
-                ),
-              ),
+      child: AnimatedContainer(
+        duration: motion.fastSpatial.approximateDuration,
+        curve: motion.fastSpatial.curve,
+        margin: const EdgeInsets.symmetric(vertical: 2),
+        decoration: ShapeDecoration(
+          color: selected ? scheme.secondaryContainer : Colors.transparent,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(
+              selected ? MECorners.large : MECorners.medium,
             ),
-            child: child,
-          );
-        },
+          ),
+        ),
         child: InkWell(
           onTap: onPressed,
           borderRadius: BorderRadius.circular(MECorners.large),

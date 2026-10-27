@@ -1,12 +1,12 @@
 # Contributing
 
-Thank you for contributing to `material3_expressive`.
+Thank you for contributing to `expressive_ui_kit`.
 
 ## Development setup
 
 ```sh
-git clone https://github.com/asimawdah/material_expressive.git
-cd material_expressive
+git clone https://github.com/asimawdah/expressive_ui_kit.git
+cd expressive_ui_kit
 flutter pub get
 cd example && flutter pub get
 ```

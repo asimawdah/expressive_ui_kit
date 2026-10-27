@@ -25,15 +25,12 @@ class MEFab extends StatelessWidget {
   }) : label = null;
 
   /// An extended FAB with an icon and a text label.
-  ///
-  /// Defaults to [MEFabSize.small] (56dp), matching the M3 Expressive
-  /// extended FAB spec.
   const MEFab.extended({
     super.key,
     required this.icon,
     required Widget this.label,
     this.onPressed,
-    this.size = MEFabSize.small,
+    this.size = MEFabSize.medium,
     this.variant = MEFabVariant.primary,
     this.tooltip,
   });
@@ -87,13 +84,7 @@ class MEFab extends StatelessWidget {
           )
         : Container(
             height: container,
-            padding: EdgeInsets.symmetric(
-              horizontal: switch (size) {
-                MEFabSize.small => 16.0,
-                MEFabSize.medium => 26.0,
-                MEFabSize.large => 28.0,
-              },
-            ),
+            padding: EdgeInsets.symmetric(horizontal: container * 0.32),
             child: Row(
               mainAxisSize: MainAxisSize.min,
               children: [
@@ -101,19 +92,11 @@ class MEFab extends StatelessWidget {
                   data: IconThemeData(size: iconSize, color: fg),
                   child: icon,
                 ),
-                SizedBox(
-                  width: switch (size) {
-                    MEFabSize.small => 8.0,
-                    MEFabSize.medium => 12.0,
-                    MEFabSize.large => 16.0,
-                  },
-                ),
+                SizedBox(width: iconSize * 0.4),
                 DefaultTextStyle.merge(
                   style: (size == MEFabSize.small
                           ? textTheme.titleMedium
-                          : size == MEFabSize.medium
-                              ? textTheme.titleLarge
-                              : textTheme.headlineSmall)!
+                          : textTheme.titleLarge)!
                       .copyWith(color: fg),
                   child: label!,
                 ),
@@ -133,6 +116,8 @@ class MEFab extends StatelessWidget {
       overlayColor: fg.withValues(alpha: 0.1),
       semanticLabel: tooltip,
       haptics: true,
+      // FABs squash a touch deeper for a more playful feel.
+      pressedScale: 0.94,
       child: content,
     );
 

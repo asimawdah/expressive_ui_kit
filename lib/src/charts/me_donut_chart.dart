@@ -2,7 +2,6 @@ import 'dart:math' as math;
 
 import 'package:flutter/material.dart';
 
-import '../theme/me_motion.dart';
 import '../theme/me_theme.dart';
 
 /// A segment of an [MEDonutChart].
@@ -125,16 +124,20 @@ class _MEDonutChartState extends State<MEDonutChart> {
 
     final chart = GestureDetector(
       onTapDown: _handleTapDown,
-      child: MEMotionBuilder(
+      child: TweenAnimationBuilder<double>(
         key: ValueKey(
           Object.hashAll(widget.segments.map((s) => s.value)),
         ),
-        value: 1,
-        from: 0,
-        spec: motion.slowSpatial,
-        builder: (context, sweepT, _) => MEMotionBuilder(
-          value: _selected == null ? 0 : 1,
-          spec: motion.defaultSpatial,
+        tween: Tween(begin: 0, end: 1),
+        duration: motion.slowSpatial.approximateDuration,
+        curve: motion.slowSpatial.curve,
+        builder: (context, sweepT, _) => TweenAnimationBuilder<double>(
+          tween: Tween(
+            begin: 0,
+            end: _selected == null ? 0 : 1,
+          ),
+          duration: motion.defaultSpatial.approximateDuration,
+          curve: motion.defaultSpatial.curve,
           builder: (context, selectT, _) => SizedBox(
             width: widget.size,
             height: widget.size,
@@ -183,22 +186,17 @@ class _MEDonutChartState extends State<MEDonutChart> {
                     child: Row(
                       mainAxisSize: MainAxisSize.min,
                       children: [
-                        MEMotionBuilder(
-                          value: _selected == i ? 1.0 : 0.0,
-                          spec: motion.fastSpatial,
-                          builder: (context, t, _) {
-                            final size = 10 + 4 * t;
-                            return Container(
-                              width: size,
-                              height: size,
-                              decoration: BoxDecoration(
-                                color: colors[i],
-                                borderRadius: BorderRadius.circular(
-                                  5 - t,
-                                ),
-                              ),
-                            );
-                          },
+                        AnimatedContainer(
+                          duration: motion.fastSpatial.approximateDuration,
+                          curve: motion.fastSpatial.curve,
+                          width: _selected == i ? 14 : 10,
+                          height: _selected == i ? 14 : 10,
+                          decoration: BoxDecoration(
+                            color: colors[i],
+                            borderRadius: BorderRadius.circular(
+                              _selected == i ? 4 : 5,
+                            ),
+                          ),
                         ),
                         const SizedBox(width: 8),
                         Flexible(
@@ -252,17 +250,11 @@ class _DonutCenter extends StatelessWidget {
     return Column(
       mainAxisSize: MainAxisSize.min,
       children: [
-        MEMotionBuilder(
-          key: ValueKey(value),
-          value: 1,
-          from: 0,
-          spec: METheme.of(context).motion.fastEffects,
-          builder: (context, t, child) => Opacity(
-            opacity: t.clamp(0.0, 1.0),
-            child: child,
-          ),
+        AnimatedSwitcher(
+          duration: const Duration(milliseconds: 200),
           child: Text(
             value,
+            key: ValueKey(value),
             style: METypography.emphasize(
               text.headlineSmall!.copyWith(color: scheme.onSurface),
             ),

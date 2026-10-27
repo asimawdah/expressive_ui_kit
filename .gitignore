@@ -5,8 +5,8 @@
 .idea/
 .packages
 build/
-# Lock the root package for reproducible CI; the example app keeps its own lock.
-# pubspec.lock
+# If you're building an application, you may want to check-in your pubspec.lock
+pubspec.lock
 
 # Directory created by dartdoc
 # If you don't generate documentation locally you can remove this line.
@@ -29,15 +29,8 @@ doc/api/
 .flutter-plugins
 .flutter-plugins-dependencies
 
-# Golden test failure dumps
-test/golden/failures/
-
-# Platform folders generated at the package root (the library itself is Dart-only).
-
-# Platform folders generated at the package root (the library itself is Dart-only).
-# The example app's hosts live under example/ and should be committed.
-/android/
-/ios/
-/macos/
-/windows/
-/linux/
+android/
+ios/
+macos/
+windows/
+linux/

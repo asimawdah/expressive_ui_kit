@@ -1,11 +1,9 @@
 import 'package:flutter/material.dart';
 
-import '../internal/me_neighbor_squish.dart';
 import '../internal/me_pressable.dart';
 import '../theme/me_motion.dart';
 import '../theme/me_shapes.dart';
 import '../theme/me_theme.dart';
-import 'me_button.dart';
 
 /// Layout styles for [MEButtonGroup].
 enum MEButtonGroupStyle {
@@ -47,8 +45,7 @@ class MEButtonGroup extends StatefulWidget {
     this.selectedIndices = const {},
     this.onSelectionChanged,
     this.multiSelect = false,
-    this.size = MEButtonSize.small,
-    this.direction = Axis.horizontal,
+    this.height = 48,
   });
 
   final List<MEButtonGroupItem> items;
@@ -58,30 +55,35 @@ class MEButtonGroup extends StatefulWidget {
   final Set<int> selectedIndices;
   final ValueChanged<Set<int>>? onSelectionChanged;
   final bool multiSelect;
-
-  /// Container height. Defaults to the small (40dp) M3E button size.
-  final MEButtonSize size;
-
-  /// Layout axis. Vertical groups still neighbor-squish along that axis.
-  final Axis direction;
+  final double height;
 
   @override
   State<MEButtonGroup> createState() => _MEButtonGroupState();
 }
 
-class _MEButtonGroupState extends State<MEButtonGroup> {
-  int? _pressedIndex;
-  int? _lastPressedIndex;
+class _MEButtonGroupState extends State<MEButtonGroup>
+    with TickerProviderStateMixin {
+  int _pressedIndex = -1;
+  late final AnimationController _press = AnimationController.unbounded(
+    vsync: this,
+    value: 0,
+  );
+
+  @override
+  void dispose() {
+    _press.dispose();
+    super.dispose();
+  }
 
   void _setPressed(int index, bool pressed) {
-    setState(() {
-      if (pressed) {
-        _pressedIndex = index;
-        _lastPressedIndex = index;
-      } else if (_pressedIndex == index) {
-        _pressedIndex = null;
-      }
-    });
+    setState(() => _pressedIndex = pressed ? index : -1);
+    springTo(
+      _press,
+      pressed ? 1 : 0,
+      pressed
+          ? METheme.of(context).motion.fastSpatial
+          : METheme.of(context).motion.defaultSpatial,
+    );
   }
 
   void _handleTap(int index) {
@@ -101,28 +103,19 @@ class _MEButtonGroupState extends State<MEButtonGroup> {
   @override
   Widget build(BuildContext context) {
     final connected = widget.style == MEButtonGroupStyle.connected;
-    final motion = METheme.of(context).motion;
-    return MEMotionBuilder(
-      value: _pressedIndex != null ? 1.0 : 0.0,
-      spec: motion.defaultSpatial,
-      builder: (context, t, _) {
-        final children = [
-          for (var i = 0; i < widget.items.length; i++) ...[
-            if (i > 0)
-              SizedBox(
-                width: widget.direction == Axis.horizontal
-                    ? (connected ? 2.0 : 8.0)
-                    : 0,
-                height: widget.direction == Axis.vertical
-                    ? (connected ? 2.0 : 8.0)
-                    : 0,
-              ),
-            _buildChild(context, i, t, connected),
+    return AnimatedBuilder(
+      animation: _press,
+      builder: (context, _) {
+        final t = _press.value.clamp(0.0, 1.2);
+        return Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            for (var i = 0; i < widget.items.length; i++) ...[
+              if (i > 0) SizedBox(width: connected ? 2 : 8),
+              _buildChild(context, i, t, connected),
+            ],
           ],
-        ];
-        return widget.direction == Axis.vertical
-            ? Column(mainAxisSize: MainAxisSize.min, children: children)
-            : Row(mainAxisSize: MainAxisSize.min, children: children);
+        );
       },
     );
   }
@@ -132,31 +125,27 @@ class _MEButtonGroupState extends State<MEButtonGroup> {
     final textTheme = Theme.of(context).textTheme;
     final item = widget.items[i];
     final selected = widget.selectedIndices.contains(i);
+    final isPressed = _pressedIndex == i;
+    final isNeighbor = (_pressedIndex - i).abs() == 1;
 
-    final factor = meNeighborSquishFactor(
-      index: i,
-      count: widget.items.length,
-      pressedIndex: _lastPressedIndex,
-      t: t,
-    );
-    final alignment = meNeighborSquishAlignment(
-      index: i,
-      pressedIndex: _lastPressedIndex,
-      direction: widget.direction,
-    );
+    // Signature group motion: pressed grows, direct neighbors compress.
+    final double scaleX = isPressed
+        ? 1 + 0.08 * t
+        : isNeighbor
+            ? 1 - 0.06 * t
+            : 1;
 
     final last = widget.items.length - 1;
-    final height = widget.size.height;
     final ShapeBorder shape;
     if (!connected) {
       shape = const StadiumBorder();
     } else {
+      final r = widget.height / 2;
+      const inner = MECorners.small;
       shape = RoundedRectangleBorder(
-        borderRadius: _connectedRadius(
-          index: i,
-          last: last,
-          radius: height / 2,
-          vertical: widget.direction == Axis.vertical,
+        borderRadius: BorderRadiusDirectional.horizontal(
+          start: Radius.circular(i == 0 ? r : inner),
+          end: Radius.circular(i == last ? r : inner),
         ),
       );
     }
@@ -172,10 +161,8 @@ class _MEButtonGroupState extends State<MEButtonGroup> {
             ? colors.onSurface
             : colors.onSecondaryContainer;
 
-    return MENeighborSquish(
-      factor: factor,
-      alignment: alignment,
-      direction: widget.direction,
+    return Transform.scale(
+      scaleX: scaleX,
       child: Listener(
         onPointerDown: (_) => _setPressed(i, true),
         onPointerUp: (_) => _setPressed(i, false),
@@ -183,11 +170,11 @@ class _MEButtonGroupState extends State<MEButtonGroup> {
         child: MEPressable(
           onPressed: () => _handleTap(i),
           shape: shape,
-          pressedShape: widget.size.pressedContainerShape,
+          pressedShape: connected ? const StadiumBorder() : null,
           color: bg,
           overlayColor: fg.withValues(alpha: 0.1),
           child: Container(
-            height: height,
+            height: widget.height,
             padding: const EdgeInsets.symmetric(horizontal: 20),
             child: Row(
               mainAxisSize: MainAxisSize.min,
@@ -210,23 +197,4 @@ class _MEButtonGroupState extends State<MEButtonGroup> {
       ),
     );
   }
-}
-
-BorderRadiusDirectional _connectedRadius({
-  required int index,
-  required int last,
-  required double radius,
-  required bool vertical,
-}) {
-  const inner = MECorners.small;
-  if (vertical) {
-    return BorderRadiusDirectional.vertical(
-      top: Radius.circular(index == 0 ? radius : inner),
-      bottom: Radius.circular(index == last ? radius : inner),
-    );
-  }
-  return BorderRadiusDirectional.horizontal(
-    start: Radius.circular(index == 0 ? radius : inner),
-    end: Radius.circular(index == last ? radius : inner),
-  );
 }

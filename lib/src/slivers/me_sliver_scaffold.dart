@@ -202,7 +202,7 @@ class _MESliverScaffoldState extends State<MESliverScaffold> {
         return SliverAppBar(
           key: child.key,
           pinned: true,
-          automaticallyImplyLeading: child.automaticallyImplyLeading,
+          automaticallyImplyLeading: false,
           leading: child.leading,
           title: child.title,
           actions: child.actions,
@@ -231,6 +231,7 @@ class _MESliverScaffoldState extends State<MESliverScaffold> {
     if (widget.extendedAppBar) {
       return SliverAppBar.large(
         leading: widget.leadingAppBar,
+        automaticallyImplyLeading: false,
         centerTitle: widget.centerTitle,
         backgroundColor: widget.backgroundColor,
         surfaceTintColor: Colors.transparent,
@@ -255,6 +256,7 @@ class _MESliverScaffoldState extends State<MESliverScaffold> {
 
     return SliverAppBar(
       leading: widget.leadingAppBar,
+      automaticallyImplyLeading: false,
       centerTitle: widget.centerTitle,
       title: widget.title != null
           ? Text(

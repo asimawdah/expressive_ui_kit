@@ -13,9 +13,6 @@ import '../theme/me_theme.dart';
 /// selection like every other expressive component.
 enum MEListPosition { only, first, middle, last }
 
-/// Surface treatment for a standalone [MEListTile].
-enum MEListTileVariant { filled, elevated, outlined }
-
 class MEListTile extends StatelessWidget {
   const MEListTile({
     super.key,
@@ -28,7 +25,6 @@ class MEListTile extends StatelessWidget {
     this.selected = false,
     this.enabled = true,
     this.position = MEListPosition.only,
-    this.variant = MEListTileVariant.filled,
   });
 
   final Widget? leading;
@@ -42,9 +38,6 @@ class MEListTile extends StatelessWidget {
 
   /// Where this tile sits in its group; controls corner rounding.
   final MEListPosition position;
-
-  /// Card outline / elevation when used as a standalone row.
-  final MEListTileVariant variant;
 
   BorderRadius _radiusFor(MEListPosition position) {
     const large = Radius.circular(MECorners.large);
@@ -67,19 +60,7 @@ class MEListTile extends StatelessWidget {
     final textTheme = Theme.of(context).textTheme;
     final shapes = METheme.of(context).shapes;
 
-    final shape = RoundedRectangleBorder(
-      borderRadius: _radiusFor(position),
-      side: variant == MEListTileVariant.outlined && !selected
-          ? BorderSide(color: scheme.outlineVariant)
-          : BorderSide.none,
-    );
-    final bg = selected
-        ? scheme.secondaryContainer
-        : switch (variant) {
-            MEListTileVariant.filled => scheme.surfaceContainerLow,
-            MEListTileVariant.elevated => scheme.surfaceContainerLow,
-            MEListTileVariant.outlined => scheme.surface,
-          };
+    final shape = RoundedRectangleBorder(borderRadius: _radiusFor(position));
 
     return MEPressable(
       shape: shape,
@@ -88,63 +69,59 @@ class MEListTile extends StatelessWidget {
       onPressed: enabled ? onPressed : null,
       onLongPress: enabled ? onLongPress : null,
       enabled: enabled,
-      color: bg,
-      elevation: variant == MEListTileVariant.elevated && !selected ? 1 : 0,
-      child: ConstrainedBox(
-        constraints: BoxConstraints(minHeight: subtitle == null ? 56 : 72),
-        child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-          child: Row(
-            children: [
-              if (leading != null) ...[
-                IconTheme(
-                  data: IconThemeData(
-                    color: selected
-                        ? scheme.onSecondaryContainer
-                        : scheme.onSurfaceVariant,
-                    size: 24,
-                  ),
-                  child: leading!,
+      color: selected ? scheme.secondaryContainer : scheme.surfaceContainerLow,
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+        child: Row(
+          children: [
+            if (leading != null) ...[
+              IconTheme(
+                data: IconThemeData(
+                  color: selected
+                      ? scheme.onSecondaryContainer
+                      : scheme.onSurfaceVariant,
+                  size: 24,
                 ),
-                const SizedBox(width: 16),
-              ],
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
+                child: leading!,
+              ),
+              const SizedBox(width: 16),
+            ],
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  DefaultTextStyle(
+                    style: textTheme.bodyLarge!.copyWith(
+                      color: selected
+                          ? scheme.onSecondaryContainer
+                          : scheme.onSurface,
+                    ),
+                    child: title,
+                  ),
+                  if (subtitle != null)
                     DefaultTextStyle(
-                      style: textTheme.bodyLarge!.copyWith(
+                      style: textTheme.bodyMedium!.copyWith(
                         color: selected
                             ? scheme.onSecondaryContainer
-                            : scheme.onSurface,
+                            : scheme.onSurfaceVariant,
                       ),
-                      child: title,
+                      child: subtitle!,
                     ),
-                    if (subtitle != null)
-                      DefaultTextStyle(
-                        style: textTheme.bodyMedium!.copyWith(
-                          color: selected
-                              ? scheme.onSecondaryContainer
-                              : scheme.onSurfaceVariant,
-                        ),
-                        child: subtitle!,
-                      ),
-                  ],
-                ),
+                ],
               ),
-              if (trailing != null) ...[
-                const SizedBox(width: 16),
-                IconTheme(
-                  data: IconThemeData(
-                    color: scheme.onSurfaceVariant,
-                    size: 24,
-                  ),
-                  child: trailing!,
+            ),
+            if (trailing != null) ...[
+              const SizedBox(width: 16),
+              IconTheme(
+                data: IconThemeData(
+                  color: scheme.onSurfaceVariant,
+                  size: 24,
                 ),
-              ],
+                child: trailing!,
+              ),
             ],
-          ),
+          ],
         ),
       ),
     );
@@ -177,7 +154,6 @@ class MEListGroup extends StatelessWidget {
             onLongPress: children[i].onLongPress,
             selected: children[i].selected,
             enabled: children[i].enabled,
-            variant: children[i].variant,
             position: children.length == 1
                 ? MEListPosition.only
                 : i == 0

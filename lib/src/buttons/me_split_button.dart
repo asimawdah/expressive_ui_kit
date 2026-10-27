@@ -1,51 +1,46 @@
 import 'package:flutter/material.dart';
 
 import '../internal/me_pressable.dart';
-import '../lists/me_menu.dart';
 import '../theme/me_shapes.dart';
 import 'me_button.dart';
 
 /// A Material 3 Expressive split button.
 ///
-/// A connected pair: a leading primary action and a trailing menu toggle.
-/// The trailing segment morphs fully round while its [MEMenu] is open.
+/// A new M3E component: a connected pair made of a leading primary-action
+/// button and a trailing menu toggle. The trailing segment morphs to a
+/// fully-round shape while its menu is open.
 class MESplitButton extends StatefulWidget {
   const MESplitButton({
     super.key,
     required this.child,
-    required this.menu,
+    required this.menuItems,
     this.icon,
     this.onPressed,
-    this.onSelected,
     this.variant = MEButtonVariant.filled,
-    this.size = MEButtonSize.small,
+    this.height = 48,
   });
 
   final Widget child;
   final Widget? icon;
   final VoidCallback? onPressed;
-
-  /// Menu tree shown from the trailing chevron. Typically [MEMenuEntry]s.
-  final List<MEMenuNode> menu;
-
-  /// Called with the selected [MEMenuEntry.value].
-  final ValueChanged<Object?>? onSelected;
-
   final MEButtonVariant variant;
-  final MEButtonSize size;
+  final double height;
+
+  /// Items shown in the trailing menu.
+  final List<MenuItemButton> menuItems;
 
   @override
   State<MESplitButton> createState() => _MESplitButtonState();
 }
 
 class _MESplitButtonState extends State<MESplitButton> {
+  final MenuController _menuController = MenuController();
   bool _menuOpen = false;
 
   @override
   Widget build(BuildContext context) {
     final colors = Theme.of(context).colorScheme;
     final textTheme = Theme.of(context).textTheme;
-    final height = widget.size.height;
 
     final (Color bg, Color fg) = switch (widget.variant) {
       MEButtonVariant.filled => (colors.primary, colors.onPrimary),
@@ -53,52 +48,40 @@ class _MESplitButtonState extends State<MESplitButton> {
           colors.secondaryContainer,
           colors.onSecondaryContainer
         ),
-      MEButtonVariant.elevated => (colors.surfaceContainerLow, colors.primary),
-      MEButtonVariant.outlined => (Colors.transparent, colors.onSurfaceVariant),
-      MEButtonVariant.text => (
-          colors.surfaceContainerHighest,
-          colors.onSurface
-        ),
+      _ => (colors.primary, colors.onPrimary),
     };
 
-    final r = height / 2;
-    const inner = Radius.circular(MECorners.extraSmall);
-    final pad = widget.size.horizontalPadding;
-    final iconSize = widget.size.iconSize;
-    final side = widget.variant == MEButtonVariant.outlined
-        ? BorderSide(color: colors.outlineVariant)
-        : null;
+    final r = widget.height / 2;
 
     return Row(
       mainAxisSize: MainAxisSize.min,
       children: [
+        // Leading: primary action.
         MEPressable(
           onPressed: widget.onPressed,
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadiusDirectional.horizontal(
               start: Radius.circular(r),
-              end: inner,
+              end: const Radius.circular(MECorners.extraSmall),
             ),
           ),
-          pressedShape: widget.size.pressedContainerShape,
           color: bg,
-          side: side,
           overlayColor: fg.withValues(alpha: 0.1),
           child: Container(
-            height: height,
-            padding: EdgeInsets.symmetric(horizontal: pad),
+            height: widget.height,
+            padding: const EdgeInsets.symmetric(horizontal: 20),
             child: Row(
               mainAxisSize: MainAxisSize.min,
               children: [
                 if (widget.icon != null) ...[
                   IconTheme.merge(
-                    data: IconThemeData(size: iconSize, color: fg),
+                    data: IconThemeData(size: 20, color: fg),
                     child: widget.icon!,
                   ),
-                  SizedBox(width: widget.size.iconGap),
+                  const SizedBox(width: 8),
                 ],
                 DefaultTextStyle.merge(
-                  style: widget.size.labelStyle(textTheme).copyWith(color: fg),
+                  style: textTheme.labelLarge!.copyWith(color: fg),
                   child: widget.child,
                 ),
               ],
@@ -106,39 +89,40 @@ class _MESplitButtonState extends State<MESplitButton> {
           ),
         ),
         const SizedBox(width: 2),
-        MEMenu(
-          position: MEMenuAnchorPosition.bottomEnd,
-          children: widget.menu,
-          onSelected: widget.onSelected,
-          onOpenChanged: (open) {
-            if (mounted) setState(() => _menuOpen = open);
-          },
-          anchorBuilder: (context, open) {
+        // Trailing: menu toggle. Morphs fully round while the menu is open.
+        MenuAnchor(
+          controller: _menuController,
+          menuChildren: widget.menuItems,
+          onOpen: () => setState(() => _menuOpen = true),
+          onClose: () => setState(() => _menuOpen = false),
+          builder: (context, controller, _) {
             return MEPressable(
-              onPressed: open,
+              onPressed: () =>
+                  controller.isOpen ? controller.close() : controller.open(),
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadiusDirectional.horizontal(
-                  start: inner,
+                  start: const Radius.circular(MECorners.extraSmall),
                   end: Radius.circular(r),
                 ),
               ),
               selectedShape: const StadiumBorder(),
               selected: _menuOpen,
-              pressedShape: const StadiumBorder(),
               color: bg,
-              side: side,
               overlayColor: fg.withValues(alpha: 0.1),
               semanticLabel: 'More options',
               child: SizedBox(
-                width: height,
-                height: height,
+                width: widget.height,
+                height: widget.height,
                 child: Center(
-                  child: Icon(
-                    _menuOpen
-                        ? Icons.keyboard_arrow_up
-                        : Icons.keyboard_arrow_down,
-                    size: iconSize,
-                    color: fg,
+                  child: AnimatedRotation(
+                    turns: _menuOpen ? 0.5 : 0,
+                    duration: const Duration(milliseconds: 350),
+                    curve: Curves.easeOutBack,
+                    child: Icon(
+                      Icons.keyboard_arrow_down,
+                      size: 22,
+                      color: fg,
+                    ),
                   ),
                 ),
               ),

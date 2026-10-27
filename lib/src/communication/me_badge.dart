@@ -3,9 +3,6 @@ import 'package:flutter/material.dart';
 import '../theme/me_motion.dart';
 import '../theme/me_theme.dart';
 
-/// Badge placement relative to [MEBadge.child].
-enum MEBadgeAlignment { topLeft, topCenter, topRight }
-
 /// A Material 3 Expressive badge.
 ///
 /// Replaces [Badge]. Pops in with a bouncy spatial spring when it appears
@@ -19,20 +16,13 @@ class MEBadge extends StatefulWidget {
     this.child,
     this.count,
     this.visible = true,
-    this.showDot = false,
-    this.alignment = MEBadgeAlignment.topRight,
   });
 
   final Widget? child;
 
-  /// Optional count. When null (and [showDot] is false), renders a small
-  /// dot badge.
+  /// Optional count. When null, renders a small dot badge.
   final int? count;
   final bool visible;
-
-  /// Force a dot even when [count] is set.
-  final bool showDot;
-  final MEBadgeAlignment alignment;
 
   @override
   State<MEBadge> createState() => _MEBadgeState();
@@ -70,7 +60,7 @@ class _MEBadgeState extends State<MEBadge> with SingleTickerProviderStateMixin {
   @override
   Widget build(BuildContext context) {
     final scheme = Theme.of(context).colorScheme;
-    final isDot = widget.showDot || widget.count == null;
+    final isDot = widget.count == null;
 
     final Widget bubble = AnimatedBuilder(
       animation: _anim,
@@ -107,19 +97,12 @@ class _MEBadgeState extends State<MEBadge> with SingleTickerProviderStateMixin {
     // Standalone badge: render just the bubble.
     if (widget.child == null) return bubble;
 
-    // Anchored badge: overlay the bubble on the child's aligned corner.
+    // Anchored badge: overlay the bubble on the child's top-right corner.
     return Stack(
       clipBehavior: Clip.none,
       children: [
         widget.child!,
-        Positioned(
-          top: -4,
-          left: widget.alignment == MEBadgeAlignment.topLeft ? -4 : null,
-          right: widget.alignment == MEBadgeAlignment.topRight ? -4 : null,
-          child: widget.alignment == MEBadgeAlignment.topCenter
-              ? Align(alignment: Alignment.topCenter, child: bubble)
-              : bubble,
-        ),
+        Positioned(top: -4, right: -4, child: bubble),
       ],
     );
   }

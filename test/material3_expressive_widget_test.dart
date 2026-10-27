@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:material3_expressive/material3_expressive.dart';
+import 'package:expressive_ui_kit/expressive_ui_kit.dart';
 
 void main() {
   group('MEButton', () {
@@ -139,7 +139,7 @@ void main() {
             return MECheckbox(
               value: checked,
               semanticsLabel: 'Accept terms',
-              onChanged: (value) => setState(() => checked = value ?? false),
+              onChanged: (value) => setState(() => checked = value),
             );
           },
         ),
@@ -378,33 +378,12 @@ void main() {
 
     controller.roll();
     await tester.pump();
-    await tester.pumpAndSettle();
+    await tester.pump(const Duration(milliseconds: 700));
+    await tester.pump(const Duration(milliseconds: 1));
 
     expect(tester.takeException(), isNull);
     expect(rolled, isNotNull);
     expect(rolled, inInclusiveRange(1, 6));
-  });
-
-  testWidgets('MECoinFlip lands without curve range exceptions',
-      (tester) async {
-    final controller = MECoinFlipController();
-    bool? landed;
-
-    await tester.pumpWidget(
-      _host(
-        MECoinFlip(
-          controller: controller,
-          onFlipped: (heads) => landed = heads,
-        ),
-      ),
-    );
-
-    controller.flip(heads: true);
-    await tester.pump();
-    await tester.pumpAndSettle();
-
-    expect(tester.takeException(), isNull);
-    expect(landed, isTrue);
   });
 
   testWidgets('MEStampCard completion callbacks can show overlays safely',

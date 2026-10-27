@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:material3_expressive/material3_expressive.dart';
+import 'package:expressive_ui_kit/expressive_ui_kit.dart';
 
 /// Demos for the content widgets: markdown viewer/editor, chat widgets,
 /// rating, and OTP input.
@@ -1461,7 +1461,7 @@ MEButton.filled(
             holder: 'Alex Rivera',
             expiry: '09/28',
             cvc: '314',
-            brand: Text('Expressive'),
+            bankName: 'Expressive',
           ),
         ),
         const SizedBox(height: 32),
