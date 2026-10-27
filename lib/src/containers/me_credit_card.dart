@@ -1,297 +1,178 @@
-import 'dart:math' as math;
-
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
+import 'package:flutter_credit_card/flutter_credit_card.dart';
 
-import '../theme/me_motion.dart';
-import '../theme/me_shapes.dart';
-import '../theme/me_theme.dart';
-
-/// A payment-card display that flips in 3D to reveal its back.
-///
-/// Tap to flip between the front (number, holder, expiry) and the back
-/// (magnetic stripe and CVC). The flip is driven by the theme's spatial
-/// spring, so it overshoots slightly and is interruptible — tapping
-/// mid-flip reverses it from the current angle.
-class MECreditCard extends StatefulWidget {
+/// Payment card using [CreditCardWidget] defaults (glass theme, padding, layout).
+class MECreditCard extends StatelessWidget {
   const MECreditCard({
     super.key,
     required this.number,
     required this.holder,
     required this.expiry,
-    this.cvc = '***',
+    this.cvc = '',
+    this.bankName,
     this.brand,
-    this.width = 320,
-    this.onFlipped,
+    this.showBackView = false,
+    this.interactive = true,
+    this.obscureNumber = true,
+    this.obscureCvv = true,
+    this.border,
   });
 
-  /// Card number; groups of 4 are spaced automatically.
+  /// Library card aspect (height / width).
+  static const double aspectRatio = 0.5714;
+
+  /// Grid `childAspectRatio` matching the default card plus 16px padding.
+  static const double gridChildAspectRatio =
+      340 / ((340 - 32) * aspectRatio + 32);
+
   final String number;
-
   final String holder;
-
-  /// Expiry string, e.g. '09/28'.
   final String expiry;
-
   final String cvc;
+  final String? bankName;
 
-  /// Optional brand widget shown top-right (e.g. a logo or [Text]).
-  final Widget? brand;
-
-  /// Card width; height follows the ISO 7810 aspect ratio.
-  final double width;
-
-  /// Called after the card settles, with true when showing the back.
-  final ValueChanged<bool>? onFlipped;
-
-  @override
-  State<MECreditCard> createState() => _MECreditCardState();
-}
-
-class _MECreditCardState extends State<MECreditCard>
-    with SingleTickerProviderStateMixin {
-  // 0 = front, 1 = back.
-  late final AnimationController _flip = AnimationController.unbounded(
-    vsync: this,
-    value: 0,
-  );
-  bool _showingBack = false;
-
-  @override
-  void dispose() {
-    _flip.dispose();
-    super.dispose();
-  }
-
-  void _toggle() {
-    final motion = METheme.of(context).motion;
-    _showingBack = !_showingBack;
-    HapticFeedback.lightImpact();
-    springTo(_flip, _showingBack ? 1 : 0, motion.defaultSpatial);
-    widget.onFlipped?.call(_showingBack);
-  }
+  /// Network brand (`visa`, `mastercard`, `amex`, `discover`, `unionpay`,
+  /// `rupay`, `elo`, `hipercard`, `mir`).
+  ///
+  /// When set, that logo is shown even if the number is not a known BIN.
+  /// Unrecognized brands show no logo.
+  final String? brand;
+  final bool showBackView;
+  final bool interactive;
+  final bool obscureNumber;
+  final bool obscureCvv;
+  final BoxBorder? border;
 
   String get _spacedNumber {
-    final digits = widget.number.replaceAll(' ', '');
+    final digits = number.replaceAll(RegExp(r'\D'), '');
+    if (digits.isEmpty) return '';
     final buffer = StringBuffer();
-    for (int i = 0; i < digits.length; i++) {
-      if (i > 0 && i % 4 == 0) buffer.write('  ');
+    for (var i = 0; i < digits.length; i++) {
+      if (i > 0 && i % 4 == 0) buffer.write(' ');
       buffer.write(digits[i]);
     }
     return buffer.toString();
   }
 
-  /// Design reference width; layout scales from this size.
-  static const double _designWidth = 320;
+  CardType? get _cardType => switch (brand?.toLowerCase().trim()) {
+        'visa' => CardType.visa,
+        'mastercard' || 'maestro' => CardType.mastercard,
+        'amex' ||
+        'americanexpress' ||
+        'american express' =>
+          CardType.americanExpress,
+        'discover' => CardType.discover,
+        'unionpay' || 'union pay' => CardType.unionpay,
+        'rupay' || 'ru pay' => CardType.rupay,
+        'elo' => CardType.elo,
+        'hipercard' => CardType.hipercard,
+        'mir' => CardType.mir,
+        _ => null,
+      };
 
-  double get _scale => (widget.width / _designWidth).clamp(0.55, 1.25);
+  String get _expiry {
+    final raw = expiry.trim();
+    if (raw.contains('/')) return raw;
+    final digits = raw.replaceAll(RegExp(r'\D'), '');
+    if (digits.length >= 4) {
+      return '${digits.substring(0, 2)}/${digits.substring(2, 4)}';
+    }
+    return raw;
+  }
 
   @override
   Widget build(BuildContext context) {
-    final double height = widget.width / 1.586;
-    final scale = _scale;
+    final theme = Theme.of(context);
+    final scheme = theme.colorScheme;
+    final isLight = theme.brightness == Brightness.light;
+    final glass = _glassFor(scheme, isLight);
 
-    return Semantics(
-      button: true,
-      label: 'Payment card, tap to flip. '
-          '${_showingBack ? 'Showing back' : 'Showing front'}',
-      child: GestureDetector(
-        onTap: _toggle,
-        child: AnimatedBuilder(
-          animation: _flip,
-          builder: (context, _) {
-            final double t = _flip.value;
-            final double angle = t * math.pi;
-            // Past the halfway point we render the back, pre-rotated so
-            // its content reads correctly.
-            final bool backVisible = angle % (2 * math.pi) > math.pi / 2 &&
-                angle % (2 * math.pi) < 3 * math.pi / 2;
-            return Transform(
-              alignment: Alignment.center,
-              transform: Matrix4.identity()
-                ..setEntry(3, 2, 0.0012)
-                ..rotateY(angle),
-              child: backVisible
-                  ? Transform(
-                      alignment: Alignment.center,
-                      transform: Matrix4.identity()..rotateY(math.pi),
-                      child: _back(context, height, scale),
-                    )
-                  : _front(context, height, scale),
-            );
-          },
+    return CreditCardWidget(
+      cardNumber: _spacedNumber,
+      expiryDate: _expiry,
+      cardHolderName: holder.trim(),
+      cvvCode: cvc.trim(),
+      showBackView: showBackView,
+      onCreditCardWidgetChange: (_) {},
+      bankName: bankName?.trim().isEmpty ?? true ? null : bankName!.trim(),
+      cardType: _cardType,
+      glassmorphismConfig: glass,
+      cardBgColor:
+          isLight ? scheme.surfaceContainerHigh : const Color(0xFF2C2C2C),
+      textStyle: isLight
+          ? theme.textTheme.titleLarge?.merge(
+              TextStyle(
+                color: scheme.onSurface,
+                fontFamily: 'halter',
+                fontSize: 15,
+                letterSpacing: 0.8,
+                package: 'flutter_credit_card',
+              ),
+            )
+          : null,
+      isHolderNameVisible: true,
+      obscureCardNumber: obscureNumber,
+      obscureCardCvv: obscureCvv,
+      isSwipeGestureEnabled: interactive,
+      enableFloatingCard: true,
+      floatingConfig: FloatingConfig(
+        shadowConfig: FloatingShadowConfig(
+          offset: Offset(0, isLight ? 10 : 8),
+          blurRadius: isLight ? 28 : 16,
+          color: scheme.shadow.withValues(alpha: isLight ? 0.10 : 0.38),
         ),
       ),
+      animationDuration: const Duration(milliseconds: 500),
+      frontCardBorder: border ??
+          Border.all(
+            width: 1.15,
+            color: isLight
+                ? Colors.white.withValues(alpha: 0.78)
+                : Colors.white.withValues(alpha: 0.22),
+          ),
+      backCardBorder: border ??
+          Border.all(
+            width: 1.15,
+            color: isLight
+                ? Colors.white.withValues(alpha: 0.78)
+                : Colors.white.withValues(alpha: 0.22),
+          ),
     );
   }
 
-  Widget _front(BuildContext context, double height, double scale) {
-    final scheme = Theme.of(context).colorScheme;
-    final textTheme = Theme.of(context).textTheme;
-    final pad = 20 * scale;
-    final chipW = 38 * scale;
-    final chipH = 28 * scale;
-    final gap = 12 * scale;
-
-    return Container(
-      width: widget.width,
-      height: height,
-      padding: EdgeInsets.all(pad),
-      decoration: BoxDecoration(
-        color: scheme.primaryContainer,
-        borderRadius: BorderRadius.circular(MECorners.large),
-        border: Border.all(color: scheme.outlineVariant),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
-            children: [
-              Container(
-                width: chipW,
-                height: chipH,
-                decoration: BoxDecoration(
-                  color: scheme.tertiaryContainer,
-                  borderRadius: BorderRadius.circular(MECorners.extraSmall),
-                  border: Border.all(color: scheme.outline),
-                ),
-              ),
-              const Spacer(),
-              if (widget.brand != null)
-                Flexible(
-                  child: DefaultTextStyle(
-                    style: textTheme.titleMedium!.copyWith(
-                      color: scheme.onPrimaryContainer,
-                      fontStyle: FontStyle.italic,
-                      fontSize: (textTheme.titleMedium?.fontSize ?? 16) * scale,
-                    ),
-                    overflow: TextOverflow.ellipsis,
-                    maxLines: 1,
-                    child: widget.brand!,
-                  ),
-                ),
-            ],
-          ),
-          const Spacer(),
-          FittedBox(
-            fit: BoxFit.scaleDown,
-            alignment: AlignmentDirectional.centerStart,
-            child: Text(
-              _spacedNumber,
-              maxLines: 1,
-              softWrap: false,
-              style: textTheme.titleLarge?.copyWith(
-                color: scheme.onPrimaryContainer,
-                fontFeatures: const [FontFeature.tabularFigures()],
-                letterSpacing: 1.2 * scale,
-                fontSize: (textTheme.titleLarge?.fontSize ?? 22) * scale,
-              ),
+  static Glassmorphism _glassFor(ColorScheme scheme, bool isLight) {
+    if (isLight) {
+      return Glassmorphism(
+        blurX: 18,
+        blurY: 24,
+        gradient: LinearGradient(
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+          colors: <Color>[
+            Colors.white.withValues(alpha: 0.78),
+            Color.alphaBlend(
+              scheme.primary.withValues(alpha: 0.10),
+              Colors.white.withValues(alpha: 0.52),
             ),
-          ),
-          SizedBox(height: gap),
-          Row(
-            children: [
-              Expanded(
-                child: Text(
-                  widget.holder.toUpperCase(),
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
-                  style: textTheme.labelMedium?.copyWith(
-                    color: scheme.onPrimaryContainer,
-                    letterSpacing: 1.5 * scale,
-                    fontSize: (textTheme.labelMedium?.fontSize ?? 12) * scale,
-                  ),
-                ),
-              ),
-              SizedBox(width: 8 * scale),
-              Text(
-                widget.expiry,
-                maxLines: 1,
-                style: textTheme.labelMedium?.copyWith(
-                  color: scheme.onPrimaryContainer,
-                  fontFeatures: const [FontFeature.tabularFigures()],
-                  fontSize: (textTheme.labelMedium?.fontSize ?? 12) * scale,
-                ),
-              ),
-            ],
-          ),
+            scheme.primaryContainer.withValues(alpha: 0.42),
+          ],
+          stops: const <double>[0.0, 0.48, 1.0],
+        ),
+      );
+    }
+
+    return Glassmorphism(
+      blurX: 12,
+      blurY: 20,
+      gradient: LinearGradient(
+        begin: Alignment.topLeft,
+        end: Alignment.bottomRight,
+        colors: <Color>[
+          Colors.white.withValues(alpha: 0.16),
+          scheme.surfaceContainerHighest.withValues(alpha: 0.38),
+          Colors.white.withValues(alpha: 0.06),
         ],
-      ),
-    );
-  }
-
-  Widget _back(BuildContext context, double height, double scale) {
-    final scheme = Theme.of(context).colorScheme;
-    final textTheme = Theme.of(context).textTheme;
-    final pad = 20 * scale;
-
-    return Container(
-      width: widget.width,
-      height: height,
-      decoration: BoxDecoration(
-        color: scheme.primaryContainer,
-        borderRadius: BorderRadius.circular(MECorners.large),
-        border: Border.all(color: scheme.outlineVariant),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          SizedBox(height: pad),
-          Container(
-            height: height * 0.22,
-            color: scheme.inverseSurface,
-          ),
-          SizedBox(height: 16 * scale),
-          Padding(
-            padding: EdgeInsets.symmetric(horizontal: pad),
-            child: Row(
-              children: [
-                Expanded(
-                  child: Container(
-                    height: 32 * scale,
-                    decoration: BoxDecoration(
-                      color: scheme.surface,
-                      borderRadius: BorderRadius.circular(MECorners.extraSmall),
-                    ),
-                  ),
-                ),
-                SizedBox(width: 12 * scale),
-                Container(
-                  padding: EdgeInsets.symmetric(
-                    horizontal: 10 * scale,
-                    vertical: 7 * scale,
-                  ),
-                  decoration: BoxDecoration(
-                    color: scheme.surface,
-                    borderRadius: BorderRadius.circular(MECorners.extraSmall),
-                    border: Border.all(color: scheme.outlineVariant),
-                  ),
-                  child: Text(
-                    widget.cvc,
-                    style: textTheme.labelLarge?.copyWith(
-                      color: scheme.onSurface,
-                      fontFeatures: const [FontFeature.tabularFigures()],
-                      fontSize: (textTheme.labelLarge?.fontSize ?? 14) * scale,
-                    ),
-                  ),
-                ),
-              ],
-            ),
-          ),
-          const Spacer(),
-          Padding(
-            padding: EdgeInsets.only(left: pad, bottom: 14 * scale),
-            child: Text(
-              'Tap to flip back',
-              maxLines: 1,
-              overflow: TextOverflow.ellipsis,
-              style: textTheme.labelSmall?.copyWith(
-                color: scheme.onPrimaryContainer.withValues(alpha: 0.7),
-                fontSize: (textTheme.labelSmall?.fontSize ?? 11) * scale,
-              ),
-            ),
-          ),
-        ],
+        stops: const <double>[0.0, 0.5, 1.0],
       ),
     );
   }

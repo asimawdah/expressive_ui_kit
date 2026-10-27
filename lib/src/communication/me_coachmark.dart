@@ -39,13 +39,12 @@ Future<void> showMECoachmark(
     Offset.zero & box.size,
   );
 
-  final motion = METheme.of(context).motion;
   await showGeneralDialog<void>(
     context: context,
     barrierDismissible: false,
     barrierColor: Colors.transparent,
     barrierLabel: title,
-    transitionDuration: motion.popup.approximateDuration,
+    transitionDuration: const Duration(milliseconds: 250),
     pageBuilder: (context, animation, secondary) => _MECoachmark(
       targetRect: targetRect,
       title: title,
@@ -53,10 +52,7 @@ Future<void> showMECoachmark(
       dismissLabel: dismissLabel,
     ),
     transitionBuilder: (context, animation, secondary, child) => FadeTransition(
-      opacity: CurvedAnimation(
-        parent: animation,
-        curve: METheme.of(context).motion.popup.curve,
-      ),
+      opacity: CurvedAnimation(parent: animation, curve: Curves.easeOut),
       child: child,
     ),
   );

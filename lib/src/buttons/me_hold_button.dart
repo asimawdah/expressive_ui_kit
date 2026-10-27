@@ -118,13 +118,19 @@ class _MEHoldButtonState extends State<MEHoldButton>
     if (_confirmed) return;
     // Abort: fill springs back to zero instead of linearly reversing.
     _fill.stop();
-    springTo(_fill, 0, METheme.of(context).motion.defaultEffects);
-    springTo(_shape, 0, METheme.of(context).motion.defaultSpatial);
+    final spring = METheme.of(context).motion.defaultSpatial;
+    _fill.animateBack(
+      0,
+      duration: spring.approximateDuration,
+      curve: spring.curve,
+    );
+    springTo(_shape, 0, spring);
   }
 
   @override
   Widget build(BuildContext context) {
     final scheme = Theme.of(context).colorScheme;
+    final motion = METheme.of(context).motion;
 
     final double shapeT = _shape.value.clamp(0.0, 1.2);
     final double radius = _confirmed
@@ -153,7 +159,9 @@ class _MEHoldButtonState extends State<MEHoldButton>
         onTapDown: (_) => _startHold(),
         onTapUp: (_) => _cancelHold(),
         onTapCancel: _cancelHold,
-        child: Container(
+        child: AnimatedContainer(
+          duration: motion.fastEffects.approximateDuration,
+          curve: motion.fastEffects.curve,
           height: widget.height,
           decoration: BoxDecoration(
             color: surface,

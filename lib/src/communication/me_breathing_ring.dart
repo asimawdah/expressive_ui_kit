@@ -1,8 +1,5 @@
 import 'package:flutter/material.dart';
 
-import '../theme/me_motion.dart';
-import '../theme/me_theme.dart';
-
 /// A guided-breathing ring that expands and contracts on a breath cycle.
 ///
 /// The ring inflates during the inhale phase, holds, deflates during the
@@ -136,17 +133,11 @@ class _MEBreathingRingState extends State<MEBreathingRing>
                   ),
                 ),
                 // Phase label cross-fades between changes.
-                MEMotionBuilder(
-                  key: ValueKey<String>(label),
-                  value: 1,
-                  from: 0,
-                  spec: METheme.of(context).motion.defaultEffects,
-                  builder: (context, t, child) => Opacity(
-                    opacity: t.clamp(0.0, 1.0),
-                    child: child,
-                  ),
+                AnimatedSwitcher(
+                  duration: const Duration(milliseconds: 350),
                   child: Text(
                     label,
+                    key: ValueKey<String>(label),
                     style: textTheme.titleMedium!.copyWith(
                       color: scheme.onPrimaryContainer,
                     ),

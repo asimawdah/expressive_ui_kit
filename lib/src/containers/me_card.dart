@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:expressive_ui_kit/expressive_ui_kit.dart';
 
 import '../internal/me_pressable.dart';
-import '../theme/me_shapes.dart';
 
 /// Visual variants for [MECard].
 enum MECardVariant { elevated, filled, outlined }
@@ -19,6 +19,7 @@ class MECard extends StatelessWidget {
     this.onLongPress,
     this.color,
     this.padding = const EdgeInsets.all(16),
+    this.itemPosition,
   });
 
   const MECard.elevated({
@@ -28,6 +29,7 @@ class MECard extends StatelessWidget {
     this.onLongPress,
     this.color,
     this.padding = const EdgeInsets.all(16),
+    this.itemPosition,
   }) : variant = MECardVariant.elevated;
 
   const MECard.outlined({
@@ -37,6 +39,7 @@ class MECard extends StatelessWidget {
     this.onLongPress,
     this.color,
     this.padding = const EdgeInsets.all(16),
+    this.itemPosition,
   }) : variant = MECardVariant.outlined;
 
   final Widget child;
@@ -45,6 +48,7 @@ class MECard extends StatelessWidget {
   final VoidCallback? onLongPress;
   final Color? color;
   final EdgeInsetsGeometry padding;
+  final ItemPosition? itemPosition;
 
   @override
   Widget build(BuildContext context) {
@@ -60,17 +64,17 @@ class MECard extends StatelessWidget {
         ),
     };
 
+    final baseShape = RoundedRectangleBorder(
+      borderRadius: itemPosition?.borderRadius ?? BorderRadius.circular(24),
+    );
+    final resolvedShape = baseShape.copyWith(side: side);
+    final pressedShape = baseShape.copyWith(side: BorderSide.none);
+
     return MEPressable(
       onPressed: onPressed,
       onLongPress: onLongPress,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(MECorners.extraLarge),
-        side: side ?? BorderSide.none,
-      ),
-      pressedShape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(MECorners.large),
-        side: side ?? BorderSide.none,
-      ),
+      shape: resolvedShape,
+      pressedShape: pressedShape,
       color: color ?? bg,
       elevation: elevation,
       pressedElevation: variant == MECardVariant.elevated ? 0 : null,

@@ -60,9 +60,9 @@ class _MELikeButtonState extends State<MELikeButton>
     vsync: this,
     value: widget.liked ? 1 : 0,
   );
-  late final AnimationController _burst = AnimationController.unbounded(
+  late final AnimationController _burst = AnimationController(
     vsync: this,
-    value: 0,
+    duration: const Duration(milliseconds: 600),
   );
 
   @override
@@ -74,8 +74,7 @@ class _MELikeButtonState extends State<MELikeButton>
         // Start squashed, spring up with overshoot, and fire the burst.
         _pop.value = 0.0;
         springTo(_pop, 1.0, motion.fastSpatial);
-        _burst.value = 0.0;
-        springTo(_burst, 1.0, motion.slowEffects);
+        _burst.forward(from: 0.0);
       } else {
         springTo(_pop, 0.0, motion.defaultEffects);
       }
@@ -151,17 +150,15 @@ class _MELikeButtonState extends State<MELikeButton>
               ),
               if (widget.count != null) ...[
                 const SizedBox(width: 2),
-                MEMotionBuilder(
-                  key: ValueKey<int>(widget.count!),
-                  value: 1,
-                  from: 0,
-                  spec: METheme.of(context).motion.fastSpatial,
-                  builder: (context, t, child) => Transform.scale(
-                    scale: 0.7 + 0.3 * t.clamp(0.0, 1.4),
-                    child: child,
+                AnimatedSwitcher(
+                  duration: const Duration(milliseconds: 250),
+                  transitionBuilder: (child, animation) => ScaleTransition(
+                    scale: animation,
+                    child: FadeTransition(opacity: animation, child: child),
                   ),
                   child: Text(
                     '${widget.count}',
+                    key: ValueKey<int>(widget.count!),
                     style: textTheme.labelLarge!.copyWith(
                       color: widget.liked ? fill : scheme.onSurfaceVariant,
                       fontFeatures: const [FontFeature.tabularFigures()],
@@ -196,11 +193,11 @@ class _BurstPainter extends CustomPainter {
     final center = size.center(Offset.zero);
     final maxRadius = size.shortestSide / 2;
 
-    // Effects spring already decelerates; no extra duration curve.
-    final t = progress.clamp(0.0, 1.0);
-    final travel = maxRadius * (0.45 + 0.55 * t);
-    final double opacity = (1.0 - t).clamp(0.0, 1.0);
-    final double dotSize = size.shortestSide * 0.045 * (1.0 - 0.5 * t);
+    // Ease out: dots decelerate as they fly.
+    final eased = Curves.easeOutCubic.transform(progress);
+    final travel = maxRadius * (0.45 + 0.55 * eased);
+    final double opacity = (1.0 - progress).clamp(0.0, 1.0);
+    final double dotSize = size.shortestSide * 0.045 * (1.0 - 0.5 * eased);
 
     final paint = Paint()..color = color.withValues(alpha: opacity);
     final paint2 = Paint()..color = secondary.withValues(alpha: opacity * 0.85);

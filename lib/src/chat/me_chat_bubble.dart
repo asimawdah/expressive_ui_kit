@@ -245,10 +245,8 @@ class _MEChatTypingIndicatorState extends State<MEChatTypingIndicator>
               children: List.generate(3, (i) {
                 // Staggered bounce: each dot delays by 0.15 of the cycle.
                 final phase = (_controller.value - i * 0.15) % 1.0;
-                final bounceCurve =
-                    METheme.of(context).motion.fastSpatial.curve;
                 final bounce = phase < 0.4
-                    ? bounceCurve.transform((phase / 0.4).clamp(0.0, 1.0)) *
+                    ? Curves.easeOutBack.transform(phase / 0.4) *
                         (1 - phase / 0.4)
                     : 0.0;
                 return Padding(

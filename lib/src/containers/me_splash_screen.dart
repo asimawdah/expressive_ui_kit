@@ -1,5 +1,3 @@
-import 'dart:async';
-
 import 'package:flutter/material.dart';
 
 import '../theme/me_motion.dart';
@@ -76,12 +74,11 @@ class _MESplashScreenState extends State<MESplashScreen>
     vsync: this,
     duration: const Duration(milliseconds: 1800),
   );
-  late final AnimationController _exit = AnimationController.unbounded(
+  late final AnimationController _exit = AnimationController(
     vsync: this,
-    value: 0,
+    duration: const Duration(milliseconds: 450),
   );
   bool _exiting = false;
-  Timer? _stagger;
 
   @override
   void initState() {
@@ -90,34 +87,23 @@ class _MESplashScreenState extends State<MESplashScreen>
     WidgetsBinding.instance.addPostFrameCallback((_) => _play());
   }
 
-  Future<void> _pause(Duration duration) {
-    _stagger?.cancel();
-    final done = Completer<void>();
-    _stagger = Timer(duration, () {
-      if (!done.isCompleted) done.complete();
-    });
-    return done.future;
-  }
-
   Future<void> _play() async {
     if (!mounted) return;
     final motion = METheme.of(context).motion;
     springTo(_logo, 1, motion.slowSpatial);
-    await _pause(motion.fastSpatial.approximateDuration);
+    await Future<void>.delayed(const Duration(milliseconds: 350));
     if (!mounted) return;
     springTo(_text, 1, motion.defaultSpatial);
     if (!widget.autoDismiss) return;
-    await _pause(widget.holdDuration);
+    await Future<void>.delayed(widget.holdDuration);
     if (!mounted) return;
     setState(() => _exiting = true);
-    await springTo(_exit, 1, motion.defaultEffects);
-    if (!mounted) return;
+    await _exit.forward();
     widget.onFinished?.call();
   }
 
   @override
   void dispose() {
-    _stagger?.cancel();
     _logo.dispose();
     _text.dispose();
     _ripple.dispose();
@@ -138,7 +124,7 @@ class _MESplashScreenState extends State<MESplashScreen>
       builder: (context, _) {
         final logoT = _logo.value.clamp(0.0, 1.4);
         final textT = _text.value.clamp(0.0, 1.0);
-        final exitT = _exit.value.clamp(0.0, 1.0);
+        final exitT = Curves.easeIn.transform(_exit.value);
 
         return Opacity(
           opacity: (1 - exitT).clamp(0.0, 1.0),

@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 
-import '../theme/me_motion.dart';
 import '../theme/me_theme.dart';
 
 /// A single candle in an [MECandlestickChart].
@@ -51,25 +50,22 @@ class MECandlestickChart extends StatefulWidget {
 
 class _MECandlestickChartState extends State<MECandlestickChart>
     with SingleTickerProviderStateMixin {
-  late final AnimationController _enter =
-      AnimationController.unbounded(vsync: this, value: 0);
-  bool _entered = false;
+  late final AnimationController _enter;
 
   @override
-  void didChangeDependencies() {
-    super.didChangeDependencies();
-    if (!_entered) {
-      _entered = true;
-      springTo(_enter, 1, METheme.of(context).motion.slowSpatial);
-    }
+  void initState() {
+    super.initState();
+    _enter = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 1300),
+    )..forward();
   }
 
   @override
   void didUpdateWidget(MECandlestickChart oldWidget) {
     super.didUpdateWidget(oldWidget);
     if (oldWidget.candles.length != widget.candles.length) {
-      _enter.value = 0;
-      springTo(_enter, 1, METheme.of(context).motion.slowSpatial);
+      _enter.forward(from: 0);
     }
   }
 
@@ -96,7 +92,7 @@ class _MECandlestickChartState extends State<MECandlestickChart>
             return CustomPaint(
               painter: _CandlePainter(
                 candles: widget.candles,
-                progress: _enter.value.clamp(0.0, 1.2),
+                progress: _enter.value,
                 curve: motion.defaultSpatial.curve,
                 candleWidth: widget.candleWidth,
                 bullColor: scheme.primary,

@@ -2,8 +2,6 @@ import 'dart:math' as math;
 
 import 'package:flutter/material.dart';
 
-import '../theme/me_theme.dart';
-
 /// A Material 3 Expressive linear progress indicator.
 ///
 /// Replaces [LinearProgressIndicator]. Renders the M3E wavy active track
@@ -47,19 +45,7 @@ class _MELinearProgressIndicatorState extends State<MELinearProgressIndicator>
   late final AnimationController _controller = AnimationController(
     vsync: this,
     duration: const Duration(milliseconds: 1600),
-  );
-
-  @override
-  void didChangeDependencies() {
-    super.didChangeDependencies();
-    final reduced = METheme.of(context).motion.defaultSpatial.instant;
-    if (reduced) {
-      _controller.stop();
-      _controller.value = 0;
-    } else if (!_controller.isAnimating) {
-      _controller.repeat();
-    }
-  }
+  )..repeat();
 
   @override
   void dispose() {
@@ -70,7 +56,6 @@ class _MELinearProgressIndicatorState extends State<MELinearProgressIndicator>
   @override
   Widget build(BuildContext context) {
     final colors = Theme.of(context).colorScheme;
-    final reduced = METheme.of(context).motion.defaultSpatial.instant;
     return Semantics(
       label: widget.semanticsLabel ?? 'Progress indicator',
       value: widget.value == null
@@ -79,34 +64,21 @@ class _MELinearProgressIndicatorState extends State<MELinearProgressIndicator>
       child: SizedBox(
         height:
             math.max(widget.height, widget.amplitude * 2 + widget.strokeWidth),
-        child: reduced
-            ? CustomPaint(
-                size: Size.infinite,
-                painter: _WavyLinearPainter(
-                  value: widget.value ?? 0.35,
-                  phase: 0,
-                  amplitude: 0,
-                  wavelength: widget.wavelength,
-                  strokeWidth: widget.strokeWidth,
-                  color: widget.color ?? colors.primary,
-                  trackColor: widget.trackColor ?? colors.secondaryContainer,
-                ),
-              )
-            : AnimatedBuilder(
-                animation: _controller,
-                builder: (context, _) => CustomPaint(
-                  size: Size.infinite,
-                  painter: _WavyLinearPainter(
-                    value: widget.value,
-                    phase: _controller.value,
-                    amplitude: widget.wavy ? widget.amplitude : 0,
-                    wavelength: widget.wavelength,
-                    strokeWidth: widget.strokeWidth,
-                    color: widget.color ?? colors.primary,
-                    trackColor: widget.trackColor ?? colors.secondaryContainer,
-                  ),
-                ),
-              ),
+        child: AnimatedBuilder(
+          animation: _controller,
+          builder: (context, _) => CustomPaint(
+            size: Size.infinite,
+            painter: _WavyLinearPainter(
+              value: widget.value,
+              phase: _controller.value,
+              amplitude: widget.wavy ? widget.amplitude : 0,
+              wavelength: widget.wavelength,
+              strokeWidth: widget.strokeWidth,
+              color: widget.color ?? colors.primary,
+              trackColor: widget.trackColor ?? colors.secondaryContainer,
+            ),
+          ),
+        ),
       ),
     );
   }

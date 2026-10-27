@@ -64,14 +64,13 @@ class _MEExpansionTileState extends State<MEExpansionTile>
     return AnimatedBuilder(
       animation: _anim,
       builder: (context, child) {
-        final t = _anim.value;
-        final clamped = t.clamp(0.0, 1.0);
+        final t = _anim.value.clamp(0.0, 1.0);
         final radius = 28.0 + (MECorners.large - 28.0) * t;
         return Material(
           color: Color.lerp(
             scheme.surfaceContainerLow,
             scheme.surfaceContainerHigh,
-            clamped,
+            t,
           ),
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(radius),
@@ -126,7 +125,7 @@ class _MEExpansionTileState extends State<MEExpansionTile>
               ClipRect(
                 child: Align(
                   alignment: Alignment.topCenter,
-                  heightFactor: t < 0 ? 0 : t,
+                  heightFactor: t,
                   child: child,
                 ),
               ),

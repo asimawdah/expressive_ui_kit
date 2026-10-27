@@ -64,35 +64,44 @@ class MEAvatar extends StatelessWidget {
             ),
     );
 
-    content = MEPressable(
-      onPressed: onPressed,
-      enabled: onPressed != null,
-      shape: const CircleBorder(),
-      // Press/selection morphs to a rounded square.
-      pressedShape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(size * 0.3),
+    content = SizedBox(
+      width: size,
+      height: size,
+      child: MEPressable(
+        onPressed: onPressed,
+        enabled: onPressed != null,
+        shape: const CircleBorder(),
+        // Press/selection morphs to a rounded square.
+        pressedShape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(size * 0.3),
+        ),
+        selectedShape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(size * 0.3),
+        ),
+        selected: selected,
+        color: bg,
+        overlayColor: fg.withValues(alpha: 0.1),
+        semanticLabel: semanticLabel,
+        child: content,
       ),
-      selectedShape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(size * 0.3),
-      ),
-      selected: selected,
-      color: bg,
-      overlayColor: fg.withValues(alpha: 0.1),
-      semanticLabel: semanticLabel,
-      child: content,
     );
 
-    if (!selected) return content;
+    if (selected) {
+      content = Container(
+        width: size + 8,
+        height: size + 8,
+        padding: const EdgeInsets.all(2),
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(size * 0.3 + 4),
+          border: Border.all(color: colors.primary, width: 2),
+        ),
+        child: content,
+      );
+    }
 
-    // Selection ring, offset from the avatar edge.
-    return Container(
-      padding: const EdgeInsets.all(2),
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(size * 0.3 + 4),
-        border: Border.all(color: colors.primary, width: 2),
-      ),
-      child: content,
-    );
+    // Keep intrinsic size so ListView/Column stretch cannot turn the
+    // avatar into a full-width banner.
+    return UnconstrainedBox(child: content);
   }
 }
 

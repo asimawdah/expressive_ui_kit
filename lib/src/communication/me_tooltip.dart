@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 
 import '../theme/me_shapes.dart';
-import '../theme/me_theme.dart';
 
 /// A Material 3 Expressive tooltip.
 ///
@@ -35,7 +34,7 @@ class METooltip extends StatelessWidget {
           ),
       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
       waitDuration: const Duration(milliseconds: 400),
-      exitDuration: METheme.of(context).motion.fastEffects.approximateDuration,
+      exitDuration: const Duration(milliseconds: 100),
       showDuration: const Duration(seconds: 3),
       enableTapToDismiss: true,
       triggerMode: TooltipTriggerMode.longPress,

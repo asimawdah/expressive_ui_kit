@@ -1,13 +1,13 @@
-name: material3_expressive
+name: expressive_ui_kit
 description: >-
   Material 3 Expressive widgets for Flutter. Spring-physics motion, shape
   morphing, wavy progress indicators, FAB menus, button groups, expressive
   sliders and more — drop-in replacements for standard Material widgets.
-version: 0.2.0
+version: 0.3.0
 homepage: https://m3.material.io
-repository: https://github.com/asimawdah/material_expressive
-issue_tracker: https://github.com/asimawdah/material_expressive/issues
-documentation: https://github.com/asimawdah/material_expressive#readme
+repository: https://github.com/asimawdah/expressive_ui_kit
+issue_tracker: https://github.com/asimawdah/expressive_ui_kit/issues
+documentation: https://github.com/asimawdah/expressive_ui_kit#readme
 
 topics:
   - material
@@ -18,14 +18,13 @@ topics:
 
 environment:
   sdk: ">=3.4.0 <4.0.0"
-  flutter: ">=3.24.0"
+  flutter: ">=3.27.0"
 
 dependencies:
   flutter:
     sdk: flutter
   material_new_shapes: ^1.0.0
-  # Same physics engine as m3e_core (MaterialSpringMotion tokens). Do not depend on m3e_core.
-  motor: ^1.1.0
+  flutter_credit_card: ^4.1.0
 
 dev_dependencies:
   flutter_test:

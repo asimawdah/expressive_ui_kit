@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:material3_expressive/material3_expressive.dart';
+import 'package:expressive_ui_kit/expressive_ui_kit.dart';
 
 /// Demonstrates text inputs, search, lists, menus, pickers and
 /// communication widgets.
@@ -21,16 +21,6 @@ class _InputsPageState extends State<InputsPage> {
   int _page = 0;
   final List<String> _emails =
       List.generate(3, (i) => 'Swipe me away — message ${i + 1}');
-  final List<Key> _taskKeys = List.generate(
-    4,
-    (i) => ValueKey<String>('task-$i'),
-  );
-  final List<String> _taskLabels = const [
-    'Review pull request',
-    'Update documentation',
-    'Ship release candidate',
-    'Plan sprint demo',
-  ];
 
   static const List<String> _fruits = [
     'Apple',
@@ -206,42 +196,6 @@ class _InputsPageState extends State<InputsPage> {
           ],
         ),
         const SizedBox(height: 24),
-        Text('Reorderable list',
-            style: Theme.of(context).textTheme.titleMedium),
-        const SizedBox(height: 8),
-        SizedBox(
-          height: 220,
-          child: MEReorderableList(
-            keys: _taskKeys,
-            onReorder: (oldIndex, newIndex) {
-              setState(() {
-                final key = _taskKeys.removeAt(oldIndex);
-                final label = _taskLabels.removeAt(oldIndex);
-                _taskKeys.insert(newIndex, key);
-                _taskLabels.insert(newIndex, label);
-              });
-            },
-            itemBuilder: (context, index, position) => MEListTile(
-              position: position,
-              leading: const Icon(Icons.task_alt_outlined),
-              title: Text(_taskLabels[index]),
-            ),
-          ),
-        ),
-        const SizedBox(height: 24),
-        Text('Paginated data table',
-            style: Theme.of(context).textTheme.titleMedium),
-        const SizedBox(height: 8),
-        MEPaginatedDataTable(
-          columns: const [
-            DataColumn(label: Text('Widget')),
-            DataColumn(label: Text('Category')),
-          ],
-          source: _WidgetCatalogSource(),
-          rowsPerPage: 5,
-          showCheckboxColumn: false,
-        ),
-        const SizedBox(height: 24),
         Text('Data table', style: Theme.of(context).textTheme.titleMedium),
         const SizedBox(height: 8),
         const MEDataTable(
@@ -374,50 +328,4 @@ class _InputsPageState extends State<InputsPage> {
       ],
     );
   }
-}
-
-class _WidgetCatalogSource extends DataTableSource {
-  static const _rows = <(String, String)>[
-    ('MEButton', 'Buttons'),
-    ('MESwitch', 'Controls'),
-    ('MENavigationBar', 'Navigation'),
-    ('MECard', 'Containers'),
-    ('METextField', 'Inputs'),
-    ('MEDataTable', 'Lists'),
-    ('MEMarkdown', 'Content'),
-    ('MELineChart', 'Charts'),
-    ('MESliverList', 'Slivers'),
-    ('METoast', 'Communication'),
-    ('MELoadingIndicator', 'Progress'),
-    ('MEAvatar', 'Containers'),
-    ('MESegmentedButton', 'Buttons'),
-    ('MEDialog', 'Containers'),
-    ('MERefreshIndicator', 'Progress'),
-    ('MEStepper', 'Lists'),
-    ('MEOtpInput', 'Inputs'),
-    ('MEGauge', 'Charts'),
-    ('MEFabMenu', 'Buttons'),
-    ('MESwipeDeck', 'Containers'),
-  ];
-
-  @override
-  DataRow? getRow(int index) {
-    if (index >= _rows.length) return null;
-    final row = _rows[index];
-    return DataRow(
-      cells: [
-        DataCell(Text(row.$1)),
-        DataCell(Text(row.$2)),
-      ],
-    );
-  }
-
-  @override
-  bool get isRowCountApproximate => false;
-
-  @override
-  int get rowCount => _rows.length;
-
-  @override
-  int get selectedRowCount => 0;
 }

@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
-import '../theme/me_motion.dart';
 import '../theme/me_theme.dart';
 
 /// A row of expressive face glyphs for rating mood or satisfaction.
@@ -108,9 +107,10 @@ class _MoodFace extends StatelessWidget {
       label: 'Mood ${(t * 100).round()} percent',
       child: GestureDetector(
         onTap: onTap,
-        child: MEMotionBuilder(
-          value: selected ? 1.0 : 0.0,
-          spec: spec,
+        child: TweenAnimationBuilder<double>(
+          tween: Tween(end: selected ? 1.0 : 0.0),
+          duration: spec.approximateDuration,
+          curve: spec.curve,
           builder: (context, v, _) {
             final clamped = v.clamp(0.0, 1.0);
             return Transform.scale(

@@ -1,4 +1,3 @@
-import 'dart:async';
 import 'dart:math' as math;
 
 import 'package:flutter/material.dart';
@@ -93,7 +92,6 @@ class _MEMorphingShapeState extends State<MEMorphingShape>
   );
   int _index = 0;
   int _target = 0;
-  Timer? _cycle;
 
   @override
   void initState() {
@@ -103,8 +101,7 @@ class _MEMorphingShapeState extends State<MEMorphingShape>
   }
 
   void _scheduleNext() {
-    _cycle?.cancel();
-    _cycle = Timer(widget.interval, () {
+    Future<void>.delayed(widget.interval, () {
       if (!mounted) return;
       setState(() {
         _index = _target;
@@ -118,7 +115,6 @@ class _MEMorphingShapeState extends State<MEMorphingShape>
 
   @override
   void dispose() {
-    _cycle?.cancel();
     _morph.dispose();
     _rotation.dispose();
     super.dispose();

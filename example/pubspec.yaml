@@ -1,7 +1,7 @@
-name: material3_expressive_example
-description: Gallery demo for the material3_expressive package.
+name: expressive_ui_kit_example
+description: Gallery demo for the expressive_ui_kit package.
 publish_to: "none"
-version: 1.5.0+6
+version: 1.0.0
 
 environment:
   sdk: ">=3.4.0 <4.0.0"
@@ -9,13 +9,11 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
-  material3_expressive:
+  expressive_ui_kit:
     path: ../
 
 dev_dependencies:
   flutter_lints: ^4.0.0
-  flutter_test:
-    sdk: flutter
 
 flutter:
   uses-material-design: true

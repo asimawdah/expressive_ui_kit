@@ -117,31 +117,27 @@ class _MECompareSliderState extends State<MECompareSlider>
                       Positioned(
                         left: width * t - 20,
                         top: widget.height / 2 - 20,
-                        child: MEMotionBuilder(
-                          value: _dragging ? 1.0 : 0.0,
-                          spec: METheme.of(context).motion.fastSpatial,
-                          builder: (context, t, child) {
-                            return Container(
-                              width: 40,
-                              height: 40,
-                              decoration: ShapeDecoration(
-                                color: scheme.surface,
-                                shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(
-                                    20 - 8 * t,
-                                  ),
-                                ),
-                                shadows: const [
-                                  BoxShadow(
-                                    color: Color(0x33000000),
-                                    blurRadius: 8,
-                                    offset: Offset(0, 2),
-                                  ),
-                                ],
+                        child: AnimatedContainer(
+                          duration: const Duration(milliseconds: 160),
+                          curve: Curves.easeOut,
+                          width: 40,
+                          height: 40,
+                          decoration: ShapeDecoration(
+                            color: scheme.surface,
+                            shape: RoundedRectangleBorder(
+                              // Press-morph: rounder at rest, squarer
+                              // while dragging.
+                              borderRadius:
+                                  BorderRadius.circular(_dragging ? 12 : 20),
+                            ),
+                            shadows: const [
+                              BoxShadow(
+                                color: Color(0x33000000),
+                                blurRadius: 8,
+                                offset: Offset(0, 2),
                               ),
-                              child: child,
-                            );
-                          },
+                            ],
+                          ),
                           child: Icon(
                             Icons.unfold_more,
                             size: 20,

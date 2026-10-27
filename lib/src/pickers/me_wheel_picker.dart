@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
-import '../theme/me_motion.dart';
 import '../theme/me_shapes.dart';
 import '../theme/me_theme.dart';
 
@@ -80,21 +79,17 @@ class _MEWheelPickerState extends State<MEWheelPicker> {
         children: [
           // Selection window: morphs squarer while dragging, like a
           // pressed M3E surface.
-          MEMotionBuilder(
-            value: _dragging ? 1.0 : 0.0,
-            spec: motion.defaultSpatial,
-            builder: (context, t, _) {
-              final corner =
-                  MECorners.large + (MECorners.small - MECorners.large) * t;
-              return Container(
-                height: widget.itemExtent,
-                margin: const EdgeInsets.symmetric(horizontal: 8),
-                decoration: ShapeDecoration(
-                  color: scheme.secondaryContainer,
-                  shape: MEShapeScheme.fromCorner(corner),
-                ),
-              );
-            },
+          AnimatedContainer(
+            duration: motion.defaultSpatial.approximateDuration,
+            curve: motion.defaultSpatial.curve,
+            height: widget.itemExtent,
+            margin: const EdgeInsets.symmetric(horizontal: 8),
+            decoration: ShapeDecoration(
+              color: scheme.secondaryContainer,
+              shape: MEShapeScheme.fromCorner(
+                _dragging ? MECorners.small : MECorners.large,
+              ),
+            ),
           ),
           NotificationListener<ScrollNotification>(
             onNotification: (n) {
@@ -120,7 +115,7 @@ class _MEWheelPickerState extends State<MEWheelPicker> {
                   return Center(
                     child: AnimatedDefaultTextStyle(
                       duration: motion.defaultEffects.approximateDuration,
-                      curve: motion.defaultEffects.curve,
+                      curve: Curves.easeOutCubic,
                       style: (selected
                               ? METypography.emphasize(text.titleMedium!)
                               : text.bodyLarge!)

@@ -1,6 +1,6 @@
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:material3_expressive/src/internal/me_keyboard.dart';
+import 'package:expressive_ui_kit/src/internal/me_keyboard.dart';
 
 void main() {
   group('MEKeyboard.horizontalDelta', () {

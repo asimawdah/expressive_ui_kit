@@ -3,9 +3,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
-import '../theme/me_motion.dart';
 import '../theme/me_shapes.dart';
-import '../theme/me_theme.dart';
 import 'me_number_ticker.dart';
 
 /// An expressive stopwatch with rolling digits and spring-morphing
@@ -140,26 +138,17 @@ class _MEStopwatchState extends State<MEStopwatch> {
             const SizedBox(width: 16),
             // Primary start/stop: circle while running, rounded square
             // while paused.
-            MEMotionBuilder(
-              value: _running ? 1.0 : 0.0,
-              spec: METheme.of(context).motion.defaultSpatial,
-              builder: (context, t, child) {
-                final radius = MECorners.largeIncreased +
-                    (36 - MECorners.largeIncreased) * t;
-                return Container(
-                  width: 72,
-                  height: 72,
-                  decoration: BoxDecoration(
-                    color: Color.lerp(
-                      scheme.primary,
-                      scheme.errorContainer,
-                      t.clamp(0.0, 1.0),
-                    ),
-                    borderRadius: BorderRadius.circular(radius),
-                  ),
-                  child: child,
-                );
-              },
+            AnimatedContainer(
+              duration: const Duration(milliseconds: 350),
+              curve: Curves.easeOutBack,
+              width: 72,
+              height: 72,
+              decoration: BoxDecoration(
+                color: _running ? scheme.errorContainer : scheme.primary,
+                borderRadius: BorderRadius.circular(
+                  _running ? 36 : MECorners.largeIncreased,
+                ),
+              ),
               child: Material(
                 color: Colors.transparent,
                 child: InkWell(

@@ -1,25 +1,11 @@
-# material3_expressive
-
-[![CI](https://github.com/asimawdah/material_expressive/actions/workflows/ci.yml/badge.svg)](https://github.com/asimawdah/material_expressive/actions/workflows/ci.yml)
-[![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)](https://github.com/asimawdah/material_expressive/blob/main/LICENSE)
+# expressive_ui_kit
 
 Material 3 Expressive widgets for Flutter — drop-in expressive replacements
 for standard Material widgets, built around spring physics, shape morphing,
 and the M3 Expressive motion scheme.
 
-## For AI assistants
-
-A Cursor skill at [`.cursor/skills/material3-expressive/SKILL.md`](.cursor/skills/material3-expressive/SKILL.md)
-is the **picker**: it maps product intent → the correct `ME*` widget
-(prefix is `ME`, not `M3E`), with a full inventory in
-[`catalog.md`](.cursor/skills/material3-expressive/catalog.md) and copy-paste
-constructors in [`constructors.md`](.cursor/skills/material3-expressive/constructors.md).
-`AGENTS.md` and [`.cursor/rules/material3-expressive.mdc`](.cursor/rules/material3-expressive.mdc)
-point agents at that skill.
-
-To reuse the picker in another app, copy the whole
-`.cursor/skills/material3-expressive/` folder (and optionally the rule file)
-into that project's `.cursor/` directory.
+This package is maintained in its own repository and is licensed under the
+[MIT License](LICENSE). Third-party dependencies retain their own licenses.
 
 ## Widget mapping
 
@@ -29,7 +15,6 @@ into that project's `.cursor/` directory.
 | `IconButton`                    | `MEIconButton`                  |
 | `SegmentedButton`               | `MESegmentedButton`             |
 | toggle button rows              | `MEButtonGroup` (connected)     |
-| —                               | `METoggleButton` (new)          |
 | `FloatingActionButton`          | `MEFab`                         |
 | speed dial patterns             | `MEFabMenu` (new)               |
 | —                               | `MESplitButton` (new)           |
@@ -55,19 +40,16 @@ into that project's `.cursor/` directory.
 | `showModalBottomSheet`          | `showMEBottomSheet`             |
 | `SnackBar`                      | `showMESnackBar`                |
 | `TextField`/`TextFormField`     | `METextField`                   |
-| `SearchBar`                     | `MESearchBar` + `MESearchAnchor` |
-| `SearchAnchor`                  | `MESearchAnchor` + `MESearchAppBar` |
-| `ListTile`                      | `MEListTile` + `MEListGroup` + `MECardList` |
+| `SearchBar`                     | `MESearchBar`                   |
+| `ListTile`                      | `MEListTile` + `MEListGroup`    |
 | `ExpansionTile`                 | `MEExpansionTile`               |
-| `PopupMenuButton`/`MenuAnchor`  | `MEMenu` / `MEMenuAnchor`       |
+| `PopupMenuButton`/`MenuAnchor`  | `MEMenuAnchor`                  |
 | `DropdownButton`/`DropdownMenu` | `MEDropdown`                    |
 | `Badge`                         | `MEBadge`                       |
 | `Tooltip`                       | `METooltip`                     |
 | `Divider`                       | `MEDivider`                     |
 | `showDatePicker`                | `showMEDatePicker`              |
-| `showDateRangePicker`           | `showMEDateRangePicker`         |
 | `showTimePicker`                | `showMETimePicker`              |
-| —                               | `MEDialTimePicker` (new)        |
 | `SliverList`                    | `MESliverList`                  |
 | `SliverGrid`                    | `MESliverGrid`                  |
 | `SliverPersistentHeader`        | `MESliverPinnedHeader`          |
@@ -76,15 +58,8 @@ into that project's `.cursor/` directory.
 | `RefreshIndicator`              | `MERefreshIndicator`            |
 | `Stepper`                       | `MEStepper`                     |
 | `DataTable`                     | `MEDataTable`                   |
-| `PaginatedDataTable`            | `MEPaginatedDataTable`          |
-| `ReorderableListView`           | `MEReorderableList`             |
 | `CircleAvatar`                  | `MEAvatar` + `MEAvatarGroup`    |
 | `Dismissible`                   | `MEDismissible`                 |
-| —                               | `MEDismissibleColumn` / `MEDismissibleList` (new) |
-| —                               | `MEExpandableList` (new)        |
-| —                               | `MESelection` (new)             |
-| —                               | `showMEFullScreenDialog` (new)  |
-| —                               | `showMESelectionDialog` (new)   |
 | `Autocomplete`                  | `MEAutocomplete`                |
 | —                               | `MEPageIndicator` (new)         |
 | —                               | `showMESideSheet` (new)         |
@@ -99,7 +74,6 @@ into that project's `.cursor/` directory.
 | —                               | `MENumberTicker` (new)          |
 | —                               | `METimeline` (new)              |
 | —                               | `MEMorphingShape` (new)         |
-| —                               | `MEShapeContainer` (new)        |
 | `CalendarDatePicker`            | `MECalendar`                    |
 | —                               | `METagInput` (new)              |
 | —                               | `METreeView` (new)              |
@@ -182,20 +156,25 @@ into that project's `.cursor/` directory.
 | —                               | `MEPomodoro` (new)              |
 | —                               | `MEBoardingPass` (new)          |
 | —                               | `MEColorWheel` (new)            |
-| —                               | `MESplashScreen` (new)          |
-| —                               | `MEPinPad` (new)                |
-| —                               | `MEReceipt` (new)               |
-| —                               | `MEVinyl` (new)                 |
 
 ## Install
 
-Add a path (or git) dependency:
+After the package is published, add it from pub.dev:
 
 ```yaml
 dependencies:
-  material3_expressive:
-    path: ../material3_expressive
+  expressive_ui_kit: ^0.3.0
 ```
+
+Or use a local checkout while developing the package:
+
+```yaml
+dependencies:
+  expressive_ui_kit:
+    path: ../
+```
+
+The package requires Flutter 3.27.0 or later.
 
 ## Setup
 
@@ -252,7 +231,7 @@ MESegmentedButton<String>(
 MEAvatar(child: const Text('JD'), onPressed: () {}, selected: isSelected);
 MEAvatarGroup(avatars: [for (final u in users) MEAvatar(child: Text(u))]);
 
-// Swipe to archive (start) or delete (end) with spring fly-off.
+// Swipe to dismiss with themed action reveal.
 MEDismissible(
   dismissKey: ValueKey(item.id),
   onDismissed: (_) => remove(item),
@@ -642,7 +621,7 @@ MEMetronome(bpm: 96, onBeat: (i) => flash(i));
 // strength (error -> tertiary -> primary). Searching runs a wave.
 MESignalStrength(level: 3, searching: isScanning);
 
-// Payment card: tap to flip in 3D and reveal the back with CVC.
+// Payment card: glass theme, tap/swipe to flip and reveal CVC.
 MECreditCard(
   number: '4242424242424242',
   holder: 'Alex Rivera',
@@ -876,11 +855,6 @@ const MECircularProgressIndicator(); // indeterminate
 
 // Shape-morphing loading indicator for short waits.
 const MELoadingIndicator(contained: true);
-const MELoadingIndicator(value: 0.4); // determinate shape morph
-MEShapeContainer(
-  polygon: MaterialShapes.cookie9Sided,
-  child: const Icon(Icons.star),
-);
 
 // Navigation bar: liquid pill indicator that stretches between
 // destinations, icon bounce, badges, and label behavior control.
@@ -936,31 +910,10 @@ MEListGroup(
 );
 
 // Menus, sheets, snackbars and pickers.
-MEMenu(
-  anchorBuilder: (context, open) => MEButton.outlined(
-    icon: const Icon(Icons.arrow_drop_down),
-    onPressed: open,
-    child: const Text('Open menu'),
-  ),
-  children: [
-    MEMenuGroup.entries(
-      entries: [
-        MEMenuEntry(
-          label: 'Edit',
-          leading: const Icon(Icons.edit_outlined),
-          value: 'edit',
-        ),
-        const MEMenuEntry(label: 'Disabled', enabled: false),
-      ],
-    ),
-    MEMenuGroup.entries(
-      label: 'More',
-      entries: [
-        MEMenuEntry(label: 'Copy', trailingText: '⌘C', value: 'copy'),
-      ],
-    ),
-  ],
+MEMenuAnchor<String>(
+  items: const [MEMenuItem(value: 'a', label: 'Option A')],
   onSelected: (v) {},
+  child: const Icon(Icons.more_vert),
 );
 showMEBottomSheet(context: context, builder: (context) => const SheetBody());
 showMESnackBar(context, message: 'Saved', actionLabel: 'Undo');
@@ -988,26 +941,21 @@ showMEDialog<void>(
 ## Motion system
 
 Every pressable surface (buttons, FABs, cards, chips, avatars, list
-tiles...) shares the same expressive press choreography as `m3e_core`:
+tiles...) shares the same expressive press choreography:
 
 - **Shape morph** — the surface springs toward a squarer (or rounder)
-  corner radius while pressed (snappy effects spring) and back on
-  release (spatial spring, which may bounce).
-- **Neighbor squish** — in `MEButtonGroup` / `METoggleButtonGroup` the
-  pressed item grows and neighbors compress in layout, keeping the
-  group's total size.
+  shape while pressed and back on release.
+- **Squash & overshoot** — the surface scales down slightly on press;
+  the underdamped release spring pushes it just past 1.0 for a natural
+  bounce.
 - **Haptics** — buttons and FABs emit a light haptic tick on press-down.
 
-All animations run on **motor** physics springs — the same
-`MaterialSpringMotion` engine [m3e_core](https://pub.dev/packages/m3e_core)
-uses — exposed through `MEMotionScheme`:
+All animations run on physics springs, exposed through `MEMotionScheme`:
 
 - `fastSpatial` / `defaultSpatial` / `slowSpatial` — bouncy springs for
   movement, scaling and shape morphs.
 - `fastEffects` / `defaultEffects` / `slowEffects` — critically damped
   springs for color, opacity and other non-spatial effects.
-- `popup` — bouncy spring for menus and dropdowns (1000 / 0.6).
-- `overflow` — snappy spring for overflow extra-actions (1600 / 0.85).
 
 Use them in your own widgets:
 
@@ -1019,10 +967,7 @@ AnimatedContainer(curve: motion.defaultSpatial.curve, ...);
 ```
 
 Pass `METhemeData.standard` to tone the bounce down (reduced-motion
-friendly). When the platform's **Reduce motion** accessibility setting is
-enabled (`MediaQuery.disableAnimations`), [METheme.of] automatically
-switches to [MEMotionScheme.reduced] so springs snap instantly with no
-bounce or overshoot.
+friendly).
 
 ## Example
 
