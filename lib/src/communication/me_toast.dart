@@ -61,6 +61,9 @@ class _METoastController {
         Navigator.maybeOf(context, rootNavigator: true)?.overlay;
     if (resolved == null) return;
 
+    final theme = Theme.of(context);
+    final meTheme = METheme.of(context);
+
     _timer?.cancel();
     // Replace any visible toast immediately.
     _entry?.remove();
@@ -70,6 +73,8 @@ class _METoastController {
         message: message,
         kind: kind,
         icon: icon,
+        theme: theme,
+        meTheme: meTheme,
         onDismissed: _removeEntry,
       ),
     );
@@ -89,12 +94,16 @@ class _METoastWidget extends StatefulWidget {
     required this.message,
     required this.kind,
     required this.onDismissed,
+    required this.theme,
+    required this.meTheme,
     this.icon,
   });
 
   final String message;
   final METoastKind kind;
   final IconData? icon;
+  final ThemeData theme;
+  final METhemeData meTheme;
   final VoidCallback onDismissed;
 
   @override
@@ -114,7 +123,7 @@ class _METoastWidgetState extends State<_METoastWidget>
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (mounted) {
-        springTo(_slide, 1, METheme.of(context).motion.defaultSpatial);
+        springTo(_slide, 1, widget.meTheme.motion.defaultSpatial);
       }
     });
     _slide.addListener(() {
@@ -127,7 +136,7 @@ class _METoastWidgetState extends State<_METoastWidget>
   void hide() {
     if (_hiding || !mounted) return;
     _hiding = true;
-    springTo(_slide, 0, METheme.of(context).motion.defaultEffects);
+    springTo(_slide, 0, widget.meTheme.motion.defaultEffects);
   }
 
   @override
@@ -167,58 +176,64 @@ class _METoastWidgetState extends State<_METoastWidget>
 
   @override
   Widget build(BuildContext context) {
-    final scheme = Theme.of(context).colorScheme;
-    final text = Theme.of(context).textTheme;
+    final scheme = widget.theme.colorScheme;
+    final text = widget.theme.textTheme;
     final (bg, fg, defaultIcon) = _palette(scheme);
     final topInset = MediaQuery.paddingOf(context).top;
 
-    return Positioned(
-      top: 0,
-      left: 0,
-      right: 0,
-      child: SafeArea(
-        bottom: false,
-        child: AnimatedBuilder(
-          animation: _slide,
-          builder: (context, child) {
-            final t = _slide.value;
-            return Transform.translate(
-              offset: Offset(0, (t - 1) * (topInset + 72)),
-              child: Opacity(
-                opacity: t.clamp(0.0, 1.0),
-                child: child,
-              ),
-            );
-          },
-          child: Center(
-            child: Padding(
-              padding: const EdgeInsets.only(top: 8),
-              child: GestureDetector(
-                onTap: hide,
-                child: Material(
-                  color: bg,
-                  elevation: 6,
-                  shadowColor: Colors.black26,
-                  shape: MEShapeScheme.fromCorner(MECorners.full),
-                  child: Padding(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 20,
-                      vertical: 12,
-                    ),
-                    child: Row(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        Icon(widget.icon ?? defaultIcon, size: 20, color: fg),
-                        const SizedBox(width: 10),
-                        Flexible(
-                          child: Text(
-                            widget.message,
-                            style: text.bodyMedium!.copyWith(color: fg),
-                            maxLines: 2,
-                            overflow: TextOverflow.ellipsis,
-                          ),
+    return Theme(
+      data: widget.theme,
+      child: METheme(
+        data: widget.meTheme,
+        child: Positioned(
+          top: 0,
+          left: 0,
+          right: 0,
+          child: SafeArea(
+            bottom: false,
+            child: AnimatedBuilder(
+              animation: _slide,
+              builder: (context, child) {
+                final t = _slide.value;
+                return Transform.translate(
+                  offset: Offset(0, (t - 1) * (topInset + 72)),
+                  child: Opacity(
+                    opacity: t.clamp(0.0, 1.0),
+                    child: child,
+                  ),
+                );
+              },
+              child: Center(
+                child: Padding(
+                  padding: const EdgeInsets.only(top: 8),
+                  child: GestureDetector(
+                    onTap: hide,
+                    child: Material(
+                      color: bg,
+                      elevation: 6,
+                      shadowColor: Colors.black26,
+                      shape: MEShapeScheme.fromCorner(MECorners.full),
+                      child: Padding(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 20,
+                          vertical: 12,
                         ),
-                      ],
+                        child: Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Icon(widget.icon ?? defaultIcon, size: 20, color: fg),
+                            const SizedBox(width: 10),
+                            Flexible(
+                              child: Text(
+                                widget.message,
+                                style: text.bodyMedium!.copyWith(color: fg),
+                                maxLines: 2,
+                                overflow: TextOverflow.ellipsis,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
                     ),
                   ),
                 ),
